@@ -1,4 +1,4 @@
-package edu.agh.mindmappingproject;
+package edu.agh.mindmapping;
 
 import android.app.Activity;
 import android.os.Bundle;
