@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">MindMappingProject</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action1_button">Zapisz plik</string>
 
 </resources>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="xmind-with-deps4">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/xmind-with-deps4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

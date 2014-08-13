@@ -2,9 +2,20 @@ package edu.agh.mindmapping;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import org.xmind.core.Core;
+import org.xmind.core.CoreException;
+import org.xmind.core.IWorkbook;
+import org.xmind.core.IWorkbookBuilder;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends Activity {
 
@@ -12,6 +23,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
     }
 
 
@@ -32,5 +44,32 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void exampleSaveToSdcard(View view) {
+        String esState = Environment.getExternalStorageState();
+        if(esState.equals(Environment.MEDIA_MOUNTED)){
+            Log.i("SAVE", "storage mounted, saving");
+            File sdCard = Environment.getExternalStorageDirectory();
+
+            try {
+                IWorkbookBuilder builder = Core.getWorkbookBuilder();
+                IWorkbook workbook = builder.createWorkbook();
+
+                String location = sdCard.getAbsolutePath()+"/exampleFile.xmind";
+                Log.i("SAVE","saving at location "+location);
+                File file = new File(location);
+                FileOutputStream fos = new FileOutputStream(file);
+                workbook.save(fos);
+                Log.i("SAVE","save successful");
+                fos.close();
+            } catch(CoreException e){
+                Log.e("SAVE",e.toString());
+            } catch(IOException e){
+                Log.e("SAVE",e.toString());
+            }
+        }else{
+            Log.i("SAVE","storage not mounted");
+        }
     }
 }
