@@ -79,10 +79,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 16 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="xmind-with-deps2" level="project" />
-    <orderEntry type="library" exported="" name="xmind-with-deps" level="project" />
-    <orderEntry type="library" exported="" name="xmind-with-deps3" level="project" />
     <orderEntry type="library" exported="" name="xmind-with-deps4" level="project" />
+    <orderEntry type="library" exported="" name="dropbox-sync-sdk-android" level="project" />
   </component>
 </module>
 

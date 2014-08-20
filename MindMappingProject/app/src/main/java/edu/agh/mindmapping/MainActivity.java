@@ -1,6 +1,7 @@
 package edu.agh.mindmapping;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -71,5 +72,10 @@ public class MainActivity extends Activity {
         }else{
             Log.i("SAVE","storage not mounted");
         }
+    }
+
+
+    public void onOpenFileBtnClick(View view) {
+        Intent fileChooserIntent = 
     }
 }
