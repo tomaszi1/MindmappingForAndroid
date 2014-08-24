@@ -8,23 +8,24 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import org.xmind.core.Core;
-import org.xmind.core.CoreException;
-import org.xmind.core.IWorkbook;
-import org.xmind.core.IWorkbookBuilder;
+import com.dropbox.sync.android.DbxAccount;
+import com.dropbox.sync.android.DbxAccountManager;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 
 public class MainActivity extends Activity {
+
+	private static final int REQUEST_FILE = 1;
+    private static final int REQUEST_LINK_DROPBOX_ACCOUNT = 2;
+    private WorkbookManager workbookManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
 
 
@@ -46,36 +47,56 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public void exampleSaveToSdcard(View view) {
-        String esState = Environment.getExternalStorageState();
-        if(esState.equals(Environment.MEDIA_MOUNTED)){
-            Log.i("SAVE", "storage mounted, saving");
-            File sdCard = Environment.getExternalStorageDirectory();
-
-            try {
-                IWorkbookBuilder builder = Core.getWorkbookBuilder();
-                IWorkbook workbook = builder.createWorkbook();
-
-                String location = sdCard.getAbsolutePath()+"/exampleFile.xmind";
-                Log.i("SAVE","saving at location "+location);
-                File file = new File(location);
-                FileOutputStream fos = new FileOutputStream(file);
-                workbook.save(fos);
-                Log.i("SAVE","save successful");
-                fos.close();
-            } catch(CoreException e){
-                Log.e("SAVE",e.toString());
-            } catch(IOException e){
-                Log.e("SAVE",e.toString());
-            }
-        }else{
-            Log.i("SAVE","storage not mounted");
-        }
+    
+    public void onOpenFileButtonClick(View view){
+    	Intent getFileToOpenIntent = new Intent(this, FileChooserActivity.class);
+    	
+    	startActivityForResult(getFileToOpenIntent, REQUEST_FILE);
     }
 
 
-    public void onOpenFileBtnClick(View view) {
-        Intent fileChooserIntent = 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode==REQUEST_FILE){
+			if(resultCode==RESULT_OK){
+				File chosenFile = (File) data.getExtras().get(FileChooserActivity.CHOSEN_FILE);
+				Toast toast = Toast.makeText(this, "Wybrano: "+chosenFile.getAbsolutePath(), Toast.LENGTH_LONG);
+				toast.show();
+			}
+		} else if (requestCode==REQUEST_LINK_DROPBOX_ACCOUNT) {
+            if (resultCode==RESULT_OK){
+                Log.i("DBX","Dropbox account linked successfully");
+                Toast toast = Toast.makeText(this, "Powiązano z kontem Dropbox",Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                Log.i("DBX","Dropbox account not linked");
+                Toast toast = Toast.makeText(this, "Nieudane powiązanie z kontem Dropbox",Toast.LENGTH_SHORT);
+            }
+        }
+	}
+
+
+    public void onCreateNewWorkbookButtonClick(View view) {
+        workbookManager = WorkbookManager.createNewWorkbook();
+        Log.i("CREATE","New workbook created");
+    }
+
+    public void onSaveCurrentWorkbookButtonClick(View view) {
+        if(workbookManager != null){
+            File dir = Environment.getExternalStorageDirectory();
+            workbookManager.saveWorkbook(new File(dir.getAbsolutePath() + "/saved_file.xmind"));
+        }
+    }
+
+    public void onConnectDropboxButtonClick(View view) {
+        DbxAccountManager dbxAccountManager = DbxAccountManager.getInstance(getApplicationContext(), Utils.APP_KEY, Utils.APP_SECRET);
+        DbxAccount linkedAccount = dbxAccountManager.getLinkedAccount();
+        if(linkedAccount==null){
+            Log.i("DBX","Starting Dropbox account linking service");
+            dbxAccountManager.startLink(this,REQUEST_LINK_DROPBOX_ACCOUNT);
+        } else {
+            Toast toast = Toast.makeText(this, "Aplikacja jest już powiązana z kontem Dropbox", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }

@@ -3,19 +3,35 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center|top"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/linearLayout">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/connectDropbox"
-        android:id="@+id/connectDropboxBtn" />
+        android:text="@string/connect_dropbox_button_text"
+        android:id="@+id/connect_dropbox_button"
+        android:onClick="onConnectDropboxButtonClick"
+        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/openFileFromStorage"
-        android:id="@+id/openFileBtn"
-        android:onClick="onOpenFileBtnClick"/>
+        android:text="@string/open_local_file_button"
+        android:id="@+id/open_file_button"
+        android:onClick="onOpenFileButtonClick"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_new_workbook_button_text"
+        android:id="@+id/create_new_workbook_button"
+        android:onClick="onCreateNewWorkbookButtonClick"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_current_workbook_button_text"
+        android:id="@+id/save_current_workbook_button"
+        android:onClick="onSaveCurrentWorkbookButtonClick"/>
 </LinearLayout>

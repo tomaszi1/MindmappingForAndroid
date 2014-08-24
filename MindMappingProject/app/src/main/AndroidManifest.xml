@@ -38,7 +38,7 @@
 
         <activity
             android:name=".FileChooserActivity"
-            android:label="@string/title_activity_file_browser" >
+            android:label="@string/title_activity_file_chooser" >
         </activity>
     </application>
 

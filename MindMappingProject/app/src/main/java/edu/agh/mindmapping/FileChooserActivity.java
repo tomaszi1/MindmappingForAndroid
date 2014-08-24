@@ -1,29 +1,34 @@
 package edu.agh.mindmapping;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.FileFilter;
+import edu.agh.mindmapping.R;
 
 
 public class FileChooserActivity extends Activity {
 
-    ListAdapter filesListAdapter;
+	public static final String CHOSEN_FILE = "chosen_file";
+    FileListAdapter filesListAdapter;
+    File currentDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,45 +40,40 @@ public class FileChooserActivity extends Activity {
 
     private void loadFilesList() {
         String storageState = Environment.getExternalStorageState();
-
-        if (storageState.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
-            Log.d("LOADING", "Loading files");
+        if (storageState.equals(Environment.MEDIA_MOUNTED) || storageState.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
             File sd = Environment.getExternalStorageDirectory();
-            File[] sdDirList = sd.listFiles(xmindFilter);
-            filesListAdapter = new FileListAdapter(this, sdDirList);
-            ListView filesListView = (ListView) findViewById(R.id.filesListView);
+            currentDir = sd;
+            File[] sdDirList = sd.listFiles(xmindFilesFilter);
+            List<File> filesList = new ArrayList<File>(Arrays.asList(sdDirList));
+            filesListAdapter = new FileListAdapter(this, filesList);
+            ListView filesListView = (ListView) findViewById(R.id.files_list_view);
             filesListView.setAdapter(filesListAdapter);
             filesListView.setOnItemClickListener(itemClickListener);
-            Log.d("LOADING", "Files loaded");
         } else {
             Log.e("LOADING", "Storage not mounted");
         }
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.file_browser, menu);
-        return true;
+    
+    public void onGoUpButtonClick(View view){
+    	currentDir = currentDir.getParentFile();
+    	refreshListAdapter();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private void refreshListAdapter() {
+    	if(!currentDir.isDirectory()){
+    		Log.e("ASSERT", "currentDir is not a dir");
+    		return;
+    	}
+    	File[] dirContent = currentDir.listFiles(xmindFilesFilter);
+    	filesListAdapter.clear();
+        filesListAdapter.addAll(Arrays.asList(dirContent));
+        filesListAdapter.notifyDataSetChanged();
+	}
 
-    FileFilter xmindFilter = new FileFilter() {
+	FileFilter xmindFilesFilter = new FileFilter() {
         @Override
         public boolean accept(File file) {
-            return file.isDirectory() || file.getName().endsWith(".xmind");
+            return (file.isDirectory() || file.getName().endsWith(".xmind")) && !file.isHidden();
         }
     };
 
@@ -82,15 +82,19 @@ public class FileChooserActivity extends Activity {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
             File clickedFile = (File) adapterView.getItemAtPosition(position);
             if (clickedFile.isDirectory()) {
-                Log.d("CLICK","Clicked directory");
+                currentDir = clickedFile;
+                refreshListAdapter();
             } else {
-                Log.d("CLICK","Clicked file");
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(CHOSEN_FILE, clickedFile);
+                setResult(Activity.RESULT_OK,resultIntent);
+                finish();
             }
         }
     };
 
     private class FileListAdapter extends ArrayAdapter<File> {
-        private FileListAdapter(Context context, File[] files) {
+        private FileListAdapter(Context context, List<File> files) {
             super(context, R.layout.row_layout, files);
         }
 
@@ -99,10 +103,10 @@ public class FileChooserActivity extends Activity {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             View view = inflater.inflate(R.layout.row_layout, parent, false);
             File file = getItem(position);
-            TextView textView = (TextView) findViewById(R.id.fileNameTextView);
+            TextView textView = (TextView) view.findViewById(R.id.file_name_text_view);
             textView.setText(file.getName());
             if(!file.isDirectory()){
-                ImageView imageView = (ImageView) findViewById(R.id.fileImageView);
+                ImageView imageView = (ImageView) view.findViewById(R.id.file_icon_view);
                 imageView.setImageResource(R.drawable.xmind_icon);
             }
             return view;

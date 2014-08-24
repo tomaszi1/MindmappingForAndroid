@@ -23,4 +23,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/xmind-with-deps4.jar')
     compile files('libs/dropbox-sync-sdk-android.jar')
+    compile files('libs/dropbox_so.jar')
+    compile files('libs/dropbox-so.jar')
+    compile files('libs/armeabi.jar')
+    compile files('libs/dropbox-native.jar')
 }

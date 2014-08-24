@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MindMappingProject</string>
-    <string name="action_settings">Settings</string>
-    <string name="action1_button">Zapisz plik</string>
-    <string name="openFileFromStorage">Otwórz plik z dysku</string>
-    <string name="connectDropbox">Powiąż z kontem Dropbox</string>
-    <string name="title_activity_file_browser">FileBrowserActivity</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="app_name">MindMapDroid</string>
+    
+    <string name="action_settings">Ustawienia</string>
+	<string name="connect_dropbox_button_text">Powiąż z kontem Dropbox</string>
+	<string name="open_local_file_button">Otwórz lokalny plik</string>
+    <string name="title_activity_file_chooser">Otwieranie pliku</string>
+    <string name="go_up_text_view">W górę</string>
+    <string name="unknown">Nieznany</string>
+    <string name="create_new_workbook_button_text">Utwórz nowy plik XMind</string>
+    <string name="save_current_workbook_button_text">Zapisz aktualny plik</string>
 </resources>

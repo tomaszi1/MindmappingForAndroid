@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dropbox-so">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/dropbox-so.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
