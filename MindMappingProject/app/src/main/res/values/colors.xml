@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light_blue">#CCE5FF</color>
+    <color name="conn">#A0A0A0</color>
+    <color name="light_gray">#C0C0C0</color>
+    <color name="black">#000000</color>
+    <color name="red">#FF0000</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="light_yellow">#FFFF66</color>
+    <color name="dark_yellow">#666600</color>
+    <color name="green">#00FF00</color>
+    <color name="dark_green">#006600</color>
+    <color name="blue">#0000FF</color>
+    <color name="dark_blue">#000066</color>
+    <color name="purple">#CC00CC</color>
+    <color name="dark_purple">#660066</color>
+    <color name="dark_gray">#404040</color>
+    <color name="gray">#808080</color>
+    <color name="dark_red">#990000</color>
+    <color name="rose">#FF6666</color>
+    <color name="orange">#FF9933</color>
+    <color name="lemon">#FFFF66</color>
+    <color name="lime_green">#9ACD32</color>
+    <color name="turquoise">#40e0d0</color>
+    <color name="copper">#B87333</color>
+    <color name="golden_olive">#A0522D</color>
+    <color name="beige">#FFFFCC</color>
+    <color name="sapphire">#9999FF</color>
+    <color name="lavender">#CC99FF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="khaki">#C3B091</color>
+    <color name="forest_green">#228b22</color>
+    <color name="antique_blue">#4682b4</color>
+    <color name="indigo">#4B0082</color>
+    <color name="violet">#ee82ee</color>
+</resources>

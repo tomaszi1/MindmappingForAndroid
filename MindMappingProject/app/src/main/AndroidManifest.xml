@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.agh.mindmapping" >
+    package="edu.agh" >
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:label="@string/app_name" >
         <activity
-            android:name=".MainActivity"
+            android:name=".mindmapping.MainActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+        <activity
+            android:name=".klaukold.gui.MainActivity"
+            android:label="@string/app_name" >
         </activity>
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
         <activity
@@ -29,7 +27,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".klaukold.gui.WelcomeScreen"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service
             android:name="com.dropbox.sync.android.DbxSyncService"
             android:enabled="true"
@@ -37,7 +41,7 @@
             android:label="Dropbox Sync" />
 
         <activity
-            android:name=".FileChooserActivity"
+            android:name=".mindmapping.FileChooserActivity"
             android:label="@string/title_activity_file_chooser" >
         </activity>
     </application>

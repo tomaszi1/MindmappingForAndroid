@@ -15,6 +15,8 @@ import com.dropbox.sync.android.DbxAccountManager;
 
 import java.io.File;
 
+import edu.agh.R;
+
 
 public class MainActivity extends Activity {
 

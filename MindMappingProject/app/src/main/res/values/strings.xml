@@ -11,4 +11,13 @@
     <string name="unknown">Nieznany</string>
     <string name="create_new_workbook_button_text">Utwórz nowy plik XMind</string>
     <string name="save_current_workbook_button_text">Zapisz aktualny plik</string>
+    <string name="action_trash">Kosz</string>
+    <string-array name="styles_array">
+        <item>Default</item>
+        <item>Classic</item>
+        <item>Simple</item>
+        <item>Business</item>
+        <item>Academese</item>
+        <item>Comic</item>
+    </string-array>
 </resources>

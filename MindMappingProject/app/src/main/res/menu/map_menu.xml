@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:showAsAction="never" />
+
+    <!-- Search, should appear as action button -->
+    <item android:id="@+id/action_new"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_new"
+        android:title="new"
+        android:showAsAction="always" />
+    <item android:id="@+id/bew_line"
+        android:orderInCategory="100"
+        android:icon="@drawable/stock_draw_line_connector"
+        android:title="new_line"
+        android:showAsAction="always" />
+    <item android:id="@+id/action_trash"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_discard"
+        android:title="trash"
+        android:showAsAction="always" />
+    <item android:id="@+id/action_undo"
+        android:orderInCategory="100"
+        android:icon="@drawable/undo_selected"
+        android:title="undo"
+        android:showAsAction="always" />
+    <item android:id="@+id/action_redo"
+        android:orderInCategory="100"
+        android:icon="@drawable/redo_selected"
+        android:title="redo"
+        android:showAsAction="always" />
+</menu>
