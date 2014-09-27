@@ -8,12 +8,15 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.PathShape;
 import android.graphics.drawable.shapes.RoundRectShape;
 
 
@@ -21,7 +24,7 @@ import edu.agh.klaukold.enums.BlockShape;
 
 
 
-public class Box  {
+public class Box implements  Cloneable {
 	public Box getParent() {
 		return parent;
 	}
@@ -46,11 +49,11 @@ public class Box  {
 	public void setColor(ColorDrawable color) {
 		this.color = color;
 	}
-	public Line getLine() {
-		return line;
+	public LinkedList<Line> getLines() {
+		return lines;
 	}
-	public void setLine(Line line) {
-		this.line = line;
+	public void setLines(LinkedList<Line> lines) {
+		this.lines = lines;
 	}
 	public Text getText() {
 		return text;
@@ -92,14 +95,31 @@ public class Box  {
     public void setHeight(int height) {
         this.height = height;
     }
-    protected  int height = 80;
-    protected  int width = 110;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    public Point getPoint() {
+        return point;
+    }
+
+    public void setPoint(Point point) {
+        this.point = point;
+    }
+
+    protected  int height = 90;
+    protected  int width = 120;
+    protected  Point point = new Point();
 	protected boolean isSelected = false;
 	protected Box parent;
 	protected LinkedList<Box> children = new LinkedList<Box>();
 	protected BlockShape shape;
 	protected ColorDrawable color;
-	protected Line line;
+	protected LinkedList<Line> lines;
 	protected Text text;
 	protected LinkedList<Note> notes = new LinkedList<Note>();
 	protected LinkedList<Marker> markers = new LinkedList<Marker>();
@@ -113,15 +133,14 @@ public class Box  {
     public void setExpanded(boolean isExpanded) {
         this.isExpanded = isExpanded;
     }
-    public GradientDrawable getDrawableShape() {
+    public Drawable getDrawableShape() {
         return drawableShape;
     }
 
-    public void setDrawableShape(GradientDrawable drawableShape) {
+    public void setDrawableShape(Drawable drawableShape) {
         this.drawableShape = drawableShape;
     }
-
-    protected GradientDrawable drawableShape;
+    protected Drawable drawableShape;
 
 	public Box() {}
 	public Box(Box parent)
@@ -136,34 +155,60 @@ public class Box  {
     {
         drawable.getPaint().setColor(color.getColor());
     }
-    public GradientDrawable prepareDrawableShape()
+    public Drawable prepareDrawableShape()
     {
+        int[] colors = {Color.WHITE, color.getColor()};
         //TODO dokonczyc ksztalty
         switch (shape)
         {
             case  RECTANGLE:
+                ((GradientDrawable)drawableShape).setColors(colors);
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
                 break;
             case ELLIPSE:
+                ((GradientDrawable)drawableShape).setColors(colors);
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
                 break;
             case ROUNDED_RECTANGLE:
                 //dwie pierwsze warosci - polozenie lewego, gornego roku, pozostale pary zgodnie z ruchem wskazowek zegara
 //                float[] arr = {10, 10, 10, 10, 10, 10, 10, 10};
 //                RoundRectShape roundRectShape = new RoundRectShape(arr, null,null);
 //                drawableShape = new ShapeDrawable(roundRectShape);
-                int[] colors = {Color.WHITE, color.getColor()};
-                drawableShape.setColors(colors);
-                drawableShape.setBounds(30, 50, 30 + width, 50 + height);
-//                Shader shader1 = new LinearGradient(0, 0, 0, 50, new int[] {
-//                        0xFFFFFF, color.getColor() }, null, Shader.TileMode.CLAMP);
-//                drawableShape.getPaint().setShader(shader1);
+                ((GradientDrawable)drawableShape).setColors(colors);
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
              break;
             case DIAMOND:
+                ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + width);
                 break;
             case UNDERLINE:
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
                 break;
             case NO_BORDER:
+                drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
                 break;
         }
         return  drawableShape;
+    }
+//
+//    public void Clone(Box box)
+//    {
+//        height = box.getHeight();
+//        width = box.getWidth();
+//        isSelected = box.isSelected();
+//        point = box.getPoint();
+//        parent = box.getParent();
+//        children = box.getChildren();
+//        shape = box.getShape();
+//        color = box.getColor();
+//        lines = box.getLines();
+//        text = box.getText().clone();
+//        notes = box.getNotes();
+//        markers = box.getMarkers();
+//        isVisible = box.isVisible;
+//        isExpanded = box.isExpanded;
+//    }
+    public Box BoxClone() throws CloneNotSupportedException {
+      return  (Box)super.clone();
     }
 }

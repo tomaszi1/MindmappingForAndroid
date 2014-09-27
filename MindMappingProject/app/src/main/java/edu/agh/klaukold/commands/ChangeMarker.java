@@ -12,4 +12,9 @@ public class ChangeMarker implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

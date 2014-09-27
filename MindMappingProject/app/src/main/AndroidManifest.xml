@@ -11,7 +11,15 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".klaukold.gui.MainActivity"
+        android:name=".klaukold.gui.MainActivity"
+        android:label="@string/app_name" >
+     </activity>
+        <activity
+            android:name=".klaukold.gui.EditSheetScreen"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".klaukold.gui.ColorPalette"
             android:label="@string/app_name" >
         </activity>
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />

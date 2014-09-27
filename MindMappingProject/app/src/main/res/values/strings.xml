@@ -20,4 +20,11 @@
         <item>Academese</item>
         <item>Comic</item>
     </string-array>
+    <string name="dialog_content">Wpisz zawartość</string>
+    <string name="ok_button">OK</string>
+    <string name="background">Background Color</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="intensity">Intensity</string>
+    <string name="multi_branch">Multi Branch Color</string>
+    <string name="error_rgb">Value range: 0 - 255</string>
 </resources>

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+            <View android:id="@+id/color1"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color2"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp">
+            </View>
+            <View android:id="@+id/color3"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color4"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color5"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color6"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color7"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+            <View android:id="@+id/color8"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color9"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color10"
+                android:background="@drawable/rect_background"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color11"
+                 android:background="@drawable/rect_background"
+                 android:layout_width="30dp"
+                 android:layout_height="30dp"
+                 android:layout_marginTop="20dp"
+                 android:layout_marginLeft="20dp" >
+             </View>
+             <View android:id="@+id/color12"
+                 android:background="@drawable/rect_background"
+                 android:layout_width="30dp"
+                 android:layout_height="30dp"
+                 android:layout_marginTop="20dp"
+                 android:layout_marginLeft="20dp" >
+             </View>
+             <View android:id="@+id/color13"
+                 android:background="@drawable/rect_background"
+                 android:layout_width="30dp"
+                 android:layout_height="30dp"
+                 android:layout_marginTop="20dp"
+                 android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color14"
+                  android:background="@drawable/rect_background"
+                  android:layout_width="30dp"
+                  android:layout_height="30dp"
+                  android:layout_marginTop="20dp"
+                  android:layout_marginLeft="20dp" >
+            </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+                <View android:id="@+id/color15"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color16"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color17"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color18"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color19"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color20"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+            </View>
+            <View android:id="@+id/color21"
+                 android:background="@drawable/rect_background"
+                 android:layout_width="30dp"
+                 android:layout_height="30dp"
+                 android:layout_marginTop="20dp"
+                 android:layout_marginLeft="20dp" >
+            </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+                <View android:id="@+id/color22"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color23"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color24"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color25"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color26"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color27"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color28"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp">
+                <View android:id="@+id/color29"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color30"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color31"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color32"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+                <View android:id="@+id/color33"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="R"
+                    android:id="@+id/textView"
+                    android:textSize="15dp"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="20dp" />
+
+                <EditText
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/editText2"
+                    android:layout_marginLeft="10dp"
+                    android:text="0"
+                    android:inputType="numberSigned|numberDecimal"
+                    />
+
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="G"
+                    android:id="@+id/textView3"
+                    android:textSize="15dp"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp" />
+
+                <EditText
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/editText3"
+                    android:layout_marginLeft="10dp"
+                    android:text="0"
+                    android:inputType="numberSigned|numberDecimal" />
+                <View android:id="@+id/color34"
+                    android:background="@drawable/rect_background"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="20dp" >
+                </View>
+            </GridLayout>
+
+            <GridLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="B"
+                    android:id="@+id/textView4"
+                    android:textSize="15dp"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp" />
+
+                <EditText
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/editText4"
+                    android:layout_marginLeft="10dp"
+                    android:text="0"
+                    android:inputType="numberSigned|numberDecimal" />
+            </GridLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

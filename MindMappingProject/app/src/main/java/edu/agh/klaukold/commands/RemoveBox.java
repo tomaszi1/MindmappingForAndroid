@@ -14,4 +14,9 @@ public class RemoveBox implements Command {
 		// TODO Auto-generated method stub
 
 	}
+
+    @Override
+    public void undo() {
+
+    }
 }

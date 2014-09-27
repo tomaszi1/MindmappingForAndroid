@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_action_new"
         android:title="new"
         android:showAsAction="always" />
-    <item android:id="@+id/bew_line"
+    <item android:id="@+id/new_line"
         android:orderInCategory="100"
         android:icon="@drawable/stock_draw_line_connector"
         android:title="new_line"

@@ -13,6 +13,10 @@ public class RemoveMarker implements Command {
 		
 	}
 
-	
+    @Override
+    public void undo() {
+
+    }
+
 
 }

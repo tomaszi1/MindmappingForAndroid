@@ -12,4 +12,9 @@ public class HideBox implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

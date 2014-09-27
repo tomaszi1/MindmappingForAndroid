@@ -12,4 +12,9 @@ public class ChangeTextNote implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

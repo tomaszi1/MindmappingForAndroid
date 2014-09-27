@@ -12,4 +12,9 @@ public class RenameBox implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

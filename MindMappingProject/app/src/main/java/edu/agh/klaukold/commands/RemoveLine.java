@@ -13,5 +13,10 @@ public class RemoveLine implements Command {
 		
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 
 }

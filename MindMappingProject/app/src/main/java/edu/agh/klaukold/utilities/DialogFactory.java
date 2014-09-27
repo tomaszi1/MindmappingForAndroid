@@ -21,14 +21,15 @@ package edu.agh.klaukold.utilities;
 import android.app.Dialog;
 import android.content.Context;
 
+import edu.agh.R;
 
 
 public class DialogFactory {
 	
 	public static Dialog newMapDialog(Context context) {
 		Dialog dialog = new Dialog(context);
-//		dialog.setContentView(R.layout.dialog_new);
-//		dialog.setTitle(context.getResources().getString(R.string.dialog_newMap));
+		dialog.setContentView(R.layout.dialog_new);
+		//dialog.setTitle(context.getResources().getString(R.string.dialog_newMap));
 		return dialog;
 	}
 
@@ -36,9 +37,9 @@ public class DialogFactory {
 
 	public static Dialog boxContentDialog(Context context) {
 		Dialog dialog = new Dialog(context);
-//		dialog.setContentView(R.layout.dialog_content);
-//		dialog.setTitle(context.getResources().getString(R.string.dialog_content));
-//		dialog.setCancelable(false);
+		dialog.setContentView(R.layout.dialog_content);
+		dialog.setTitle(context.getResources().getString(R.string.dialog_content));
+		dialog.setCancelable(false);
 		return dialog;
 	}
 	

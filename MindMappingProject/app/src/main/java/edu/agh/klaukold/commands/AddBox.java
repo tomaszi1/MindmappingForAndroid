@@ -14,5 +14,10 @@ public class AddBox implements Command {
 		// TODO Auto-generated method stub
 
 	}
-	
+
+    @Override
+    public void undo() {
+
+    }
+
 }

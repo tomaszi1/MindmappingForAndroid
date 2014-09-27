@@ -12,4 +12,9 @@ public class HideLines implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

@@ -6,7 +6,12 @@ import edu.agh.klaukold.interfaces.Command;
 
 public class AddNote implements Command {
 
-	@Override
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
 	public void execute(Properties properties) {
 		// TODO Auto-generated method stub
 		

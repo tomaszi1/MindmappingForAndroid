@@ -1,12 +1,18 @@
 package edu.agh.klaukold.common;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.xmind.core.internal.Image;
 
+import java.io.Serializable;
+
 import edu.agh.klaukold.enums.MapStyle;
 
-public class Sheet {
+
+public class Sheet implements  Cloneable {
 	public MapStyle getStyle() {
 		return style;
 	}
@@ -19,10 +25,10 @@ public class Sheet {
 	public void setRoot(Root root) {
 		this.root = root;
 	}
-	public Color getColor() {
+	public ColorDrawable getColor() {
 		return color;
 	}
-	public void setColor(Color color) {
+	public void setColor(ColorDrawable color) {
 		this.color = color;
 	}
 	public Image getWallpaper() {
@@ -43,7 +49,8 @@ public class Sheet {
 	public void setMultiBranchColor(boolean isMultiBranchColor) {
 		this.isMultiBranchColor = isMultiBranchColor;
 	}
-	public Sheet(MapStyle style, Root root, Color color, Image wallpaper,
+    public Sheet() {super();}
+	public Sheet(MapStyle style, Root root, ColorDrawable color, Image wallpaper,
 			int intensivity, boolean isMultiBranchColor) {
 		super();
 		this.style = style;
@@ -55,8 +62,13 @@ public class Sheet {
 	}
 	private MapStyle style;
 	private Root root;
-	private Color color;
+	private ColorDrawable color;
 	private Image wallpaper;
 	private int intensivity;
 	private boolean isMultiBranchColor;
+
+    public Sheet SheetClone() throws CloneNotSupportedException {
+        return  (Sheet) super.clone();
+    }
 }
+

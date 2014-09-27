@@ -77,42 +77,40 @@ public class Utils {
 		Root c = MainActivity.root;
 				
 		
-		//if(c.rect.contains(x, y)) {
-		//	return c;
-		//}
+		if(c.getDrawableShape().getBounds().contains(x, y)) {
+			return c;
+		}
 		
 		//BFS do przejścia drzewa
 		
 		Queue<Box> q= new LinkedList<Box>();
 		
-		//for(Box b: c.left) {
-		//	q.add(b);
-		//}
+		for(Box b: c.getLeftChildren()) {
+			q.add(b);
+		}
 		
-		//for(Box b: c.right) {
-		//	q.add(b);
-		//}
+		for(Box b: c.getRightChildren()) {
+			q.add(b);
+		}
 		
-		//for(Box b: c.detached) {
-		//	q.add(b);
-		//}
-		
+		for(Box b: c.getDetached()) {
+			q.add(b);
+		}
 		while(!q.isEmpty()) {
 			Box box = q.remove();
 			
 			if(box.isVisible()) {
-				//Rect rec = box.rect;
-//				if(rec.contains(x, y)) {
-//					q.clear();
-//					return box;
-//				}
+				Rect rec = box.getDrawableShape().getBounds();
+				if(rec.contains(x, y)) {
+					q.clear();
+					return box;
+				}
 				
 				for(Box b: box.getChildren()) {
 					q.add(b);
 				}
 			}
 		}
-
 		return null;
 	}
 	

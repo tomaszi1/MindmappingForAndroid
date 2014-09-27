@@ -12,4 +12,9 @@ public class MoveBox implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

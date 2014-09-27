@@ -12,4 +12,9 @@ public class ShowBox implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

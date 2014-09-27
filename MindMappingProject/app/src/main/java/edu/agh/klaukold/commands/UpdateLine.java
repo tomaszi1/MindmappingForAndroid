@@ -12,4 +12,9 @@ public class UpdateLine implements Command {
 
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }

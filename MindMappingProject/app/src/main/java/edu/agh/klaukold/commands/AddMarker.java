@@ -12,4 +12,9 @@ public class AddMarker implements Command {
 		
 	}
 
+    @Override
+    public void undo() {
+
+    }
+
 }
