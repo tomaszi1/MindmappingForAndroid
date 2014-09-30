@@ -27,4 +27,71 @@
     <string name="intensity">Intensity</string>
     <string name="multi_branch">Multi Branch Color</string>
     <string name="error_rgb">Value range: 0 - 255</string>
+    <string name="shape">Shape</string>
+    <string name="ellipse">Ellipse</string>
+    <string name="rounded_rect">Rounded Rectangle</string>
+    <string name="rect">Rectangle</string>
+    <string name="diamond">Diamond</string>
+    <string name="underline">Underline</string>
+    <string name="no_border">No Border</string>
+    <string name="line">Line</string>
+    <string name="curve">Curve</string>
+    <string name="straight">Straight</string>
+    <string name="arrowed_curve">Arrowed Curve</string>
+    <string name="elbow">Elbow</string>
+    <string name="rounded_elbow">Rounded Elbow</string>
+    <string name="thinnest">Thinnest</string>
+    <string name="thin">Thin</string>
+    <string name="medium">Medium</string>
+    <string name="fat">Fat</string>
+    <string name="fattest">Fattest</string>
+    <string name="text">Text</string>
+    <string name="align">Align</string>
+    <string name="font">Font</string>
+    <string name="bold">Bold</string>
+    <string name="italic">Italic</string>
+    <string name="strikeout">Strikeout</string>
+    <string name="right">Right</string>
+    <string name="center">Center</string>
+    <string name="left">Left</string>
+    <string name="SAGOE_UI">SAGOE UI</string>
+    <string name="NEW_TIMES_ROMAN">NEW TIMES ROMAN</string>
+    <string name="VERDANA">VERDANA</string>
+    <string name="ARIAL">ARIAL</string>
+    <string name="CALIBRI">CALIBRI</string>
+    <string name="height">Height</string>
+    <string-array name="shapes_array">
+        <item>@string/ellipse</item>
+        <item>@string/rounded_rect</item>
+        <item>@string/rect</item>
+        <item>@string/diamond</item>
+        <item>@string/underline</item>
+        <item>@string/no_border</item>
+    </string-array>
+    <string-array name="lines_array">
+        <item>@string/curve</item>
+        <item>@string/straight</item>
+        <item>@string/arrowed_curve</item>
+        <item>@string/elbow</item>
+        <item>@string/rounded_elbow</item>
+    </string-array>
+    <string-array name="thin_array">
+        <item>@string/thinnest</item>
+        <item>@string/thin</item>
+        <item>@string/medium</item>
+        <item>@string/fat</item>
+        <item>@string/fattest</item>
+    </string-array>
+    <string-array name="align_array">
+        <item>@string/right</item>
+        <item>@string/left</item>
+        <item>@string/center</item>
+    </string-array>
+    <string-array name="fonts_array">
+        <item>@string/SAGOE_UI</item>
+        <item>@string/VERDANA</item>
+        <item>@string/NEW_TIMES_ROMAN</item>
+        <item>@string/ARIAL</item>
+        <item>@string/CALIBRI</item>
+    </string-array>
 </resources>

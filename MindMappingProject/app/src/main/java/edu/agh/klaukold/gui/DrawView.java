@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -588,6 +589,7 @@ public class DrawView extends RelativeLayout {
                 box.prepareDrawableShape().draw(canvas);
             }
             drawText(box, canvas);
+
 //            for (int j = 0; j < parts.length; j++) {
 //                paint.setColor(Color.BLACK);
 //                String str = parts[j];
@@ -752,6 +754,7 @@ public class DrawView extends RelativeLayout {
             }
         }
     }
+
 
     public void updateBox(Box box) {
         String s = box.getText().getText();

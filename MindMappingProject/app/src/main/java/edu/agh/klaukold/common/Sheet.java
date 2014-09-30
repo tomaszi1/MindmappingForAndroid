@@ -12,7 +12,7 @@ import java.io.Serializable;
 import edu.agh.klaukold.enums.MapStyle;
 
 
-public class Sheet implements  Cloneable {
+public class Sheet implements  Serializable, Cloneable {
 	public MapStyle getStyle() {
 		return style;
 	}

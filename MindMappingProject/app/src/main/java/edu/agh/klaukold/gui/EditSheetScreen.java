@@ -19,37 +19,6 @@ import edu.agh.klaukold.commands.EditSheet;
 
 
 public class EditSheetScreen extends Activity {
-	public ColorPalette getColorPalette() {
-		return colorPalette;
-	}
-
-	public void setColorPalette(ColorPalette colorPalette) {
-		this.colorPalette = colorPalette;
-	}
-
-	public CheckBox getMuliBranchColor() {
-		return muliBranchColor;
-	}
-
-	public void setMuliBranchColor(CheckBox muliBranchColor) {
-		this.muliBranchColor = muliBranchColor;
-	}
-
-	public SeekBar getIntensivity() {
-		return intensivity;
-	}
-
-	public void setIntensivity(SeekBar intensivity) {
-		this.intensivity = intensivity;
-	}
-
-	public Wallpaper getWallPaper() {
-		return wallPaper;
-	}
-
-	public void setWallPaper(Wallpaper wallPaper) {
-		this.wallPaper = wallPaper;
-	}
 
 	private ColorPalette colorPalette;
 	private CheckBox muliBranchColor;
