@@ -1,20 +1,24 @@
 package edu.agh.klaukold.common;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+
+import java.io.Serializable;
+
 import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.interfaces.Element;
 
-public class Line implements Element {
+public class Line implements Serializable {
 	private LineStyle shape;
 	private int thickness;
-	private Color color;
+	private ColorDrawable color;
 	private Point start;
 	private Point end;
 	private boolean isVisible;
 	
 
 
-	public Line(LineStyle shape, int thickness, Color color, Point start,
+	public Line(LineStyle shape, int thickness, ColorDrawable color, Point start,
 			Point end, boolean isVisible) {
 		super();
 		this.shape = shape;
@@ -49,11 +53,11 @@ public class Line implements Element {
 		this.thickness = thickness;
 	}
 
-	public Color getColor() {
+	public ColorDrawable getColor() {
 		return color;
 	}
 
-	public void setColor(Color color) {
+	public void setColor(ColorDrawable color) {
 		this.color = color;
 	}
 
@@ -88,9 +92,5 @@ public class Line implements Element {
 	public void repaint()
 	{}
 
-	@Override
-	public void draw() {
-		// TODO Auto-generated method stub
-		
-	}
+
 }

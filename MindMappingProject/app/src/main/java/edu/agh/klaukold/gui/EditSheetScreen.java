@@ -27,6 +27,7 @@ public class EditSheetScreen extends Activity {
     public static TextView backgroud;
     public static View backdroundColorEditScreen;
     public static int COLOR;
+    public static String ACTIVITY_TYPE = "EDIT_SHEET";
 
     //ToDO obsługa wallpaper oraz multibranch color
 	@Override
@@ -46,12 +47,13 @@ public class EditSheetScreen extends Activity {
         intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
         intensivity.setProgress((inten));
         backgroud = (TextView) findViewById(R.id.textViewBackgroundColor);
-       backdroundColorEditScreen = (View) findViewById(R.id.sheet_color);
+        backdroundColorEditScreen = (View) findViewById(R.id.sheet_color);
         ((GradientDrawable)backdroundColorEditScreen.getBackground()).setColor(COLOR);
         backdroundColorEditScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditSheetScreen.this, ColorPalette.class);
+                intent.putExtra("ACTIVITY", ACTIVITY_TYPE);
                 startActivity(intent);
             }
         });

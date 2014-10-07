@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
 
 
 import edu.agh.klaukold.common.Box;
+import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.common.Root;
+import edu.agh.klaukold.enums.Actions;
 import edu.agh.klaukold.gui.DrawView;
 import edu.agh.klaukold.gui.MainActivity;
 import android.app.Activity;
@@ -40,12 +42,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.drm.DrmStore;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -65,7 +69,8 @@ public class Utils {
 	public static boolean isBaseSet() {
 		return base != null;
 	}
-	
+
+
 	
 	//Który bloczek został kliknięty palcem o indeksie id
 	public static Box whichBox(DrawView draw, MotionEvent event, int id) {
@@ -113,7 +118,91 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
+    public static Pair<Box, Actions> whichBoxAction(DrawView draw, MotionEvent event) {
+        return whichBoxAction(draw, event, 0);
+    }
+    public static Pair<Box, Actions> whichBoxAction(DrawView draw, MotionEvent event, int id) {
+        float[] mClickCoords = getCoordsInView(draw, event, id);
+
+        int x = (int) mClickCoords[0];
+        int y = (int) mClickCoords[1];
+
+        Root c = MainActivity.root;
+
+
+        if(c.newMarker.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.NEW_MARKER);
+            return p;
+        } else if (c.newNote.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.NEW_NOTE);
+            return p;
+        } else if(c.editBox.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.EDIT_BOX);
+            return p;
+        } else if(c.collapseAction != null && c.collapseAction.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.COLLAPSE);
+            return p;
+        } else if(c.expandAction != null && c.expandAction.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.EXPAND);
+            return  p;
+        }
+
+        //BFS do przejścia drzewa
+
+        Queue<Box> q= new LinkedList<Box>();
+
+        for(Box b: c.getLeftChildren()) {
+            q.add(b);
+        }
+
+        for(Box b: c.getRightChildren()) {
+            q.add(b);
+        }
+
+        for(Box b: c.getDetached()) {
+            q.add(b);
+        }
+        while(!q.isEmpty()) {
+            Box box = q.remove();
+
+            if(box.isVisible()) {
+//                Rect rec = box.getDrawableShape().getBounds();
+//                if(rec.contains(x, y)) {
+//                    q.clear();
+//                    return box;
+//                }
+
+                if(box.newMarker.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.NEW_MARKER);
+                    q.clear();
+                    return p;
+                } else if (box.newNote.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.NEW_NOTE);
+                    q.clear();
+                    return p;
+                } else if(box.editBox.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.EDIT_BOX);
+                    q.clear();
+                    return p;
+                } else if(box.collapseAction != null && box.collapseAction.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.COLLAPSE);
+                    q.clear();
+                    return p;
+                } else if(box.expandAction != null && box.expandAction.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.EXPAND);
+                    q.clear();
+                    return  p;
+                }
+
+                for(Box b: box.getChildren()) {
+                    q.add(b);
+                }
+            }
+        }
+        return null;
+    }
+
 	public static Box whichBox(DrawView draw, MotionEvent event) {
 		return whichBox(draw, event, 0);
 	}
@@ -216,20 +305,20 @@ public class Utils {
 	}
 	
 	//propagacja orientacji
-	public static void propagatePosition(Box box) {
-		//box.position = position;
-		for(Box my: box.getChildren()) {
-			//propagatePosition(my, position);
-		}
-	}
+    public static void propagatePosition(Box box, Point point) {
+        box.setPoint(point);
+        for(Box my: box.getChildren()) {
+            propagatePosition(my, point);
+        }
+    }
 	
 	//przesuwanie bloczka z potomkami w płaszczyźnie poziomej
 	public static void moveChildX(Box b, int diff) {
 		for(Box bx: b.getChildren()) {
 			moveChildX(bx, diff);
 		}
-	//	b.rect.left += diff;
-	//	b.rect.right += diff;
+		b.getDrawableShape().getBounds().left += diff;
+		b.getDrawableShape().getBounds().right += diff;
 	}
 	
 	//przesuwanie bloczka z potomkami w płaszczyźnie poziomej
@@ -237,8 +326,8 @@ public class Utils {
 		for(Box bx: b.getChildren()) {
 			moveChildY(bx, diff);
 		}
-	//	b.rect.top += diff;
-	//	b.rect.bottom += diff;
+		b.getDrawableShape().getBounds().top += diff;
+        b.getDrawableShape().getBounds().bottom += diff;
 	}
 	
 	public static int countLines(String s) {

@@ -1,8 +1,10 @@
 package edu.agh.klaukold.common;
 
+import java.io.Serializable;
+
 import edu.agh.klaukold.interfaces.Element;
 
-public class Note implements Element {
+public class Note implements Serializable{
 	private Text text;
 	
 	public Note(Text text) {
@@ -18,10 +20,5 @@ public class Note implements Element {
 		this.text = text;
 	}
 
-	@Override
-	public void draw() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

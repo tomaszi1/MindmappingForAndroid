@@ -1,5 +1,6 @@
 package edu.agh.klaukold.common;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import android.content.res.Resources;
@@ -21,10 +22,11 @@ import android.graphics.drawable.shapes.RoundRectShape;
 
 
 import edu.agh.klaukold.enums.BlockShape;
+import edu.agh.klaukold.enums.LineStyle;
+import edu.agh.klaukold.enums.LineThickness;
 
 
-
-public class Box implements  Cloneable {
+public class Box implements  Cloneable, Serializable {
 	public Box getParent() {
 		return parent;
 	}
@@ -119,12 +121,47 @@ public class Box implements  Cloneable {
 	protected LinkedList<Box> children = new LinkedList<Box>();
 	protected BlockShape shape;
 	protected ColorDrawable color;
-	protected LinkedList<Line> lines;
+	protected LinkedList<Line> lines = new LinkedList<Line>();
 	protected Text text;
 	protected LinkedList<Note> notes = new LinkedList<Note>();
 	protected LinkedList<Marker> markers = new LinkedList<Marker>();
 	protected boolean isVisible = true;
     protected boolean isExpanded = false;
+    public Drawable newNote;
+    public Drawable editBox;
+    public Drawable newMarker;
+    public Drawable collapseAction;
+    public Drawable expandAction;
+
+    public LineThickness getLineThickness() {
+        return lineThickness;
+    }
+
+    public void setLineThickness(LineThickness lineThickness) {
+        this.lineThickness = lineThickness;
+    }
+
+    private LineThickness lineThickness;
+
+    public int getLineColor() {
+        return lineColor;
+    }
+
+    public void setLineColor(int lineColor) {
+        this.lineColor = lineColor;
+    }
+
+    private int lineColor;
+
+    public LineStyle getLineStyle() {
+        return lineStyle;
+    }
+
+    public void setLineStyle(LineStyle lineStyle) {
+        this.lineStyle = lineStyle;
+    }
+
+    private LineStyle lineStyle;
 
     public boolean isExpanded() {
         return isExpanded;
@@ -185,7 +222,9 @@ public class Box implements  Cloneable {
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
                 break;
             case NO_BORDER:
+                int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
+                ((GradientDrawable)drawableShape).setColors(colors1);
                 break;
         }
         return  drawableShape;
@@ -210,5 +249,18 @@ public class Box implements  Cloneable {
 //    }
     public Box BoxClone() throws CloneNotSupportedException {
       return  (Box)super.clone();
+    }
+
+    public void setActiveColor() {
+        int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
+        if (shape != BlockShape.DIAMOND) {
+            ((GradientDrawable)drawableShape).setColors(colors);
+        } else {
+            ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);
+        }
+    }
+
+    public void addChild(Box box) {
+        children.add(box);
     }
 }

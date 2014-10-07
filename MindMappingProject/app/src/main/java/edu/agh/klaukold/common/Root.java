@@ -18,6 +18,7 @@
 
 package edu.agh.klaukold.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
 import android.graphics.Rect;
 
 
-public class Root extends Box {
+public class Root extends Box implements Serializable {
 	private float midX;
 	private float midY;
 	

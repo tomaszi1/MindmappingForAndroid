@@ -4,15 +4,17 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 
+import java.io.Serializable;
+
 import edu.agh.klaukold.enums.Align;
 import edu.agh.klaukold.enums.Font;
 
-public class Text implements  Cloneable{
+public class Text implements  Cloneable, Serializable{
     public  Text()
     {
-        align = Align.CENTER;
-        color.setColor(Color.BLACK);
-        size = 13;
+//        align = Align.CENTER;
+//        color.setColor(Color.BLACK);
+//        size = 13;
         font = Font.ARIAL;
         text = "Central Topic";
         //text = "Central Topic ivdsvwegiv bzxuivweiv xwf egdwbv  dfidsvb\n buacbfwbev vwufq  uwlwq v uwdvwvewighve wdgiewdv z\n buifqwvcu3yewvd  wedfwegdh vegwqivfwegv  dffwegedghd cyeugf\n";

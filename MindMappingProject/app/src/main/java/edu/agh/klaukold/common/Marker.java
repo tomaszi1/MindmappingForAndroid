@@ -1,10 +1,13 @@
 package edu.agh.klaukold.common;
 
 import android.widget.CheckBox;
+
+import java.io.Serializable;
+
 import edu.agh.klaukold.enums.MarkerType;
 import edu.agh.klaukold.interfaces.Element;
 
-public class Marker implements Element {
+public class Marker implements  Serializable {
 
 	public Marker(String url, MarkerType type, CheckBox imageBox) {
 		super();
@@ -45,10 +48,5 @@ public class Marker implements Element {
 	{
 		
 	}
-	
-	@Override
-	public void draw() {
-		// TODO Auto-generated method stub
-		
-	}
+
 }
