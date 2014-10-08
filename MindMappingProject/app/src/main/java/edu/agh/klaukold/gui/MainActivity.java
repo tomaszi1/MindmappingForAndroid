@@ -274,29 +274,73 @@ public class MainActivity extends Activity {
                         // multitouch!! - touch down
                         int count = event.getPointerCount(); // Number of 'fingers' in this time
 
-                        if (count > 1) {
+                        if(count > 1) {
                             Box b1 = Utils.whichBox(lay, event, 0);
                             Box b2 = Utils.whichBox(lay, event, 1);
 
+                            //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
+                            if(b1 != null && b2 != null) {
+                                if(b1.getPoint().compareTo(b2.getPoint()) == 0) {
+                                    if(b1.getPoint().compareTo(root.getPoint()) == 0) {
+                                        mIsScrolling = false;
+                                        return true;
+                                    }
 
-                            mIsScrolling = false;
-                            return true;
-                        } else {
-                            return detector.onTouchEvent(event);
+                                    if(mActionMode == null) {
+                                        mActionMode = startActionMode(moveCallback);
+                                        mActionMode.setTitle("Move");
+                                    }
+
+                                    if(mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
+                                        boolean b = b1.isSelected();
+
+                                        if(b) {
+                                            moveCallback.removeObserver();
+                                        } else {
+                                            moveCallback.setObserver(b1);
+                                        }
+
+                                        lay.revalidate();
+                                        lay.invalidate();
+                                    }
+
+                                    mIsScrolling = false;
+                                    return true;
+                                }
+//
+//                                if(Utils.changeParent(b1, b2)) {
+//                                    lay.revalidate();
+//                                    lay.invalidate();
+//                                }
+
+                                mIsScrolling = false;
+                                return true;
+                            } else if(b1 != null && b2 == null) {
+                                if(mActionMode == null) {
+                                    Utils.unlink(b1, Utils.getCoordsInView(lay, event, 1));
+                                    lay.revalidate();
+                                    lay.invalidate();
+                                }
+
+                                mIsScrolling = false;
+                                return true;
+                            } else {
+                                return detector.onTouchEvent(event);
+                            }
                         }
+                        break;
                     case MotionEvent.ACTION_POINTER_UP:
-                        if (event.getPointerCount() > 1) {
+                        if(event.getPointerCount() > 1) {
                             return detector.onTouchEvent(event);
                         }
 
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (event.getPointerCount() > 1) {
+                        if(event.getPointerCount() > 1) {
                             return detector.onTouchEvent(event);
                         }
-
-                    default:
-                        break;
+                    break;
+                    default: break;
                 }
 
                 boolean response = gestureDetector.onTouchEvent(event);
@@ -395,25 +439,26 @@ public class MainActivity extends Activity {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            if (!click || Utils.whichBox(lay, e) == null) {
-                return;
-            }
-
-            if (mActionMode == null) {
-                mActionMode = startActionMode(callback);
-                mActionMode.setTitle("Move");
-            }
-
-            if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
-                boolean b = clicked.isSelected();
-                if (b) {
-                    callback.removeObserver(clicked);
-                } else {
-                    callback.addObserver(clicked);
-                }
-
-                lay.invalidate();
-            }
+//            if (!click || Utils.whichBox(lay, e) == null) {
+//                return;
+//            }
+//
+//            if (mActionMode == null) {
+//                mActionMode = startActionMode(moveCallback);
+//                mActionMode.setTitle("Move");
+//            }
+//
+//            if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
+//                boolean b = clicked.isSelected();
+//                if (b) {
+//                    //callback.removeObserver(clicked);
+//                    moveCallback.removeObserver();
+//                } else {
+//                    moveCallback.setObserver(clicked);
+//                }
+//
+//                lay.invalidate();
+//            }
 
         }
 
@@ -430,6 +475,7 @@ public class MainActivity extends Activity {
                     newx = (int) -distanceX;
                     newy = (int) -distanceY;
 
+                    clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
                     Utils.moveChildX(clicked, newx);
                     Utils.moveChildY(clicked, newy);
                     lay.revalidate();
@@ -444,6 +490,9 @@ public class MainActivity extends Activity {
                 newx /= lay.zoomx;
                 newy /= lay.zoomy;
 
+                clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
+                lay.revalidate();
+                lay.invalidate();
                 //Rect r = new Rect(newx, newy, newx + 100, newy + 50);
 
                 //myRect.rect.set();
@@ -588,12 +637,12 @@ public class MainActivity extends Activity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 //            // remove selection
-//        	notifyObservers();
-//        	observers.clear();
-//
-//        	lay.revalidate();
-//        	lay.invalidate();
-//        	mActionMode = null;
+        	notifyObservers();
+        	observers.clear();
+
+        	lay.revalidate();
+        	lay.invalidate();
+        	mActionMode = null;
         }
     }
 
@@ -625,13 +674,13 @@ public class MainActivity extends Activity {
                 if (observer.getPoint()!= null) {
                     observer.getPoint().x = observer.getDrawableShape().getBounds().left;
                     observer.getPoint().y = observer.getDrawableShape().getBounds().top;
-                    if ((observer.getDrawableShape().getBounds().left + observer.getDrawableShape().getBounds().right) / 2 < core.getPoint().x/2) {
-                      //  observer.position = Position.LEFT;
-                        ;
-                    } else {
-                       // observer.position = Position.RIGHT;
-                    }
-                    Utils.propagatePosition(observer, observer.getPoint());
+//                    if ((observer.getDrawableShape().getBounds().left + observer.getDrawableShape().getBounds().right) / 2 < core.getPoint().x/2) {
+//                         observer.position = Position.LEFT;
+//                        ;
+//                    } else {
+//                       // observer.position = Position.RIGHT;
+//                    }
+                    Utils.propagatePosition(observer,observer.getPoint());
                     return;
                 }
 
@@ -639,7 +688,7 @@ public class MainActivity extends Activity {
                 core.getLeftChildren().remove(observer);
 
                 if ((core.getPoint().x / 2) < observer.getDrawableShape().getBounds().left) {
-                   // Utils.propagatePosition(observer, );
+                    Utils.propagatePosition(observer, core.getPoint());
                     lay.updateRight = true;
 
                     int ind = core.getRightChildren().size();
@@ -653,7 +702,8 @@ public class MainActivity extends Activity {
 
                     core.getRightChildren().add(ind, observer);
                 } else {
-                    //Utils.propagatePosition(observer, Position.LEFT);
+                   // Utils.propagatePosition(observer, Position.LEFT);
+                    Utils.propagatePosition(observer, observer.getPoint());
                     lay.updateLeft = true;
 
                     int ind = core.getLeftChildren().size();
@@ -696,14 +746,14 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-//            switch (item.getItemId()) {
-//                case R.id.menu_delete:
-//
-//                    mode.finish();
-//                    return true;
-//                default:
+            switch (item.getItemId()) {
+                case R.menu.map_menu:
+
+                    mode.finish();
+                    return true;
+                default:
                    return false;
-//            }
+           }
         }
 
         @Override

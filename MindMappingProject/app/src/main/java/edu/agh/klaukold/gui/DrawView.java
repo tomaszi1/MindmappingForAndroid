@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
@@ -501,83 +502,83 @@ public class DrawView extends RelativeLayout {
 //    }
 
     private void setOffsets(Point p1, Point p2, Box parent) {
-//    	if(!parent.getChildren().isEmpty()) {
-//    		setOffsets(parent.getChildren(), position, parent);
-//    		for(Box box: parent.getChildren()) {
-//    			setOffsets(position, box);
-//    		}
-//    	}
+    	if(!parent.getChildren().isEmpty()) {
+    		setOffsets(parent.getChildren(), p1, p2, parent);
+    		for(Box box: parent.getChildren()) {
+    			setOffsets(position, box);
+    		}
+    	}
     }
 
     //wyjustowanie względem rodzica
     private void setOffsets(List<Box> list, Point p1, Point p2, Box parent) {
-//    	Box first = list.get(0);
-//    	int diff = first.rect.top - parent.rect.top;
-//    	first.rect.top -= diff;
-//    	first.rect.bottom -= diff;
-//
-//    	for(int x = 1; x < list.size(); x++) {
-//    		first = list.get(x);
-//    		diff = first.rect.top - (list.get(x-1).rect.bottom + 20);
-//    		first.rect.top -= diff;
-//    		first.rect.bottom -= diff;
-//    	}
-//
-//    	int offset = 0;
-//    	int size = list.size();
-//
-//    	first = list.get(size/2);
-//    	offset = first.rect.top - (parent.rect.top + parent.rect.bottom)/2;
-//
-//    	for(Box b: list) {
-//    		b.rect.top -= offset;
-//    		b.rect.bottom -= offset;
-//    		//updateBox(b);
-//    	}
+    	Box first = list.get(0);
+    	int diff = first.getDrawableShape().getBounds().top - parent.getDrawableShape().getBounds().top;
+    	first.getDrawableShape().getBounds().top -= diff;
+    	first.getDrawableShape().getBounds().bottom -= diff;
+
+    	for(int x = 1; x < list.size(); x++) {
+    		first = list.get(x);
+    		diff = first.getDrawableShape().getBounds().top - (list.get(x-1).getDrawableShape().getBounds().bottom + 20);
+    		first.getDrawableShape().getBounds().top -= diff;
+    		first.getDrawableShape().getBounds().bottom -= diff;
+    	}
+
+    	int offset = 0;
+    	int size = list.size();
+
+    	first = list.get(size/2);
+    	offset = first.getDrawableShape().getBounds().top - (parent.getDrawableShape().getBounds().top + parent.getDrawableShape().getBounds().bottom)/2;
+
+    	for(Box b: list) {
+    		b.getDrawableShape().getBounds().top -= offset;
+    		b.getDrawableShape().getBounds().bottom -= offset;
+    		updateBox(b);
+    	}
     }
 
     //wyrównanie do dzieci
     private void adjustToChildren(Box box) {
-//    	Box temp = box;
-//    	temp.updateMaxY();
-//    	temp.updateMinY();
-//
-//    	//dojście do najwyższego dziecka
-//    	while(!temp.getChildren().isEmpty()) {
-//    		temp = temp.getChildren().get(0);
-//    	}
-//
-//    	while(temp.parent != null) {
-//    		temp.updateMaxY();
-//    		temp.updateMinY();
-//	    	//sprawdzamy rodzenstwo i odsuwamy je, jeśli jeszcze nie zostało odsunięte
-//	    	List<Box> siblings = temp.parent.getChildren();
-//	    	if(temp.parent instanceof Core) {
-//	    		if(temp.position == Position.LEFT) {
-//	    			siblings = ((Core) temp.parent).left;
-//	    		} else {
-//	    			siblings = ((Core) temp.parent).right;
-//	    		}
-//	    	}
-//	    	//od 1 bo temp to pierwsze dziecko
-//
-//	    	for(int i = 1; i < siblings.size(); i++) {
-//    			siblings.get(i).updateMaxY();
-//    			siblings.get(i).updateMinY();
-//	    		int sibDiff = (int) (siblings.get(i-1).minY - siblings.get(i).maxY);
-//	    		if(sibDiff >= 0) {
-//	    			int diff = (int) (siblings.get(i).maxY - siblings.get(i-1).minY);
-//	    			Utils.moveChildY(siblings.get(i), -diff + 20);
-//	    			siblings.get(i).updateMaxY();
-//	    			siblings.get(i).updateMinY();
-//	    		}
-//	    	}
-//	    	temp = temp.parent;
-//    	}
-//
-//    	for(Box child: box.getChildren()) {
-//    		adjustToChildren(child);
-//    	}
+    	Box temp = box;
+    //	temp.updateMaxY();
+    //	temp.updateMinY();
+
+    	//dojście do najwyższego dziecka
+    	while(!temp.getChildren().isEmpty()) {
+    		temp = temp.getChildren().get(0);
+    	}
+
+    	while(temp.parent != null) {
+    		temp.updateMaxY();
+    		temp.updateMinY();
+	    	//sprawdzamy rodzenstwo i odsuwamy je, jeśli jeszcze nie zostało odsunięte
+	    	List<Box> siblings = temp.parent.getChildren();
+	    	if(temp.parent instanceof Core) {
+	    		if(temp.position == Position.LEFT) {
+	    			siblings = ((Core) temp.parent).left;
+	    		} else {
+	    			siblings = ((Core) temp.parent).right;
+	    		}
+	    	}
+	    	//od 1 bo temp to pierwsze dziecko
+
+	    	for(int i = 1; i < siblings.size(); i++) {
+    			siblings.get(i).updateMaxY();
+    			siblings.get(i).updateMinY();
+	    		int sibDiff = (int) (siblings.get(i-1).minY - siblings.get(i).maxY);
+	    		if(sibDiff >= 0) {
+	    			int diff = (int) (siblings.get(i).maxY - siblings.get(i-1).minY);
+	    			Utils.moveChildY(siblings.get(i), -diff + 20);
+	    			siblings.get(i).updateMaxY();
+	    			siblings.get(i).updateMinY();
+	    		}
+	    	}
+	    	temp = temp.parent;
+    	}
+
+    	for(Box child: box.getChildren()) {
+    		adjustToChildren(child);
+    	}
     }
 
     private void drawBox(Box box, Canvas canvas) {
@@ -979,4 +980,53 @@ public class DrawView extends RelativeLayout {
     public void updateText() {
         drawText(MainActivity.boxEdited, canvas);
     }
+
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//
+//        int x = (int) event.getX();
+//        int y = (int) event.getY();
+//
+//        Box box = Utils.whichBox(this, event);
+//        switch(event.getAction()){
+//            case MotionEvent.ACTION_DOWN:
+//
+//
+//                    Log.w("action", "down");
+////                for(int i=0; i < rectangles.size(); i++){
+////                    View child = rectangles.get(i);
+////                    if(x > child.getLeft() && x < child.getLeft()+150 && y > child.getTop() && y < child.getTop()+50){
+////                        rectId = child.getId();
+////                        rectangles.get(rectId-1).setTop(child.getTop());
+////                        rectangles.get(rectId-1).setLeft(child.getLeft());
+////                        break;
+////                    }
+////                }
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                Log.w("action", "move");
+////                if(rectId > 0){
+////                    rectangles.get(rectId-1).setBackgroundRessource(true);
+////                    rectangles.get(rectId-1).setTop(y-25);
+////                    rectangles.get(rectId-1).setLeft(x-25);
+////                    Log.i("MOVE X", rectId+" "+rectangles.get(rectId-1).getX());
+////                    Log.i("MOVE Y", rectId+" "+rectangles.get(rectId-1).getY());
+////                }
+//
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                Log.w("action", "up");
+////                Log.i("rectid Cancel", ""+rectId);
+////                if(rectId > 0){
+////                    rectangles.get(rectId-1).setBackgroundRessource(true);
+////                }
+//
+//                break;
+//        }
+//
+//        invalidate();
+//        return true;
+//
+//    }
 }

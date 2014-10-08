@@ -311,6 +311,14 @@ public class Utils {
             propagatePosition(my, point);
         }
     }
+
+    //propagacja orientacji
+    public static void propagatePosition(Box box) {
+       // box.setPoint(point);
+        for(Box my: box.getChildren()) {
+            propagatePosition(my);
+        }
+    }
 	
 	//przesuwanie bloczka z potomkami w płaszczyźnie poziomej
 	public static void moveChildX(Box b, int diff) {
@@ -343,7 +351,6 @@ public class Utils {
 	}
 	
 	private static void insertHimAndChildren(Box parent) {
-		//Utils.db.insertTopic(parent);
 		for(Box box: parent.getChildren()) {
 			insertHimAndChildren(box);
 		}

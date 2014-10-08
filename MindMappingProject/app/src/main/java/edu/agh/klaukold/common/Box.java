@@ -133,6 +133,7 @@ public class Box implements  Cloneable, Serializable {
     public Drawable collapseAction;
     public Drawable expandAction;
 
+
     public LineThickness getLineThickness() {
         return lineThickness;
     }
