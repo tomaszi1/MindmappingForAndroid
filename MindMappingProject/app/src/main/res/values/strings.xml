@@ -111,4 +111,9 @@
         <item>48</item>
         <item>56</item>
     </string-array>
+    <string name="newbox">New Box</string>
+    <string name="newline">Edit Lines</string>
+    <string name="trash">Delete</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
 </resources>

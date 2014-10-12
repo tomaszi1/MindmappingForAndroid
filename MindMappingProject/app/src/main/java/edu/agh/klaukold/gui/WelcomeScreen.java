@@ -213,6 +213,10 @@ public class WelcomeScreen extends Activity {
                 Spinner spinner= (Spinner) findViewById(R.id.spinnerStyles);
                 String style = (String) spinner.getSelectedItem();
                 intent.putExtra(STYLE, style);
+                if (MainActivity.root != null) {
+                    MainActivity.root.clear();
+                }
+                MainActivity.root = null;
                 startActivity(intent);
             }
         });

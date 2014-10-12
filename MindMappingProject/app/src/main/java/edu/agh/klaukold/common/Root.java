@@ -27,82 +27,88 @@ import android.graphics.Rect;
 
 
 public class Root extends Box implements Serializable {
-	private float midX;
-	private float midY;
-	
-	//@Attribute(name="structure-class")
-	//private String structure = "org.xmind.ui.map.clockwise";
-	
-	private List<Box> leftChildren = new ArrayList<Box>();
-	private List<Box> rightChildren = new ArrayList<Box>();
-	private List<Box> detached = new ArrayList<Box>();
-	
-	public float getMidX() {
-		return midX;
-	}
+    private float midX;
+    private float midY;
 
-	public void setMidX(float midX) {
-		this.midX = midX;
-	}
+    //@Attribute(name="structure-class")
+    //private String structure = "org.xmind.ui.map.clockwise";
 
-	public float getMidY() {
-		return midY;
-	}
+    private List<Box> leftChildren = new ArrayList<Box>();
+    private List<Box> rightChildren = new ArrayList<Box>();
+    private List<Box> detached = new ArrayList<Box>();
 
-	public void setMidY(float midY) {
-		this.midY = midY;
-	}
+    public float getMidX() {
+        return midX;
+    }
 
-	public List<Box> getLeftChildren() {
-		return leftChildren;
-	}
+    public void setMidX(float midX) {
+        this.midX = midX;
+    }
 
-	public void setLeftChildren(List<Box> leftChildren) {
-		this.leftChildren = leftChildren;
-	}
+    public float getMidY() {
+        return midY;
+    }
 
-	public List<Box> getRightChildren() {
-		return rightChildren;
-	}
+    public void setMidY(float midY) {
+        this.midY = midY;
+    }
 
-	public void setRightChildren(List<Box> rightChildren) {
-		this.rightChildren = rightChildren;
-	}
+    public List<Box> getLeftChildren() {
+        return leftChildren;
+    }
 
-	public List<Box> getDetached() {
-		return detached;
-	}
+    public void setLeftChildren(List<Box> leftChildren) {
+        this.leftChildren = leftChildren;
+    }
 
-	public void setDetached(List<Box> detached) {
-		this.detached = detached;
-	}
+    public List<Box> getRightChildren() {
+        return rightChildren;
+    }
 
-	public Root() {
-	}
-	
-	public Root(Root root) {
-		super(root);
-		
-		for(Box box: root.leftChildren) {
-			leftChildren.add(new Box(box));
-		}
-		
-		for(Box box: root.rightChildren) {
-			rightChildren.add(new Box(box));
-		}
-		
-		for(Box box: root.detached) {
-			detached.add(new Box(box));
-		}
-		
-		children.clear();
-		
-		children.addAll(rightChildren);
-		children.addAll(leftChildren);
-		children.addAll(detached);
-		
-		midX = root.midX;
-		midY = root.midY;
-	}
-	
+    public void setRightChildren(List<Box> rightChildren) {
+        this.rightChildren = rightChildren;
+    }
+
+    public List<Box> getDetached() {
+        return detached;
+    }
+
+    public void setDetached(List<Box> detached) {
+        this.detached = detached;
+    }
+
+    public Root() {
+    }
+
+    public Root(Root root) {
+        super();
+
+        for (Box box : root.leftChildren) {
+            leftChildren.add(box);
+        }
+
+        for (Box box : root.rightChildren) {
+            rightChildren.add(box);
+        }
+
+        for (Box box : root.detached) {
+            detached.add(box);
+        }
+
+        children.clear();
+
+        children.addAll(rightChildren);
+        children.addAll(leftChildren);
+        children.addAll(detached);
+
+        midX = root.midX;
+        midY = root.midY;
+
+
+    }
+
+    public void clear() {
+        leftChildren.clear();
+        rightChildren.clear();
+    }
 }

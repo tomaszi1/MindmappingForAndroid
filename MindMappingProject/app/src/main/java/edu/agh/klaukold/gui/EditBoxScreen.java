@@ -50,7 +50,7 @@ public class EditBoxScreen extends Activity {
     public static String LINE_COLOR = "LINE COLOR";
     public static String BOX_SHAPE = "BOX_SHAPE";
     public static String LINE_SHAPE = "LINE_SHAPE";
-    public static String ACTIVITY_TYPE = "EDIT_BOX";
+    public static String ACTIVITY_TYPE = "ADD_BOX";
     public static String ACTIVITY_TYPE1 = "EDIT_TEXT_COLOR";
     public static String ACTIVITY_TYPE2 = "EDIT_LINE_COLOR";
     public static String LINE_THICKNESS = "LINE_THICKNESS";
@@ -168,7 +168,7 @@ public class EditBoxScreen extends Activity {
         ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
                 R.array.lines_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         lineShape.setAdapter(adapter1);
         //dodanie lisener'a do spinnera
@@ -218,7 +218,7 @@ public class EditBoxScreen extends Activity {
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
                 R.array.thin_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         lineThickness.setAdapter(adapter2);
         lineThicknessEnum = (LineThickness) intent.getSerializableExtra(EditBoxScreen.LINE_THICKNESS);
@@ -267,7 +267,7 @@ public class EditBoxScreen extends Activity {
         ArrayAdapter<CharSequence> adapter3 = ArrayAdapter.createFromResource(this,
                 R.array.align_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         textAlign.setAdapter(adapter3);
         if (MainActivity.boxEdited.getText().getAlign() == Align.RIGHT) {
@@ -313,7 +313,7 @@ public class EditBoxScreen extends Activity {
         ArrayAdapter<CharSequence> adapter4 = ArrayAdapter.createFromResource(this,
                 R.array.height_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         textHeight.setAdapter(adapter4);
         if (MainActivity.boxEdited.getText().getSize() == 8) {
@@ -377,7 +377,7 @@ public class EditBoxScreen extends Activity {
         ArrayAdapter<CharSequence> adapter5 = ArrayAdapter.createFromResource(this,
                 R.array.fonts_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         font.setAdapter(adapter5);
 

@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.sax.RootElement;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -18,6 +19,7 @@ import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Marker;
 import edu.agh.klaukold.common.Note;
+import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.common.Text;
 import edu.agh.klaukold.enums.BlockShape;
 import edu.agh.klaukold.enums.LineStyle;
@@ -54,14 +56,23 @@ public class EditBox implements Command{
             properties1.put("line_color", new ColorDrawable(box.getLineColor()));
             ColorDrawable color = (ColorDrawable)properties.get("line_color");
             box.setLineColor(color.getColor());
+            for (Box b : box.getLines().keySet()) {
+                box.getLines().get(b).setColor(color);
+            }
         } else if (properties.containsKey("line_thickness")) {
             properties1.put("line_thickness", box.getLineThickness());
             LineThickness lt = (LineThickness) properties.get("line_thickness");
             box.setLineThickness(lt);
+            for (Box b : box.getLines().keySet()) {
+                box.getLines().get(b).setThickness((int) lt.getValue());
+            }
         } else if (properties.containsKey("line_shape")) {
             properties1.put("line_shape", box.getLineThickness());
             LineStyle ls = (LineStyle) properties.get("line_shape");
             box.setLineStyle(ls);
+            for (Box b : box.getLines().keySet()) {
+                box.getLines().get(b).setShape(ls);
+            }
         }
     }
 

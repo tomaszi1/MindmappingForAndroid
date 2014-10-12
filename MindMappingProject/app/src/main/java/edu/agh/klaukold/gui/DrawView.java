@@ -1,7 +1,6 @@
 package edu.agh.klaukold.gui;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import edu.agh.R;
@@ -9,35 +8,23 @@ import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.common.Root;
-import edu.agh.klaukold.common.Text;
 import edu.agh.klaukold.enums.Align;
 import edu.agh.klaukold.enums.BlockShape;
-import edu.agh.klaukold.enums.LineThickness;
-import edu.agh.klaukold.utilities.Utils;
+import edu.agh.klaukold.enums.LineStyle;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.graphics.Picture;
-import android.graphics.PorterDuff;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 
@@ -183,8 +170,7 @@ public class DrawView extends RelativeLayout {
             fireDrawChildren(box, canvas);
         }
 //       if(root.isExpanded()) {
-//
-//    	   //showLines(root);
+//    	   showLines(root);
 //       } else {
 //    	   //hideLines(root);
 //       }
@@ -193,7 +179,7 @@ public class DrawView extends RelativeLayout {
         if (MainActivity.mActionMode != null && MainActivity.mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
             //  paint.setStrokeWidth(0);
 //
-            drawBox(root, canvas);
+            // drawBox(root, canvas);
 //
             for (Box box : root.getLeftChildren()) {
                 drawBox(box, canvas);
@@ -208,26 +194,26 @@ public class DrawView extends RelativeLayout {
             }
 
             for (Box box : root.getRightChildren()) {
-                 fireDrawChildren(box, canvas);
+                fireDrawChildren(box, canvas);
             }
 
-           for(Box box: root.getDetached()) {
-        	   drawBox(box, canvas);
-           }
+            for (Box box : root.getDetached()) {
+                drawBox(box, canvas);
+            }
 
-           for(Box box: root.getDetached()) {
-        	  fireDrawChildren(box, canvas);
-           }
+            for (Box box : root.getDetached()) {
+                fireDrawChildren(box, canvas);
+            }
 
-                return;
+            return;
         }
 
-       if(!root.getLeftChildren().isEmpty() && updateLeft) {
-    	   for(Box box: root.getDetached()) {
-    		  // triggerDetachMove(box);
-    	   }
-    	   updateLeft = false;
-       }
+        if (!root.getLeftChildren().isEmpty() && updateLeft) {
+            for (Box box : root.getDetached()) {
+                // triggerDetachMove(box);
+            }
+            updateLeft = false;
+        }
 //
 //       if(!root.right.isEmpty() && updateRight) {
 //    	   for(Box box: root.detached) {
@@ -478,10 +464,10 @@ public class DrawView extends RelativeLayout {
 
     private void fireDrawChildren(Box box, Canvas canvas) {
         drawBox(box, canvas);
-    	for(Box child: box.getChildren()) {
-    		drawBox(child, canvas);
-    		fireDrawChildren(child, canvas);
-    	}
+        for (Box child : box.getChildren()) {
+            drawBox(child, canvas);
+            fireDrawChildren(child, canvas);
+        }
     }
 
 //    private void firePrepareChildren(Box box) {
@@ -502,84 +488,84 @@ public class DrawView extends RelativeLayout {
 //    }
 
     private void setOffsets(Point p1, Point p2, Box parent) {
-    	if(!parent.getChildren().isEmpty()) {
-    		setOffsets(parent.getChildren(), p1, p2, parent);
-    		for(Box box: parent.getChildren()) {
-    			setOffsets(position, box);
-    		}
-    	}
+        if (!parent.getChildren().isEmpty()) {
+            setOffsets(parent.getChildren(), p1, p2, parent);
+            for (Box box : parent.getChildren()) {
+                //setOffsets(position, box);
+            }
+        }
     }
 
     //wyjustowanie względem rodzica
     private void setOffsets(List<Box> list, Point p1, Point p2, Box parent) {
-    	Box first = list.get(0);
-    	int diff = first.getDrawableShape().getBounds().top - parent.getDrawableShape().getBounds().top;
-    	first.getDrawableShape().getBounds().top -= diff;
-    	first.getDrawableShape().getBounds().bottom -= diff;
+        Box first = list.get(0);
+        int diff = first.getDrawableShape().getBounds().top - parent.getDrawableShape().getBounds().top;
+        first.getDrawableShape().getBounds().top -= diff;
+        first.getDrawableShape().getBounds().bottom -= diff;
 
-    	for(int x = 1; x < list.size(); x++) {
-    		first = list.get(x);
-    		diff = first.getDrawableShape().getBounds().top - (list.get(x-1).getDrawableShape().getBounds().bottom + 20);
-    		first.getDrawableShape().getBounds().top -= diff;
-    		first.getDrawableShape().getBounds().bottom -= diff;
-    	}
+        for (int x = 1; x < list.size(); x++) {
+            first = list.get(x);
+            diff = first.getDrawableShape().getBounds().top - (list.get(x - 1).getDrawableShape().getBounds().bottom + 20);
+            first.getDrawableShape().getBounds().top -= diff;
+            first.getDrawableShape().getBounds().bottom -= diff;
+        }
 
-    	int offset = 0;
-    	int size = list.size();
+        int offset = 0;
+        int size = list.size();
 
-    	first = list.get(size/2);
-    	offset = first.getDrawableShape().getBounds().top - (parent.getDrawableShape().getBounds().top + parent.getDrawableShape().getBounds().bottom)/2;
+        first = list.get(size / 2);
+        offset = first.getDrawableShape().getBounds().top - (parent.getDrawableShape().getBounds().top + parent.getDrawableShape().getBounds().bottom) / 2;
 
-    	for(Box b: list) {
-    		b.getDrawableShape().getBounds().top -= offset;
-    		b.getDrawableShape().getBounds().bottom -= offset;
-    		updateBox(b);
-    	}
+        for (Box b : list) {
+            b.getDrawableShape().getBounds().top -= offset;
+            b.getDrawableShape().getBounds().bottom -= offset;
+            updateBox(b);
+        }
     }
 
-    //wyrównanie do dzieci
-    private void adjustToChildren(Box box) {
-    	Box temp = box;
-    //	temp.updateMaxY();
-    //	temp.updateMinY();
-
-    	//dojście do najwyższego dziecka
-    	while(!temp.getChildren().isEmpty()) {
-    		temp = temp.getChildren().get(0);
-    	}
-
-    	while(temp.parent != null) {
-    		temp.updateMaxY();
-    		temp.updateMinY();
-	    	//sprawdzamy rodzenstwo i odsuwamy je, jeśli jeszcze nie zostało odsunięte
-	    	List<Box> siblings = temp.parent.getChildren();
-	    	if(temp.parent instanceof Core) {
-	    		if(temp.position == Position.LEFT) {
-	    			siblings = ((Core) temp.parent).left;
-	    		} else {
-	    			siblings = ((Core) temp.parent).right;
-	    		}
-	    	}
-	    	//od 1 bo temp to pierwsze dziecko
-
-	    	for(int i = 1; i < siblings.size(); i++) {
-    			siblings.get(i).updateMaxY();
-    			siblings.get(i).updateMinY();
-	    		int sibDiff = (int) (siblings.get(i-1).minY - siblings.get(i).maxY);
-	    		if(sibDiff >= 0) {
-	    			int diff = (int) (siblings.get(i).maxY - siblings.get(i-1).minY);
-	    			Utils.moveChildY(siblings.get(i), -diff + 20);
-	    			siblings.get(i).updateMaxY();
-	    			siblings.get(i).updateMinY();
-	    		}
-	    	}
-	    	temp = temp.parent;
-    	}
-
-    	for(Box child: box.getChildren()) {
-    		adjustToChildren(child);
-    	}
-    }
+//    //wyrównanie do dzieci
+//    private void adjustToChildren(Box box) {
+//    	Box temp = box;
+//    	temp.updateMaxY();
+//    	temp.updateMinY();
+//
+//    	//dojście do najwyższego dziecka
+//    	while(!temp.getChildren().isEmpty()) {
+//    		temp = temp.getChildren().get(0);
+//    	}
+//
+//    	while(temp.parent != null) {
+//    		temp.updateMaxY();
+//    		temp.updateMinY();
+//	    	//sprawdzamy rodzenstwo i odsuwamy je, jeśli jeszcze nie zostało odsunięte
+//	    	List<Box> siblings = temp.parent.getChildren();
+//	    	if(temp.parent instanceof Core) {
+//	    		if(temp.position == Position.LEFT) {
+//	    			siblings = ((Core) temp.parent).left;
+//	    		} else {
+//	    			siblings = ((Core) temp.parent).right;
+//	    		}
+//	    	}
+//	    	//od 1 bo temp to pierwsze dziecko
+//
+//	    	for(int i = 1; i < siblings.size(); i++) {
+//    			siblings.get(i).updateMaxY();
+//    			siblings.get(i).updateMinY();
+//	    		int sibDiff = (int) (siblings.get(i-1).minY - siblings.get(i).maxY);
+//	    		if(sibDiff >= 0) {
+//	    			int diff = (int) (siblings.get(i).maxY - siblings.get(i-1).minY);
+//	    			Utils.moveChildY(siblings.get(i), -diff + 20);
+//	    			siblings.get(i).updateMaxY();
+//	    			siblings.get(i).updateMinY();
+//	    		}
+//	    	}
+//	    	temp = temp.parent;
+//    	}
+//
+//    	for(Box child: box.getChildren()) {
+//    		adjustToChildren(child);
+//    	}
+//    }
 
     private void drawBox(Box box, Canvas canvas) {
         if (box.isVisible()) {
@@ -587,51 +573,61 @@ public class DrawView extends RelativeLayout {
             //String[] parts = s.split("\n");
             //1float f = getLongest(parts);
             //
-            if (box.getShape() != BlockShape.DIAMOND) {
+            if (box.getShape() != BlockShape.DIAMOND && box.getShape() != BlockShape.UNDERLINE && box.getShape() != BlockShape.NO_BORDER) {
                 ((GradientDrawable) box.getDrawableShape()).setStroke((int) box.getLineThickness().getValue(), box.getLineColor());
-            } else {
+            } else if (box.getShape() == BlockShape.DIAMOND) {
                 ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke((int) box.getLineThickness().getValue(), box.getLineColor());
             }
 
             // paint.setStrokeWidth(0);
 
-         //   if (box instanceof Root) {
-                //   box.setHeight(box.getDrawableShape().getBounds().top + parts.length * 30 + 10);
-                //   box.setWidth(box.getDrawableShape().getBounds().left + (int)f + 50);
+            //   if (box instanceof Root) {
+            //   box.setHeight(box.getDrawableShape().getBounds().top + parts.length * 30 + 10);
+            //   box.setWidth(box.getDrawableShape().getBounds().left + (int)f + 50);
 //                Rect rect = null;
 //                float start = 0.5f * box.getDrawableShape().getBounds().height() / (parts.length);
 //                Log.w("app",Float.toString(paint.measureText(box.getText().getText())));
 //                box.setWidth(box.getWidth() + (int)(paint.measureText(box.getText().getText())));
-                //paint.getTextBounds(box.getText().getText(), width - 10,height - 10, box.getDrawableShape().getBounds());
-                box.prepareDrawableShape();
-         //   }
+            //paint.getTextBounds(box.getText().getText(), width - 10,height - 10, box.getDrawableShape().getBounds());
+            box.prepareDrawableShape();
+            //   }
 
             if (box.isSelected()) {
                 box.setActiveColor();
             }// else if (!box.isExpanded()) {
 //                paint.setColor(collapsedColor);
 //            }
+            if (box.isVisible()) {
                 box.getDrawableShape().draw(canvas);
+                if (box.getShape() == BlockShape.UNDERLINE) {
+                    Path path = new Path();
+                    path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
+                    path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
+                    Paint paint1 = new Paint();
+                    paint1.setColor(box.getLineColor());
+                    paint1.setStrokeWidth(box.getLineThickness().getValue());
+                    paint1.setStyle(Paint.Style.STROKE);
+                    canvas.drawPath(path, paint1);
+                }
+                drawText(box, canvas);
+                // todo sytuacja dla ciemnego tla
+                box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
+                box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
+                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.newNote.draw(canvas);
+                box.addBox = context.getResources().getDrawable(R.drawable.ic_action_new);
+                box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
+                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.addBox.draw(canvas);
+                box.newMarker = context.getResources().getDrawable(R.drawable.ic_action_new_picture);
+                box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
+                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.newMarker.draw(canvas);
+//                Rect rect = new Rect();
+//                rect.set(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
+//                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
 
-            drawText(box, canvas);
-            // todo sytuacja dla ciemnego tla
-            box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
-            box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
-                    box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-            box.newNote.draw(canvas);
-            box.editBox = context.getResources().getDrawable(R.drawable.ic_action_edit);
-            box.editBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.editBox).getBitmap().getHeight(),
-                    box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.editBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-            box.editBox.draw(canvas);
-            box.newMarker = context.getResources().getDrawable(R.drawable.ic_action_new_picture);
-            box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.editBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
-                    box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.editBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-            box.newMarker.draw(canvas);
-            Rect rect = new Rect();
-            rect.set(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
-                    box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-
-
+            }
 //            for (int j = 0; j < parts.length; j++) {
 //                paint.setColor(Color.BLACK);
 //                String str = parts[j];
@@ -642,6 +638,9 @@ public class DrawView extends RelativeLayout {
 //                    canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
 //                }
 //            }
+            if (box.isExpanded()) {
+                showLines(box);
+            }
         }
     }
 
@@ -664,10 +663,8 @@ public class DrawView extends RelativeLayout {
             } else if (box.getText().getAlign() == Align.LEFT) {
                 paint.setTextAlign(Paint.Align.LEFT);
             }
-            Rect rect = new Rect();
-            paint.getTextBounds(s, 0, s.length(), rect);
-            Log.w(s, rect.toString());
-            Log.w("measute", String.valueOf(paint.measureText(s)));
+//            Log.w(s, rect.toString());
+//            Log.w("measute", String.valueOf(paint.measureText(s)));
             if (box.getText().isItalic() && box.getText().isBold()) {
                 //todo dodac
                 Typeface tf = Typeface.create("zainsalowana czcionka", Typeface.BOLD_ITALIC);
@@ -755,7 +752,13 @@ public class DrawView extends RelativeLayout {
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize();
                         } else {
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-                            y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) * paint.getTextSize();
+                            //y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) * paint.getTextSize();
+                            if (j == 0) {
+                                y = box.getDrawableShape().getBounds().top + paint.getTextSize();
+                            } else {
+                                y = box.getDrawableShape().getBounds().top + paint.getTextSize() * (j + 1) + paint.getTextSize() / 2;
+                                // y = box.getDrawableShape().getBounds().top + (((box.getDrawableShape().getBounds().height()) / ((parts.length) * paint.getTextSize())) * (j + 1)) + 20;
+                            }
                         }
                     } else if (box.getText().getAlign() == Align.RIGHT) {
                         if (box.getShape() == BlockShape.DIAMOND) {
@@ -801,39 +804,70 @@ public class DrawView extends RelativeLayout {
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
-        box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
-             box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().top + parts.length * box.getText().getSize() + 10);
-        box.getDrawableShape().getBounds().bottom = box.getDrawableShape().getBounds().top + parts.length * 30 + 10;
-        if (box instanceof Root) {
-            box.setWidth((int) f + 30);
-              box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
-                     box.getDrawableShape().getBounds().right + (int) f + 50, box.getDrawableShape().getBounds().bottom);
-              box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
-        }
+//        box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
+//             box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().top + parts.length * box.getText().getSize() + 10);
+//        box.getDrawableShape().getBounds().bottom = box.getDrawableShape().getBounds().top + parts.length * 30 + 10;
+//        if (box instanceof Root) {
+//              box.setWidth((int) f + 30);
+//              box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
+//                     box.getDrawableShape().getBounds().right + (int) f + 50, box.getDrawableShape().getBounds().bottom);
+//              box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
+//       }
 //    	else if(box.xmlPosition != null) {
 //    		box.rect.right = box.rect.left + (int) f + 50;
 //    		box.xmlPosition.x = box.rect.left;
 //    		box.xmlPosition.y = box.rect.top;
 //    	}
         //else if(box.position == Position.RIGHT) {
-        else {
-            //TODO sprawdzic i poprawic
-            box.getPoint().x = box.getParent().getDrawableShape().getBounds().right + 20;
-            box.setWidth((int) f + 50);
-        }
+//        else {
+//            //TODO sprawdzic i poprawic
+//            box.getPoint().x = box.getParent().getDrawableShape().getBounds().right + 20;
+//            box.setWidth((int) f + 50);
+//        }
 //    	} else {
 //    		box.rect.right = box.parent.rect.left - 20;
 //        	box.rect.left = box.rect.right - ((int) f + 50);
 //    	}
-        if (parts.length != 1) {
-            if (box.getShape() == BlockShape.ELLIPSE) {
-                box.setWidth((int) (f * 1.5));
-                box.setHeight(parts.length * (box.getText().getSize() + 40));
-            } else {
-                box.setHeight(parts.length * (box.getText().getSize() + 10));
+        Rect rect = new Rect();
+        paint.setTextSize((float) box.getText().getSize());
+        paint.getTextBounds(s, 0, s.length(), rect);
+        if (parts.length == 1) {
+            Log.w("rect", rect.toString());
+            box.setWidth((rect.right - rect.left) + 20);
+            //  box.setWidth(((int) f) * (box.getText().getSize()/3));
+            //  box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
+            //         box.getDrawableShape().getBounds().left + (-rect.right - rect.left), box.getDrawableShape().getBounds().bottom);
+            // box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
+        } else {
+            Log.w("rect", rect.toString());
+            int width = 0;
+            for (String sPart : parts) {
+                paint.getTextBounds(sPart, 0, sPart.length(), rect);
+                if ((rect.right - rect.left) > width) {
+                    width = (rect.right - rect.left);
+                }
             }
+            box.setWidth(width + box.getText().getSize());
+            box.setHeight((rect.bottom - rect.top) * parts.length + (box.getText().getSize() / 2 * parts.length));
+            if (box.getShape() == BlockShape.ELLIPSE) {
+                box.setWidth(box.getWidth() + box.getWidth() / 2);
+                box.setHeight(box.getHeight() + box.getHeight() / 2);
+            }
+//            if (box.getShape() == BlockShape.ELLIPSE) {
+//                box.setWidth((int) (f * 1.5));
+//                box.setHeight(parts.length * (box.getText().getSize() + 40));
+//            } else {
+//                box.setWidth((int) f + 30);
+//                box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
+//                        box.getDrawableShape().getBounds().right + (int) f + 50, box.getDrawableShape().getBounds().bottom);
+//                box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
+//            }
         }
-          drawText(box, canvas);
+        drawText(box, canvas);
+//        if (box.isExpanded()) {
+//              showLines(box);
+//        }
+        //  box.getDrawableShape().draw(canvas);
     }
 
 //    //dodanie linii
@@ -867,7 +901,7 @@ public class DrawView extends RelativeLayout {
             if (!x.isVisible()) {
                 continue;
             }
-
+            //todo te linie
 //    		if(x.getEnd1().equals(parent)) {
 //    			x.setColor(parent.color);
 //    			for(Box child: parent.getChildren()) {
@@ -928,7 +962,43 @@ public class DrawView extends RelativeLayout {
 //    	}
 //    }
 //
-//    private void showLines(Box b) {
+    private void showLines(Box box) {
+        for (Box b1 : box.getLines().keySet()) {
+            Line x = box.getLines().get(b1);
+            if (x == null || !x.isVisible()) {
+                continue;
+            } else {
+                    Paint paint = new Paint();
+                    paint.setColor(x.getColor().getColor());
+                    paint.setStrokeWidth(x.getThickness());
+                    paint.setStyle(Paint.Style.STROKE);
+                    x.preparePath();
+                    canvas.drawPath(x.getPath(), paint);
+                    if (x.getShape() == LineStyle.ARROWED_CURVE) {
+                        Path path = new Path();
+//                        path.moveTo(0, -10);
+//                        path.lineTo(5, 0);
+//                        path.lineTo(-5, 0);
+                        path.moveTo(x.getEnd().x, x.getEnd().y);
+                        path.lineTo(x.getEnd().x + 10, x.getEnd().y - 20);
+                        path.lineTo(x.getEnd().x - 10, x.getEnd().y - 20);
+                        path.close();
+                     //   path.offset(10, 40);
+                        canvas.drawPath(path, paint);
+                     //   path.offset(50, 100);
+                        path.offset(-10, -20);
+                        canvas.drawPath(path, paint);
+// offset is cumlative
+// next draw displaces 50,100 from previous
+                     //   path.offset(50, 100);
+                        canvas.drawPath(path, paint);
+                    }
+                    if (MainActivity.EDIT_CONN) {
+
+                    }
+            }
+        }
+
 //    	for(int i = 0; i < lines.size(); i++) {
 //    		Line x = lines.get(i);
 //
@@ -938,7 +1008,8 @@ public class DrawView extends RelativeLayout {
 //    			x.setVisible(true);
 //    		}
 //    	}
-//    }
+    }
+
     private class EndlessScrollListener implements AbsListView.OnScrollListener {
 
         private int visibleThreshold = 5;
@@ -979,6 +1050,30 @@ public class DrawView extends RelativeLayout {
 
     public void updateText() {
         drawText(MainActivity.boxEdited, canvas);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Get the coordinates of the touch event.
+        float eventX = event.getX();
+        float eventY = event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // Set a new starting point
+                //path.moveTo(eventX, eventY);
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                // Connect the points
+               // path.lineTo(eventX, eventY);
+                break;
+            default:
+                return false;
+        }
+
+        // Makes our view repaint and call onDraw
+        invalidate();
+        return true;
     }
 
 

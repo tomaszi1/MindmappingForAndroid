@@ -18,17 +18,8 @@
 
 package edu.agh.klaukold.utilities;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 import edu.agh.klaukold.common.Box;
@@ -38,26 +29,10 @@ import edu.agh.klaukold.enums.Actions;
 import edu.agh.klaukold.gui.DrawView;
 import edu.agh.klaukold.gui.MainActivity;
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.drm.DrmStore;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.util.Pair;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 
 public class Utils {
 	public static DrawView lay;
@@ -137,8 +112,8 @@ public class Utils {
         } else if (c.newNote.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.NEW_NOTE);
             return p;
-        } else if(c.editBox.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.EDIT_BOX);
+        } else if(c.addBox.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.ADD_BOX);
             return p;
         } else if(c.collapseAction != null && c.collapseAction.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.COLLAPSE);
@@ -181,8 +156,8 @@ public class Utils {
                     Pair p = new Pair(box, Actions.NEW_NOTE);
                     q.clear();
                     return p;
-                } else if(box.editBox.getBounds().contains(x, y)) {
-                    Pair p = new Pair(box, Actions.EDIT_BOX);
+                } else if(box.addBox.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.ADD_BOX);
                     q.clear();
                     return p;
                 } else if(box.collapseAction != null && box.collapseAction.getBounds().contains(x, y)) {

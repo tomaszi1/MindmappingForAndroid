@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.agh.R;
+import edu.agh.klaukold.commands.AddBox;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
 import edu.agh.klaukold.common.Box;
@@ -35,6 +36,7 @@ import edu.agh.klaukold.enums.Align;
 import edu.agh.klaukold.enums.BlockShape;
 import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.enums.LineThickness;
+import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.interfaces.Command;
 import edu.agh.klaukold.utilities.AsyncInvalidate;
 import edu.agh.klaukold.utilities.Callback;
@@ -48,21 +50,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Display;
@@ -94,6 +90,8 @@ public class MainActivity extends Activity {
     public static Root root;
     public static Sheet sheet = new Sheet();
     public static Box boxEdited;
+    public static boolean EDIT_CONN = false;
+    public static LinkedList<Box> toEdit = new LinkedList<Box>();
 
     public static LinkedList<Command> commandsUndo = new LinkedList<Command>();
     public static LinkedList<Command> commandsRedo = new LinkedList<Command>();
@@ -390,9 +388,8 @@ public class MainActivity extends Activity {
             if (box != null) {
                 box.setSelected(true);
                 MainActivity.boxEdited = box;
-                menu.getItem(1).setVisible(true);
-                menu.getItem(2).setVisible(true);
                 lay.invalidate();
+                menu.getItem(1).setVisible(true);
             } else if (box == null) {
                 root.setSelected(false);
                 for (int i = 0; i < root.getLeftChildren().size(); i++) {
@@ -402,23 +399,36 @@ public class MainActivity extends Activity {
                     root.getLeftChildren().get(i).setSelected(false);
                 }
                 menu.getItem(1).setVisible(false);
-                menu.getItem(2).setVisible(false);
                 lay.invalidate();
             }
             if (pair != null) {
 
-                if (pair.second == Actions.EDIT_BOX) {
+                if (pair.second == Actions.ADD_BOX) {
                     boxEdited = pair.first;
-                    Intent intent = new Intent(MainActivity.this, EditBoxScreen.class);
-                    intent.putExtra(EditBoxScreen.BOX_COLOR, pair.first.getColor().getColor());
-                    intent.putExtra(EditBoxScreen.TEXT_COLOR, pair.first.getText().getColor().getColor());
-                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getShape());
-                    intent.putExtra(EditBoxScreen.LINE_COLOR, pair.first.getLineColor());
-                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getLineStyle());
-                    intent.putExtra(EditBoxScreen.BOX_SHAPE, pair.first.getShape());
-                    intent.putExtra(EditBoxScreen.LINE_THICKNESS, pair.first.getLineThickness());
-                    startActivity(intent);
+                    Box box1 = new Box();
+                    AddBox addBox = new AddBox();
+                    Properties properties = new Properties();
+                    properties.put("box", MainActivity.boxEdited);
+                    properties.put("new_box", box1);
+                    properties.put("root", root);
+                    properties.put("res", res);
+                    properties.put("style", style);
+                    addBox.execute(properties);
+                    MainActivity.addCommendUndo(addBox);
+                    lay.revalidate();
+                    lay.invalidate();
 
+//                    Intent intent = new Intent(MainActivity.this, EditBoxScreen.class);
+//                    intent.putExtra(EditBoxScreen.BOX_COLOR, pair.first.getColor().getColor());
+//                    intent.putExtra(EditBoxScreen.TEXT_COLOR, pair.first.getText().getColor().getColor());
+//                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getShape());
+//                    intent.putExtra(EditBoxScreen.LINE_COLOR, pair.first.getLineColor());
+//                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getLineStyle());
+//                    intent.putExtra(EditBoxScreen.BOX_SHAPE, pair.first.getShape());
+//                    intent.putExtra(EditBoxScreen.LINE_THICKNESS, pair.first.getLineThickness());
+//                    startActivity(intent);
+//                   // lay.revalidate();
+//                   // lay.invalidate();
                 } else if (pair.second == Actions.NEW_NOTE) {
 
                 } else if (pair.second == Actions.NEW_MARKER) {
@@ -465,23 +475,39 @@ public class MainActivity extends Activity {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             if (mActionMode != null) {
-                if (clicked != null && click) {
-                    int newx = (int) (e2.getX() - e1.getX());
-                    int newy = (int) (e2.getY() - e1.getY());
-
-                    newx /= lay.zoomx;
-                    newy /= lay.zoomy;
-
-                    newx = (int) -distanceX;
-                    newy = (int) -distanceY;
-
-                    clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
-                    Utils.moveChildX(clicked, newx);
-                    Utils.moveChildY(clicked, newy);
-                    lay.revalidate();
-                    lay.invalidate();
-                    return true;
-                }
+//                if (clicked != null && click) {
+//                    int newx = (int) (e2.getX() - e1.getX());
+//                    int newy = (int) (e2.getY() - e1.getY());
+//
+//                    newx /= lay.zoomx;
+//                    newy /= lay.zoomy;
+//
+//                    newx = (int) -distanceX;
+//                    newy = (int) -distanceY;
+//
+//                    clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
+//                    if (clicked.getLines().size() > 0) {
+//                        for (Box box : clicked.getLines().keySet()) {
+//                            if (box.position == Position.LFET) {
+//                                clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(newx, newy));
+//                            } else {
+//                                clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(newx + clicked.getWidth(), newy + clicked.getHeight()));
+//                            }
+//                        }
+//                    }
+//                    if (clicked.getParent() != null) {
+//                        if (clicked.position == Position.LFET) {
+//                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(newx, newy));
+//                        } else {
+//                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(newx + clicked.getDrawableShape().getBounds().left, newy + clicked.getHeight()));
+//                        }
+//                    }
+//                    Utils.moveChildX(clicked, newx);
+//                    Utils.moveChildY(clicked, newy);
+//                    lay.revalidate();
+//                    lay.invalidate();
+//                    return true;
+//                }
             } else if (click && clicked != null) {
                 mIsScrolling = true;
                 int newx = (int) (e2.getX() - lay.transx);
@@ -491,7 +517,34 @@ public class MainActivity extends Activity {
                 newy /= lay.zoomy;
 
                 clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
-                lay.revalidate();
+                clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
+                clicked.prepareDrawableShape();
+                if (clicked.getLines().size() > 0) {
+                    for (Box box : clicked.getLines().keySet()) {
+                        if (box.position == Position.LFET) {
+                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight()/2));
+                        } else {
+                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top+ clicked.getHeight()/2));
+                        }
+                    }
+                }
+                if (clicked.getParent() != null) {
+                    if (clicked.getParent() instanceof  Root) {
+                        if (clicked.position == Position.LFET) {
+                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                        } else {
+                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                        }
+                    } else {
+                        if (clicked.position == Position.LFET) {
+                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                        } else {
+                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                        }
+                    }
+                }
+
+                    lay.revalidate();
                 lay.invalidate();
                 //Rect r = new Rect(newx, newy, newx + 100, newy + 50);
 
@@ -891,6 +944,9 @@ public class MainActivity extends Activity {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.map_menu, menu);
+        menu.getItem(1).setVisible(true);
+        menu.getItem(2).setVisible(false);
+        menu.getItem(3).setVisible(false);
         menu.getItem(4).setVisible(false);
         menu.getItem(5).setVisible(false);
         return super.onCreateOptionsMenu(menu);
@@ -920,6 +976,9 @@ public class MainActivity extends Activity {
                         lay.invalidate();
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
+                    } else if (commandsUndo.getFirst() instanceof  AddBox) {
+                        lay.revalidate();
+                        lay.invalidate();
                     }
                     commandsRedo.add(commandsUndo.getFirst());
                     commandsUndo.removeFirst();
@@ -939,39 +998,63 @@ public class MainActivity extends Activity {
                 }
                 return true;
             case R.id.action_new:
-                Box box = new Box();
-                if (boxEdited instanceof Root) {
-                    if (root.getLeftChildren().size() == root.getRightChildren().size()) {
-                        root.getLeftChildren().add(box);
-                    } else {
-                        root.getRightChildren().add(box);
-                    }
+                Intent intent1 = new Intent(MainActivity.this, EditBoxScreen.class);
+                intent1.putExtra(EditBoxScreen.BOX_COLOR, MainActivity.boxEdited.getColor().getColor());
+                intent1.putExtra(EditBoxScreen.TEXT_COLOR, MainActivity.boxEdited.getText().getColor().getColor());
+                intent1.putExtra(EditBoxScreen.LINE_SHAPE, MainActivity.boxEdited.getShape());
+                intent1.putExtra(EditBoxScreen.LINE_COLOR, MainActivity.boxEdited.getLineColor());
+                intent1.putExtra(EditBoxScreen.LINE_SHAPE, MainActivity.boxEdited.getLineStyle());
+                intent1.putExtra(EditBoxScreen.BOX_SHAPE, MainActivity.boxEdited.getShape());
+                intent1.putExtra(EditBoxScreen.LINE_THICKNESS, MainActivity.boxEdited.getLineThickness());
+                startActivity(intent1);
+                // lay.revalidate();
+                // lay.invalidate();
+//                Box box = new Box();
+//                AddBox addBox = new AddBox();
+//                Properties properties = new Properties();
+//                properties.put("box", MainActivity.boxEdited);
+//                properties.put("new_box", box);
+//                properties.put("root", root);
+//                properties.put("res", res);
+//                properties.put("style", style);
+//                addBox.execute(properties);
+//                MainActivity.addCommendUndo(addBox);
+
+//                if (boxEdited instanceof Root) {
+//                    if (root.getLeftChildren().size() == root.getRightChildren().size()) {
+//                        root.getLeftChildren().add(box);
+//                    } else {
+//                        root.getRightChildren().add(box);
+//                    }
+//                } else {
+//                    boxEdited.addChild(box);
+//                }
+//                box.setParent(boxEdited);
+//                box.setHeight(root.getHeight() - 10);
+//                box.setPoint(new edu.agh.klaukold.common.Point(boxEdited.getDrawableShape().getBounds().right + 30, boxEdited.getDrawableShape().getBounds().top));
+//                if (style.equals("Default")) {
+//                    Text text = new Text();
+//                    text.setAlign(Align.CENTER);
+//                    text.setColor(new ColorDrawable(Color.BLACK));
+//                    text.setSize(13);
+//                    box.setShape(BlockShape.ROUNDED_RECTANGLE);
+//                    int color = res.getColor(R.color.light_blue);
+//                    box.setColor(new ColorDrawable(color));
+//                    box.setText(text);
+//                    box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+//                    box.setLineStyle(LineStyle.STRAIGHT);
+//                    box.setLineColor(Color.rgb(128, 128, 128));
+//                    box.setLineThickness(LineThickness.THINNEST);
+//                }
+                lay.revalidate();
+                lay.invalidate();
+                return true;
+            case R.id.new_line:
+                if (!EDIT_CONN) {
+                    MainActivity.EDIT_CONN = true;
                 } else {
-                    boxEdited.addChild(box);
+                    MainActivity.EDIT_CONN = false;
                 }
-                //todo tylko probne
-                box.setParent(boxEdited);
-                box.setHeight(root.getHeight() - 10);
-                box.setPoint(new edu.agh.klaukold.common.Point(boxEdited.getDrawableShape().getBounds().right + 30, boxEdited.getDrawableShape().getBounds().top));
-                if (style.equals("Default")) {
-                    Text text = new Text();
-                    text.setAlign(Align.CENTER);
-                    text.setColor(new ColorDrawable(Color.BLACK));
-                    text.setSize(13);
-                    box.setShape(BlockShape.ROUNDED_RECTANGLE);
-                    int color = res.getColor(R.color.light_blue);
-                    box.setColor(new ColorDrawable(color));
-                    box.setText(text);
-                    box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                    box.setLineStyle(LineStyle.STRAIGHT);
-                    box.setLineColor(Color.rgb(128, 128, 128));
-                    box.setLineThickness(LineThickness.THINNEST);
-                }
-                boxEdited.setSelected(false);
-                boxEdited = null;
-                lay.invalidate();
-                // deleteNote(info.id);
-                lay.invalidate();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -987,6 +1070,9 @@ public class MainActivity extends Activity {
         menu.getItem(4).setVisible(true);
         lay.revalidate();
         lay.invalidate();
+        if (boxEdited != null &&  command instanceof  EditBox) {
+            lay.updateBox(boxEdited);
+        }
         //    lay.updateText();
     }
 
@@ -994,7 +1080,7 @@ public class MainActivity extends Activity {
         if (box.getShape() == BlockShape.DIAMOND) {
             box.setDrawableShape((RotateDrawable) res.getDrawable(R.drawable.diammond));
         } else if (box.getShape() == BlockShape.UNDERLINE) {
-            box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.underline));
+            box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
         } else if (box.getShape() == BlockShape.NO_BORDER) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
         } else if (box.getShape() == BlockShape.ELLIPSE) {
@@ -1005,5 +1091,12 @@ public class MainActivity extends Activity {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
         }
     }
+
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        root.clear();
+//        root = null;
+//    }
 }
 

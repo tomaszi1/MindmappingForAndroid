@@ -1,8 +1,10 @@
 package edu.agh.klaukold.common;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 
+import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,11 +21,13 @@ import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.os.Build;
 
 
 import edu.agh.klaukold.enums.BlockShape;
 import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.enums.LineThickness;
+import edu.agh.klaukold.enums.Position;
 
 
 public class Box implements  Cloneable, Serializable {
@@ -51,10 +55,10 @@ public class Box implements  Cloneable, Serializable {
 	public void setColor(ColorDrawable color) {
 		this.color = color;
 	}
-	public LinkedList<Line> getLines() {
+	public HashMap<Box, Line> getLines() {
 		return lines;
 	}
-	public void setLines(LinkedList<Line> lines) {
+	public void setLines(HashMap<Box, Line> lines) {
 		this.lines = lines;
 	}
 	public Text getText() {
@@ -121,17 +125,18 @@ public class Box implements  Cloneable, Serializable {
 	protected LinkedList<Box> children = new LinkedList<Box>();
 	protected BlockShape shape;
 	protected ColorDrawable color;
-	protected LinkedList<Line> lines = new LinkedList<Line>();
+	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
 	protected Text text;
 	protected LinkedList<Note> notes = new LinkedList<Note>();
 	protected LinkedList<Marker> markers = new LinkedList<Marker>();
 	protected boolean isVisible = true;
-    protected boolean isExpanded = false;
+    protected boolean isExpanded = true;
     public Drawable newNote;
-    public Drawable editBox;
+    public Drawable addBox;
     public Drawable newMarker;
     public Drawable collapseAction;
     public Drawable expandAction;
+    public Position position;
 
 
     public LineThickness getLineThickness() {
@@ -181,11 +186,9 @@ public class Box implements  Cloneable, Serializable {
     protected Drawable drawableShape;
 
 	public Box() {}
-	public Box(Box parent)
-	{
-		this.parent = parent; 
-	}
-	
+
+
+
 	public void hideChildren() {}
 	public void showChildren() {}
 	public void repaint() {}
@@ -220,7 +223,9 @@ public class Box implements  Cloneable, Serializable {
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + width);
                 break;
             case UNDERLINE:
+                int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
+                ((GradientDrawable)drawableShape).setColors(colors2);
                 break;
             case NO_BORDER:
                 int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
@@ -252,6 +257,7 @@ public class Box implements  Cloneable, Serializable {
       return  (Box)super.clone();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void setActiveColor() {
         int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
         if (shape != BlockShape.DIAMOND) {
