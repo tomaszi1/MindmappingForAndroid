@@ -59,7 +59,7 @@ public class AddBox implements Command {
         if (position == Position.RIGHT) {
             box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().right + 30, parent.getDrawableShape().getBounds().top));
         } else {
-            box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().left - 30, parent.getDrawableShape().getBounds().top));
+            box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().left - box.getWidth() - 10, parent.getDrawableShape().getBounds().top));
         }
         //todo inne style
         if (style.equals("Default")) {

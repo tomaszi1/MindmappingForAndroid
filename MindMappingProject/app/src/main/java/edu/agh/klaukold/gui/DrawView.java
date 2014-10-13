@@ -11,6 +11,7 @@ import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.enums.Align;
 import edu.agh.klaukold.enums.BlockShape;
 import edu.agh.klaukold.enums.LineStyle;
+import edu.agh.klaukold.enums.Position;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -625,11 +626,17 @@ public class DrawView extends RelativeLayout {
                 box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
                         box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                 box.newMarker.draw(canvas);
-                if (box.isExpendable) {
-                    if (box.isExpanded()) {
+                if (!(box instanceof Root) &&  box.isExpendable) {
+                    if (!box.isExpanded()) {
                         box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
-                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left - 10 - ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top + ((BitmapDrawable) box.collapseAction).getBitmap().getHeight() / 2,
-                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), (int) (box.getDrawableShape().getBounds().top + 1.5 * ((BitmapDrawable) box.collapseAction).getBitmap().getHeight()));
+                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 10, box.getDrawableShape().getBounds().bottom,
+                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth() + 10, (int) (box.getDrawableShape().getBounds().bottom + 1.3 * ((BitmapDrawable) box.collapseAction).getBitmap().getHeight()));
+                        box.collapseAction.draw(canvas);
+                    } else {
+                        box.expandAction= context.getResources().getDrawable(R.drawable.ic_action_expand);
+                        box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 10, box.getDrawableShape().getBounds().bottom,
+                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.expandAction).getBitmap().getWidth() + 10, (int) (box.getDrawableShape().getBounds().bottom + 1.3 * ((BitmapDrawable) box.expandAction).getBitmap().getHeight()));
+                        box.expandAction.draw(canvas);
                     }
                 }
 //                Rect rect = new Rect();
@@ -655,6 +662,7 @@ public class DrawView extends RelativeLayout {
 
     // ToDO wyswietlanie tekstu
     private void drawText(Box box, Canvas canvas) {
+        paint = new Paint();
         if (box != null) {
             float x = 0;
             float y = 0;
@@ -675,23 +683,21 @@ public class DrawView extends RelativeLayout {
 //            Log.w(s, rect.toString());
 //            Log.w("measute", String.valueOf(paint.measureText(s)));
             if (box.getText().isItalic() && box.getText().isBold()) {
-                //todo dodac
-                Typeface tf = Typeface.create("", Typeface.BOLD_ITALIC);
+                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD_ITALIC);
                 paint.setTypeface(tf);
                 // paint.setFakeBoldText(true);
             } else if (box.getText().isItalic()) {
-                //todo dodac
-                Typeface tf = Typeface.create("zainsalowana czcionka", Typeface.ITALIC);
+                Typeface tf = Typeface.create(box.getText().typeface, Typeface.ITALIC);
                 paint.setTypeface(tf);
             } else if (box.getText().isBold()) {
-                //todo dodac
-                Typeface tf = Typeface.create("zainsalowana czcionka", Typeface.BOLD);
+                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD);
                 paint.setTypeface(tf);
             } else if (box.getText().isStrikeOut()) {
                 paint.setStrokeWidth(2);
+                paint.setStrikeThruText(true);
             } else {
-                Typeface tf = Typeface.create("zainsalowana czcionka", Typeface.NORMAL);
-                paint.setTypeface(tf);
+               // Typeface tf = Typeface.create(box.getText().typeface);
+                paint.setTypeface(box.getText().typeface);
             }
 
             if (box.getText().getAlign() == Align.CENTER) {
@@ -874,6 +880,13 @@ public class DrawView extends RelativeLayout {
 //                        box.getDrawableShape().getBounds().right + (int) f + 50, box.getDrawableShape().getBounds().bottom);
 //                box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
 //            }
+        }
+        for (Box b : box.getLines().keySet()) {
+            if (b.position == Position.LFET) {
+                box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().centerY()));
+            } else  {
+                box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
+            }
         }
         drawText(box, canvas);
 //        if (box.isExpanded()) {

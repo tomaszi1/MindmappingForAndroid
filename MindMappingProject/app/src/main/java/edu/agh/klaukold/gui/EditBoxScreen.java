@@ -3,6 +3,7 @@ package edu.agh.klaukold.gui;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -385,6 +386,48 @@ public class EditBoxScreen extends Activity {
         adapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         font.setAdapter(adapter5);
+        if (MainActivity.boxEdited.getText().typeface == Typeface.DEFAULT) {
+            font.setSelection(0);
+        } else  if (MainActivity.boxEdited.getText().typeface == Typeface.MONOSPACE) {
+            font.setSelection(1);
+        } else if (MainActivity.boxEdited.getText().typeface == Typeface.SANS_SERIF) {
+            font.setSelection(2);
+        } else if (MainActivity.boxEdited.getText().typeface == Typeface.SERIF) {
+            font.setSelection(3);
+        }
+
+        font.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                EditBox editBox = new EditBox();
+                Properties properties = new Properties();
+                try {
+                    Text text = MainActivity.boxEdited.getText().TextClone();
+                    if (font.getSelectedItem().toString().equals("DEFAULT")) {
+                        text.typeface = Typeface.DEFAULT;
+                    } else if (font.getSelectedItem().toString().equals("MONOSPACE")) {
+                        text.typeface = Typeface.MONOSPACE;
+                    } else if (font.getSelectedItem().toString().equals("SANS_SERIF")) {
+                        text.typeface = Typeface.SANS_SERIF;
+                    } else if (font.getSelectedItem().toString().equals("SERIF")) {
+                        text.typeface = Typeface.SERIF;
+                    }
+                    properties.put("box_text", text);
+                    properties.put("box", MainActivity.boxEdited);
+                    properties.put("boxes", MainActivity.toEditBoxes);
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+                editBox.execute(properties);
+                MainActivity.addCommendUndo(editBox);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         //todo akcja zmiany wartosci
         //todo dokonczycwartosci
@@ -397,9 +440,35 @@ public class EditBoxScreen extends Activity {
                                             @Override
                                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                 if (isChecked) {
-                                                    MainActivity.boxEdited.getText().setBold(true);
+                                                   // MainActivity.boxEdited.getText().setBold(true);
+                                                    EditBox editBox = new EditBox();
+                                                    Properties properties = new Properties();
+                                                    try {
+                                                        Text text = MainActivity.boxEdited.getText().TextClone();
+                                                        text.setBold(true);
+                                                        properties.put("box_text", text);
+                                                        properties.put("box", MainActivity.boxEdited);
+                                                        properties.put("boxes", MainActivity.toEditBoxes);
+                                                    } catch (CloneNotSupportedException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    editBox.execute(properties);
+                                                    MainActivity.addCommendUndo(editBox);
                                                 } else {
-                                                    MainActivity.boxEdited.getText().setBold(false);
+                                                   // MainActivity.boxEdited.getText().setBold(false);
+                                                    EditBox editBox = new EditBox();
+                                                    Properties properties = new Properties();
+                                                    try {
+                                                        Text text = MainActivity.boxEdited.getText().TextClone();
+                                                        text.setBold(false);
+                                                        properties.put("box_text", text);
+                                                        properties.put("box", MainActivity.boxEdited);
+                                                        properties.put("boxes", MainActivity.toEditBoxes);
+                                                    } catch (CloneNotSupportedException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    editBox.execute(properties);
+                                                    MainActivity.addCommendUndo(editBox);
                                                 }
 
                                             }
@@ -413,9 +482,35 @@ public class EditBoxScreen extends Activity {
                                               @Override
                                               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                   if (isChecked) {
-                                                      MainActivity.boxEdited.getText().setItalic(true);
+                                                   //   MainActivity.boxEdited.getText().setItalic(true);
+                                                      EditBox editBox = new EditBox();
+                                                      Properties properties = new Properties();
+                                                      try {
+                                                          Text text = MainActivity.boxEdited.getText().TextClone();
+                                                          text.setItalic(true);
+                                                          properties.put("box_text", text);
+                                                          properties.put("box", MainActivity.boxEdited);
+                                                          properties.put("boxes", MainActivity.toEditBoxes);
+                                                      } catch (CloneNotSupportedException e) {
+                                                          e.printStackTrace();
+                                                      }
+                                                      editBox.execute(properties);
+                                                      MainActivity.addCommendUndo(editBox);
                                                   } else {
-                                                      MainActivity.boxEdited.getText().setItalic(false);
+                                                     // MainActivity.boxEdited.getText().setItalic(false);
+                                                      EditBox editBox = new EditBox();
+                                                      Properties properties = new Properties();
+                                                      try {
+                                                          Text text = MainActivity.boxEdited.getText().TextClone();
+                                                          text.setItalic(false);
+                                                          properties.put("box_text", text);
+                                                          properties.put("box", MainActivity.boxEdited);
+                                                          properties.put("boxes", MainActivity.toEditBoxes);
+                                                      } catch (CloneNotSupportedException e) {
+                                                          e.printStackTrace();
+                                                      }
+                                                      editBox.execute(properties);
+                                                      MainActivity.addCommendUndo(editBox);
                                                   }
 
                                               }
@@ -429,9 +524,35 @@ public class EditBoxScreen extends Activity {
                                                  @Override
                                                  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                      if (isChecked) {
-                                                         MainActivity.boxEdited.getText().setStrikeOut(true);
+                                                        // MainActivity.boxEdited.getText().setStrikeOut(true);
+                                                         EditBox editBox = new EditBox();
+                                                         Properties properties = new Properties();
+                                                         try {
+                                                             Text text = MainActivity.boxEdited.getText().TextClone();
+                                                             text.setStrikeOut(true);
+                                                             properties.put("box_text", text);
+                                                             properties.put("box", MainActivity.boxEdited);
+                                                             properties.put("boxes", MainActivity.toEditBoxes);
+                                                         } catch (CloneNotSupportedException e) {
+                                                             e.printStackTrace();
+                                                         }
+                                                         editBox.execute(properties);
+                                                         MainActivity.addCommendUndo(editBox);
                                                      } else {
-                                                         MainActivity.boxEdited.getText().setStrikeOut(false);
+                                                       //  MainActivity.boxEdited.getText().setStrikeOut(false);
+                                                         EditBox editBox = new EditBox();
+                                                         Properties properties = new Properties();
+                                                         try {
+                                                             Text text = MainActivity.boxEdited.getText().TextClone();
+                                                             text.setStrikeOut(false);
+                                                             properties.put("box_text", text);
+                                                             properties.put("box", MainActivity.boxEdited);
+                                                             properties.put("boxes", MainActivity.toEditBoxes);
+                                                         } catch (CloneNotSupportedException e) {
+                                                             e.printStackTrace();
+                                                         }
+                                                         editBox.execute(properties);
+                                                         MainActivity.addCommendUndo(editBox);
                                                      }
 
                                                  }

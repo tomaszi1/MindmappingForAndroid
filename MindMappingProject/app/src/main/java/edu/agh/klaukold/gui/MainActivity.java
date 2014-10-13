@@ -94,6 +94,7 @@ public class MainActivity extends Activity {
     public static boolean EDIT_CONN = false;
     public static LinkedList<Box> toEditBoxes = new LinkedList<Box>();
     public static Properties properties = new Properties();
+    private static Pair<Box, Actions> pair;
 
     public static LinkedList<Command> commandsUndo = new LinkedList<Command>();
     public static LinkedList<Command> commandsRedo = new LinkedList<Command>();
@@ -165,54 +166,6 @@ public class MainActivity extends Activity {
         // settings.setOnClickListener(onClickListener);
         Utils.lay = lay;
         Utils.context = this;
-//	    //zeby byla czysta mapa przy wczytywaniu nowej
-//	    core = null;
-//	    id = 1;
-//	    
-//	    if(getIntent() != null && getIntent().getStringExtra("filename") != null) {
-//	    	//DbAdapter.filename = getIntent().getStringExtra("filename");
-//	    }
-//	    
-        if (getIntent() != null && getIntent().getBooleanExtra("present", false)) {
-            Callback call = new Callback() {
-                @Override
-                public void execute() {
-                    //core = Utils.db.getCore();
-
-                    for (Box box : root.getLeftChildren()) {
-                        //	lay.addLine(core, box);
-                        Utils.drawAllLines(box);
-                    }
-
-                    for (Box box : root.getRightChildren()) {
-                        //lay.addLine(core, box);
-                        Utils.drawAllLines(box);
-                    }
-
-//					for(Box box: core.detached) {
-//						Utils.drawAllLines(box);
-//					}
-                }
-            };
-//			
-            AsyncInvalidate async = new AsyncInvalidate(this);
-            async.setCallback(call);
-            async.execute();
-        }
-//	    } else if(getIntent() != null && getIntent().getBooleanExtra("import", false)) { 
-//	    	Utils.loadMaps(this);
-//	    }
-// else {
-//	    	core = new Core();
-//	    	core.setText("CENTRAL BOX");
-//	    	core.setId((id++)+"");
-//	    	core.rect = new Rect(200, 120, 300, 220);
-//		   // Utils.db.insertCore(core);
-//		    lay.revalidate();
-//		    core.refresh();
-//		    lay.invalidate();
-//	    }
-//	    
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 //		
         lay.setOnTouchListener(new OnTouchListener() {
@@ -223,14 +176,14 @@ public class MainActivity extends Activity {
                         return true;
 
                     case (MotionEvent.ACTION_UP):
-                        gestList.click = false;
-                        if (mIsScrolling) {
-                            String txt = "default text";
-                            Text t = new Text();
-                            t.setText(txt);
-                            gestList.myRect.setText(t);
-
-                            gestList.myRect.setParent(gestList.clicked);
+                      //  gestList.click = false;
+                        //if (mIsScrolling) {
+//                            String txt = "default text";
+//                            Text t = new Text();
+//                            t.setText(txt);
+//                            gestList.myRect.setText(t);
+//
+//                            gestList.myRect.setParent(gestList.clicked);
                             //gestList.myRect.setId(Utils.giveId()+"");
 
                             //editContent(gestList.myRect);
@@ -248,26 +201,26 @@ public class MainActivity extends Activity {
                             //	lay.addLine(gestList.clicked, gestList.myRect);
                             //	Utils.db.insertTopic(gestList.myRect);
                             //	Utils.db.updateCore(core);
-                        } else {
+                     //   } else {
 //							if(gestList.clicked.position == Position.LEFT) {
 //								gestList.myRect.position = Position.LEFT;
 //								lay.updateLeft = true;
 //							} else {
 //								gestList.myRect.position = Position.RIGHT;
 //								lay.updateRight = true;
-                        }
+                    //    }
 
                         //	gestList.clicked.addChild(gestList.myRect);
                         //	lay.addLine(gestList.clicked, gestList.myRect);
                         //Utils.db.insertTopic(gestList.myRect);
-                        //Utils.db.updateTopic(gestList.clicked);
-                        lay.revalidate();
-                        lay.invalidate();
+                     //   //Utils.db.updateTopic(gestList.clicked);
+                       // lay.revalidate();
+                     //   lay.invalidate();
 
-                        mIsScrolling = false;
+                     //   mIsScrolling = false;
 
-                        gestList.clicked = null;
-                        gestList.myRect = new Box();
+                    //    gestList.clicked = null;
+                    //    gestList.myRect = new Box();
 
                         break;
                     case MotionEvent.ACTION_POINTER_DOWN:
@@ -389,16 +342,6 @@ public class MainActivity extends Activity {
             if (MainActivity.EDIT_CONN) {
                 Box box = Utils.whichLine(lay, event, 0);
                 if (box != null) {
-                  //  Box parent = box.getParent();
-//                    if (parent instanceof  Root) {
-//                        if (root.getLeftChildren().contains(box)) {
-//                            root.getLeftChildren().remove(box);
-//                        } else {
-//                            root.getRightChildren().remove(box);
-//                        }
-//                    } else {
-//                        parent.getChildren().remove(box);
-//                    }
                     properties.put("box", box);
                     RemoveLine removeLine = new RemoveLine();
                     removeLine.execute(properties);
@@ -422,7 +365,7 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-            Pair<Box, Actions> pair = Utils.whichBoxAction(lay, event);
+            pair = Utils.whichBoxAction(lay, event);
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.setSelected(true);
@@ -479,6 +422,34 @@ public class MainActivity extends Activity {
 
                 } else if (pair.second == Actions.NEW_MARKER) {
 
+                } else if (pair.second == Actions.COLLAPSE) {
+                    Callback call = new Callback() {
+                        @Override
+                        public void execute() {
+                           Utils.fireSetVisible(pair.first, true);
+                        }
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                } else if (pair.second == Actions.EXPAND) {
+                    Callback call = new Callback() {
+                        @Override
+                        public void execute() {
+                            Utils.fireSetVisible(pair.first, false);
+                        }
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
 //            if(mActionMode == null && clicked != null) {
@@ -1055,8 +1026,9 @@ public class MainActivity extends Activity {
                     }
                     commandsRedo.add(commandsUndo.getFirst());
                     commandsUndo.removeFirst();
-                    menu.getItem(4).setVisible(false);
                     menu.getItem(5).setVisible(true);
+                    menu.getItem(4).setVisible(false);
+                   // menu.getItem(5).setVisible(true);
                 } else {
                     commandsUndo.getLast().undo();
                     if (commandsUndo.getLast() instanceof EditBox) {
@@ -1096,6 +1068,7 @@ public class MainActivity extends Activity {
                         }
                     }
                     commandsRedo.add(commandsUndo.getLast());
+                    menu.getItem(5).setVisible(true);
                     commandsUndo.removeLast();
                 }
                 return true;
@@ -1251,6 +1224,7 @@ public class MainActivity extends Activity {
                         }
                     }
                     commandsUndo.add(commandsRedo.getLast());
+                    menu.getItem(4).setVisible(true);
                     commandsRedo.removeLast();
                 }
                 return true;

@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import java.io.Serializable;
 
 import edu.agh.klaukold.enums.Align;
-import edu.agh.klaukold.enums.Font;
 
 public class Text implements  Cloneable, Serializable{
     public  Text()
@@ -15,14 +14,12 @@ public class Text implements  Cloneable, Serializable{
 //        align = Align.CENTER;
 //        color.setColor(Color.BLACK);
 //        size = 13;
-        font = Font.ARIAL;
         text = "Central Topic";
         //text = "Central Topic ivdsvwegiv bzxuivweiv xwf egdwbv  dfidsvb\n buacbfwbev vwufq  uwlwq v uwdvwvewighve wdgiewdv z\n buifqwvcu3yewvd  wedfwegdh vegwqivfwegv  dffwegedghd cyeugf\n";
     }
-	public Text(Font font, int size, boolean isBold, boolean isItalic,
+	public Text(int size, boolean isBold, boolean isItalic,
 			boolean isStrikeOut, Align align, String text) {
 		super();
-		this.font = font;
 		this.size = size;
 		this.isBold = isBold;
 		this.isItalic = isItalic;
@@ -32,7 +29,6 @@ public class Text implements  Cloneable, Serializable{
 	}
 
     public void setText(Text t) {
-        this.font = t.font;
         this.size = t.size;
         this.isBold = t.isBold;
         this.isItalic = t.isItalic;
@@ -40,13 +36,8 @@ public class Text implements  Cloneable, Serializable{
         this.align = t.align;
         this.color = t.getColor();
     }
-	public Font getFont() {
-		return font;
-	}
-	public void setFont(Font font) {
-		this.font = font;
-	}
-	public int getSize() {
+    public Typeface typeface = Typeface.DEFAULT;
+    public int getSize() {
 		return size;
 	}
 	public void setSize(int size) {
@@ -91,8 +82,6 @@ public class Text implements  Cloneable, Serializable{
         this.color = color;
     }
 
-
-    private Font font;
 	private int size; 
 	private boolean isBold;
 	private boolean isItalic;
