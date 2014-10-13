@@ -18,5 +18,10 @@ public class AddLine implements Command {
         
     }
 
+    @Override
+    public void redo() {
+
+    }
+
 
 }

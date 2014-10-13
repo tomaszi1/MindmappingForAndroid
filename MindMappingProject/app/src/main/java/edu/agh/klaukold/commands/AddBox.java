@@ -23,8 +23,9 @@ import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.interfaces.Command;
 
 public class AddBox implements Command {
-    Box box;
+    public Box box;
     Properties before;
+    Properties after;
     Box parent;
     Line line;
     Root root;
@@ -32,6 +33,7 @@ public class AddBox implements Command {
 	@Override
 	public void execute(Properties properties) {
         before = (Properties)properties.clone();
+        after = (Properties)properties.clone();
         parent = (Box)properties.get("box");
         box = (Box) properties.get("new_box");
         root = (Root) properties.get("root");
@@ -92,6 +94,8 @@ public class AddBox implements Command {
             parent.getLines().put(box,line);
         }
         parent.setSelected(false);
+        parent.setExpanded(true);
+        parent.isExpendable = true;
 	}
 
     @Override
@@ -107,7 +111,17 @@ public class AddBox implements Command {
             parent.getChildren().remove(box);
             parent.getLines().remove(box);
         }
+        if (root.getRightChildren().size() == 0 && root.getLeftChildren().size() == 0) {
+            root.isExpendable = false;
+        }
+        if (parent.getChildren().size() == 0) {
+            parent.isExpendable = false;
+        }
+    }
 
+    @Override
+    public void redo() {
+        execute(after);
     }
 
 }

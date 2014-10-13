@@ -17,4 +17,9 @@ public class ShowBox implements Command {
 
     }
 
+    @Override
+    public void redo() {
+
+    }
+
 }

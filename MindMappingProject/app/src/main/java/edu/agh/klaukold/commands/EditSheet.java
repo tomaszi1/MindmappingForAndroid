@@ -11,8 +11,10 @@ import edu.agh.klaukold.interfaces.Command;
 public class EditSheet implements Command  {
     Sheet sheet;
     Properties properties1 = new Properties();
+    Properties after;
 	@Override
 	public void execute(Properties properties) {
+        after = (Properties) properties.clone();
         sheet = (Sheet) properties.get("sheet");
         try {
             properties1.put("sheet", sheet.SheetClone());
@@ -37,6 +39,11 @@ public class EditSheet implements Command  {
         if (properties1.containsKey("color")) {
             sheet.setColor((ColorDrawable)properties1.get("color"));
         }
+    }
+
+    @Override
+    public void redo() {
+        execute(after);
     }
 
 }

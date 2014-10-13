@@ -52,6 +52,7 @@ public class ColorPalette extends Activity {
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
                     properties.put("color", new ColorDrawable(colors.get(v)));
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE1)) {
@@ -63,6 +64,7 @@ public class ColorPalette extends Activity {
                         text.setColor(new ColorDrawable(colors.get(v)));
                         properties.put("box_text", text);
                         properties.put("box", MainActivity.boxEdited);
+                        properties.put("boxes", MainActivity.toEditBoxes);
                     } catch (CloneNotSupportedException e) {
                         e.printStackTrace();
                     }
@@ -74,6 +76,7 @@ public class ColorPalette extends Activity {
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
                     properties.put("line_color", new ColorDrawable(colors.get(v)));
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                     //todo kolor lini
@@ -317,6 +320,7 @@ public class ColorPalette extends Activity {
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
                     properties.put("color", new ColorDrawable(Color.rgb(r, g, b)));
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE1)) {
@@ -328,6 +332,7 @@ public class ColorPalette extends Activity {
                         text.setColor(new ColorDrawable(Color.rgb(r, g, b)));
                         properties.put("box_text", text);
                         properties.put("box", MainActivity.boxEdited);
+                        properties.put("boxes", MainActivity.toEditBoxes);
                     } catch (CloneNotSupportedException e) {
                         e.printStackTrace();
                     }
@@ -338,6 +343,7 @@ public class ColorPalette extends Activity {
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
                     properties.put("line_color", new ColorDrawable(Color.rgb(r, g, b)));
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                     //todo kolor lini

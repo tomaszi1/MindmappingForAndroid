@@ -17,4 +17,9 @@ public class ShowLines implements Command {
 
     }
 
+    @Override
+    public void redo() {
+
+    }
+
 }

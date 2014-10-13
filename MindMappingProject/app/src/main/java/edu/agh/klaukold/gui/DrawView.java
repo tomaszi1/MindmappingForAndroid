@@ -18,8 +18,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
@@ -623,6 +625,13 @@ public class DrawView extends RelativeLayout {
                 box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
                         box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                 box.newMarker.draw(canvas);
+                if (box.isExpendable) {
+                    if (box.isExpanded()) {
+                        box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
+                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left - 10 - ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top + ((BitmapDrawable) box.collapseAction).getBitmap().getHeight() / 2,
+                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), (int) (box.getDrawableShape().getBounds().top + 1.5 * ((BitmapDrawable) box.collapseAction).getBitmap().getHeight()));
+                    }
+                }
 //                Rect rect = new Rect();
 //                rect.set(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
 //                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
@@ -667,7 +676,7 @@ public class DrawView extends RelativeLayout {
 //            Log.w("measute", String.valueOf(paint.measureText(s)));
             if (box.getText().isItalic() && box.getText().isBold()) {
                 //todo dodac
-                Typeface tf = Typeface.create("zainsalowana czcionka", Typeface.BOLD_ITALIC);
+                Typeface tf = Typeface.create("", Typeface.BOLD_ITALIC);
                 paint.setTypeface(tf);
                 // paint.setFakeBoldText(true);
             } else if (box.getText().isItalic()) {
@@ -832,22 +841,25 @@ public class DrawView extends RelativeLayout {
         paint.setTextSize((float) box.getText().getSize());
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
-            Log.w("rect", rect.toString());
-            box.setWidth((rect.right - rect.left) + 20);
+            int w = (rect.right - rect.left) + 20;
+            if (w > box.getWidth()) {
+                box.setWidth(w);
+            }
             //  box.setWidth(((int) f) * (box.getText().getSize()/3));
             //  box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
             //         box.getDrawableShape().getBounds().left + (-rect.right - rect.left), box.getDrawableShape().getBounds().bottom);
             // box.getDrawableShape().getBounds().right = box.getDrawableShape().getBounds().left + (int) f + 50;
         } else {
-            Log.w("rect", rect.toString());
             int width = 0;
             for (String sPart : parts) {
                 paint.getTextBounds(sPart, 0, sPart.length(), rect);
-                if ((rect.right - rect.left) > width) {
-                    width = (rect.right - rect.left);
+                if (Math.abs((rect.right - rect.left)) > width) {
+                    width = Math.abs(rect.right - rect.left);
                 }
             }
-            box.setWidth(width + box.getText().getSize());
+            if (width > box.getWidth()) {
+                box.setWidth(width + box.getText().getSize());
+            }
             box.setHeight((rect.bottom - rect.top) * parts.length + (box.getText().getSize() / 2 * parts.length));
             if (box.getShape() == BlockShape.ELLIPSE) {
                 box.setWidth(box.getWidth() + box.getWidth() / 2);
@@ -994,7 +1006,11 @@ public class DrawView extends RelativeLayout {
                         canvas.drawPath(path, paint);
                     }
                     if (MainActivity.EDIT_CONN) {
-
+                        RectF rf = new RectF();
+                        x.getPath().computeBounds(rf, true);
+                        x.deleteLine = context.getResources().getDrawable(R.drawable.ic_action_cancel);
+                        x.deleteLine.setBounds((int) rf.centerX(), (int) rf.centerY(), (int) rf.centerX() + 40, (int) rf.centerY() + 40);
+                        x.deleteLine.draw(canvas);
                     }
             }
         }

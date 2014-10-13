@@ -12,6 +12,11 @@ public class AddNote implements Command {
     }
 
     @Override
+    public void redo() {
+
+    }
+
+    @Override
 	public void execute(Properties properties) {
 		// TODO Auto-generated method stub
 		

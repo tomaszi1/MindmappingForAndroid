@@ -5,8 +5,12 @@ import java.util.Properties;
 import edu.agh.klaukold.interfaces.Command;
 
 public class MoveBox implements Command {
+    @Override
+    public void redo() {
 
-	@Override
+    }
+
+    @Override
 	public void execute(Properties properties) {
 		// TODO Auto-generated method stub
 

@@ -17,5 +17,10 @@ public class RemoveNote implements Command{
 
     }
 
+    @Override
+    public void redo() {
+
+    }
+
 
 }

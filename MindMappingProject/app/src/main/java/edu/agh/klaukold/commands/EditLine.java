@@ -6,6 +6,11 @@ import edu.agh.klaukold.interfaces.Command;
 
 public class EditLine implements Command {
     @Override
+    public void redo() {
+
+    }
+
+    @Override
     public void undo() {
 
     }

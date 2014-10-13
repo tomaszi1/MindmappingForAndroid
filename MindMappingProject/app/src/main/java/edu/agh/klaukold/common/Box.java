@@ -31,7 +31,34 @@ import edu.agh.klaukold.enums.Position;
 
 
 public class Box implements  Cloneable, Serializable {
-	public Box getParent() {
+    public void updateBox(Box b) {
+        this.height = b.height;
+        this.width = b.width;
+        this.point = b.point;
+        this.isSelected = b.isSelected;
+        this.parent = b.parent;
+        this.children = b.children;
+        this.shape = b.shape;
+        this.color = b.color;
+        this.lines = b.lines;
+        this.text = b.text;
+        this.notes = b.notes;
+        this.markers = b.markers;
+        this.isVisible = b.isVisible;
+        this.isExpanded = b.isExpanded;
+        this.newNote = b.newNote;
+        this.addBox = b.addBox;
+        this.newMarker = b.newMarker;
+        this.collapseAction = b.collapseAction;
+        this.expandAction = b.expandAction;
+        this.position = b.position;
+        this.lineThickness = b.lineThickness;
+        this.lineColor = b.lineColor;
+        this.lineStyle = b.lineStyle;
+        this.drawableShape = b.drawableShape;
+    }
+
+    public Box getParent() {
 		return parent;
 	}
 	public void setParent(Box parent) {
@@ -86,6 +113,7 @@ public class Box implements  Cloneable, Serializable {
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 	}
+    public boolean isExpendable = false;
 	
 	public boolean isVisible() {
 		return isVisible;

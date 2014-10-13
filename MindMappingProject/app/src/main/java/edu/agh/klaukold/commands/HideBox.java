@@ -6,7 +6,12 @@ import edu.agh.klaukold.interfaces.Command;
 
 public class HideBox implements Command {
 
-	@Override
+    @Override
+    public void redo() {
+
+    }
+
+    @Override
 	public void execute(Properties properties) {
 		// TODO Auto-generated method stub
 

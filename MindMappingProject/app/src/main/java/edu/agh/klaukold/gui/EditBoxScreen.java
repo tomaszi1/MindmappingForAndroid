@@ -151,6 +151,7 @@ public class EditBoxScreen extends Activity {
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
                 properties.put("shape", blockShape);
+                properties.put("boxes", MainActivity.toEditBoxes);
                 EditBox editBox = new EditBox();
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
@@ -190,6 +191,7 @@ public class EditBoxScreen extends Activity {
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
                 properties.put("line_shape", lineStyle);
+                properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
             }
@@ -253,6 +255,7 @@ public class EditBoxScreen extends Activity {
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
                 properties.put("line_thickness", lt);
+                properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
             }
@@ -295,6 +298,7 @@ public class EditBoxScreen extends Activity {
                     text.setAlign(align);
                     properties.put("box_text", text);
                     properties.put("box", MainActivity.boxEdited);
+                    properties.put("boxes", MainActivity.toEditBoxes);
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
                 }
@@ -357,6 +361,7 @@ public class EditBoxScreen extends Activity {
                                                          text.setSize(Integer.parseInt(textHeight.getSelectedItem().toString()));
                                                          properties.put("box_text", text);
                                                          properties.put("box", MainActivity.boxEdited);
+                                                         properties.put("boxes", MainActivity.toEditBoxes);
                                                      } catch (CloneNotSupportedException e) {
                                                          e.printStackTrace();
                                                      }

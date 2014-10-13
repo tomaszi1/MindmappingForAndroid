@@ -27,6 +27,7 @@ import edu.agh.R;
 import edu.agh.klaukold.commands.AddBox;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
+import edu.agh.klaukold.commands.RemoveLine;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.common.Sheet;
@@ -91,7 +92,8 @@ public class MainActivity extends Activity {
     public static Sheet sheet = new Sheet();
     public static Box boxEdited;
     public static boolean EDIT_CONN = false;
-    public static LinkedList<Box> toEdit = new LinkedList<Box>();
+    public static LinkedList<Box> toEditBoxes = new LinkedList<Box>();
+    public static Properties properties = new Properties();
 
     public static LinkedList<Command> commandsUndo = new LinkedList<Command>();
     public static LinkedList<Command> commandsRedo = new LinkedList<Command>();
@@ -272,27 +274,27 @@ public class MainActivity extends Activity {
                         // multitouch!! - touch down
                         int count = event.getPointerCount(); // Number of 'fingers' in this time
 
-                        if(count > 1) {
+                        if (count > 1) {
                             Box b1 = Utils.whichBox(lay, event, 0);
                             Box b2 = Utils.whichBox(lay, event, 1);
 
                             //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
-                            if(b1 != null && b2 != null) {
-                                if(b1.getPoint().compareTo(b2.getPoint()) == 0) {
-                                    if(b1.getPoint().compareTo(root.getPoint()) == 0) {
+                            if (b1 != null && b2 != null) {
+                                if (b1.getPoint().compareTo(b2.getPoint()) == 0) {
+                                    if (b1.getPoint().compareTo(root.getPoint()) == 0) {
                                         mIsScrolling = false;
                                         return true;
                                     }
 
-                                    if(mActionMode == null) {
+                                    if (mActionMode == null) {
                                         mActionMode = startActionMode(moveCallback);
                                         mActionMode.setTitle("Move");
                                     }
 
-                                    if(mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
+                                    if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
                                         boolean b = b1.isSelected();
 
-                                        if(b) {
+                                        if (b) {
                                             moveCallback.removeObserver();
                                         } else {
                                             moveCallback.setObserver(b1);
@@ -313,8 +315,8 @@ public class MainActivity extends Activity {
 
                                 mIsScrolling = false;
                                 return true;
-                            } else if(b1 != null && b2 == null) {
-                                if(mActionMode == null) {
+                            } else if (b1 != null && b2 == null) {
+                                if (mActionMode == null) {
                                     Utils.unlink(b1, Utils.getCoordsInView(lay, event, 1));
                                     lay.revalidate();
                                     lay.invalidate();
@@ -328,17 +330,18 @@ public class MainActivity extends Activity {
                         }
                         break;
                     case MotionEvent.ACTION_POINTER_UP:
-                        if(event.getPointerCount() > 1) {
+                        if (event.getPointerCount() > 1) {
                             return detector.onTouchEvent(event);
                         }
 
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if(event.getPointerCount() > 1) {
+                        if (event.getPointerCount() > 1) {
                             return detector.onTouchEvent(event);
                         }
-                    break;
-                    default: break;
+                        break;
+                    default:
+                        break;
                 }
 
                 boolean response = gestureDetector.onTouchEvent(event);
@@ -383,22 +386,65 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent event) {
+            if (MainActivity.EDIT_CONN) {
+                Box box = Utils.whichLine(lay, event, 0);
+                if (box != null) {
+                  //  Box parent = box.getParent();
+//                    if (parent instanceof  Root) {
+//                        if (root.getLeftChildren().contains(box)) {
+//                            root.getLeftChildren().remove(box);
+//                        } else {
+//                            root.getRightChildren().remove(box);
+//                        }
+//                    } else {
+//                        parent.getChildren().remove(box);
+//                    }
+                    properties.put("box", box);
+                    RemoveLine removeLine = new RemoveLine();
+                    removeLine.execute(properties);
+                    MainActivity.addCommendUndo(removeLine);
+                    properties = new Properties();
+                    Callback call = new Callback() {
+                        @Override
+                        public void execute() {
+//                            RemoveLine removeLine = new RemoveLine();
+//                            removeLine.execute(properties);
+//                            MainActivity.addCommendUndo(removeLine);
+//                            properties = new Properties();
+                        }
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
             Pair<Box, Actions> pair = Utils.whichBoxAction(lay, event);
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.setSelected(true);
                 MainActivity.boxEdited = box;
+                if (MainActivity.boxEdited != null) {
+                    MainActivity.toEditBoxes.add(box);
+                }
                 lay.invalidate();
-                menu.getItem(1).setVisible(true);
+                menu.getItem(2).setVisible(true);
+                menu.getItem(3).setVisible(true);
             } else if (box == null) {
                 root.setSelected(false);
+
                 for (int i = 0; i < root.getLeftChildren().size(); i++) {
-                    root.getLeftChildren().get(i).setSelected(false);
+                    fireUnSelect(root.getLeftChildren().get(i));
                 }
                 for (int i = 0; i < root.getRightChildren().size(); i++) {
-                    root.getLeftChildren().get(i).setSelected(false);
+                    fireUnSelect(root.getRightChildren().get(i));
                 }
-                menu.getItem(1).setVisible(false);
+                MainActivity.toEditBoxes = new LinkedList<Box>();
+                menu.getItem(2).setVisible(false);
+                menu.getItem(3).setVisible(false);
                 lay.invalidate();
             }
             if (pair != null) {
@@ -522,29 +568,31 @@ public class MainActivity extends Activity {
                 if (clicked.getLines().size() > 0) {
                     for (Box box : clicked.getLines().keySet()) {
                         if (box.position == Position.LFET) {
-                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight()/2));
+                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
                         } else {
-                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top+ clicked.getHeight()/2));
+                            clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
                         }
                     }
                 }
                 if (clicked.getParent() != null) {
-                    if (clicked.getParent() instanceof  Root) {
-                        if (clicked.position == Position.LFET) {
-                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                    if (clicked.getParent().getLines().get(clicked) != null) {
+                        if (clicked.getParent() instanceof Root) {
+                            if (clicked.position == Position.LFET) {
+                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            } else {
+                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            }
                         } else {
-                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                        }
-                    } else {
-                        if (clicked.position == Position.LFET) {
-                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                        } else {
-                            clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            if (clicked.position == Position.LFET) {
+                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            } else {
+                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            }
                         }
                     }
                 }
 
-                    lay.revalidate();
+                lay.revalidate();
                 lay.invalidate();
                 //Rect r = new Rect(newx, newy, newx + 100, newy + 50);
 
@@ -690,12 +738,12 @@ public class MainActivity extends Activity {
         @Override
         public void onDestroyActionMode(ActionMode mode) {
 //            // remove selection
-        	notifyObservers();
-        	observers.clear();
+            notifyObservers();
+            observers.clear();
 
-        	lay.revalidate();
-        	lay.invalidate();
-        	mActionMode = null;
+            lay.revalidate();
+            lay.invalidate();
+            mActionMode = null;
         }
     }
 
@@ -724,7 +772,7 @@ public class MainActivity extends Activity {
             if (observer.getParent() instanceof Root) {
                 Root core = (Root) observer.getParent();
 
-                if (observer.getPoint()!= null) {
+                if (observer.getPoint() != null) {
                     observer.getPoint().x = observer.getDrawableShape().getBounds().left;
                     observer.getPoint().y = observer.getDrawableShape().getBounds().top;
 //                    if ((observer.getDrawableShape().getBounds().left + observer.getDrawableShape().getBounds().right) / 2 < core.getPoint().x/2) {
@@ -733,7 +781,7 @@ public class MainActivity extends Activity {
 //                    } else {
 //                       // observer.position = Position.RIGHT;
 //                    }
-                    Utils.propagatePosition(observer,observer.getPoint());
+                    Utils.propagatePosition(observer, observer.getPoint());
                     return;
                 }
 
@@ -755,7 +803,7 @@ public class MainActivity extends Activity {
 
                     core.getRightChildren().add(ind, observer);
                 } else {
-                   // Utils.propagatePosition(observer, Position.LEFT);
+                    // Utils.propagatePosition(observer, Position.LEFT);
                     Utils.propagatePosition(observer, observer.getPoint());
                     lay.updateLeft = true;
 
@@ -805,8 +853,8 @@ public class MainActivity extends Activity {
                     mode.finish();
                     return true;
                 default:
-                   return false;
-           }
+                    return false;
+            }
         }
 
         @Override
@@ -971,14 +1019,39 @@ public class MainActivity extends Activity {
                 if (commandsUndo.size() == 1) {
                     commandsUndo.getFirst().undo();
                     if (commandsUndo.getFirst() instanceof EditBox) {
-                        lay.updateBox(((EditBox) commandsUndo.getFirst()).box);
-                        lay.revalidate();
-                        lay.invalidate();
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                                lay.updateBox(((EditBox) commandsUndo.getFirst()).box);
+                                for (Box b : ((EditBox) commandsUndo.getLast()).edited) {
+                                    lay.updateBox(b);
+                                }
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
-                    } else if (commandsUndo.getFirst() instanceof  AddBox) {
-                        lay.revalidate();
-                        lay.invalidate();
+                    } else if (commandsUndo.getFirst() instanceof AddBox || commandsUndo.getFirst() instanceof  RemoveLine) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        //lay.revalidate();
+                        //lay.invalidate();
                     }
                     commandsRedo.add(commandsUndo.getFirst());
                     commandsUndo.removeFirst();
@@ -987,11 +1060,40 @@ public class MainActivity extends Activity {
                 } else {
                     commandsUndo.getLast().undo();
                     if (commandsUndo.getLast() instanceof EditBox) {
-                        lay.updateBox(((EditBox) commandsUndo.getLast()).box);
-                        lay.revalidate();
-                        lay.invalidate();
+
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                                lay.updateBox(((EditBox) commandsUndo.getLast()).box);
+                                for (Box b : ((EditBox) commandsUndo.getLast()).edited) {
+                                    lay.updateBox(b);
+                                }
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        //lay.revalidate();
+                       // lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
+                    } else if (commandsUndo.getLast() instanceof  AddBox || commandsUndo.getLast() instanceof  RemoveLine) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     commandsRedo.add(commandsUndo.getLast());
                     commandsUndo.removeLast();
@@ -1055,6 +1157,102 @@ public class MainActivity extends Activity {
                 } else {
                     MainActivity.EDIT_CONN = false;
                 }
+                lay.revalidate();
+                lay.invalidate();
+                return true;
+            case R.id.action_redo:
+                if (commandsRedo.size() == 1) {
+                    commandsRedo.getFirst().redo();
+                    if (commandsRedo.getFirst() instanceof EditBox) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                                lay.updateBox(((EditBox) commandsRedo.getFirst()).box);
+                                for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
+                                    lay.updateBox(b);
+                                }
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+//                        lay.updateBox(((EditBox) commandsRedo.getFirst()).box);
+//                        for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
+//                            lay.updateBox(b);
+//                        }
+//                        lay.revalidate();
+//                        lay.invalidate();
+
+                    } else if (commandsRedo.getFirst() instanceof EditSheet) {
+                        lay.setBackgroundColor(sheet.getColor().getColor());
+                    } else if (commandsRedo.getFirst() instanceof AddBox || commandsRedo.getFirst() instanceof  RemoveLine) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+//                        lay.revalidate();
+//                        lay.invalidate();
+                    }
+                    commandsUndo.add(commandsRedo.getFirst());
+                    commandsRedo.removeFirst();
+                    menu.getItem(4).setVisible(true);
+                    menu.getItem(5).setVisible(false);
+                } else {
+                    commandsRedo.getLast().redo();
+                    if (commandsRedo.getLast() instanceof EditBox) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                                lay.updateBox(((EditBox) commandsRedo.getLast()).box);
+                                for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
+                                    lay.updateBox(b);
+                                }
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+//                        lay.updateBox(((EditBox) commandsRedo.getLast()).box);
+//                        for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
+//                            lay.updateBox(b);
+//                        }
+//                        lay.revalidate();
+//                        lay.invalidate();
+                    } else if (commandsRedo.getLast() instanceof EditSheet) {
+                        lay.setBackgroundColor(sheet.getColor().getColor());
+                    } else if (commandsRedo.getLast() instanceof  AddBox || commandsRedo.getLast() instanceof  RemoveLine) {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    commandsUndo.add(commandsRedo.getLast());
+                    commandsRedo.removeLast();
+                }
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -1070,7 +1268,7 @@ public class MainActivity extends Activity {
         menu.getItem(4).setVisible(true);
         lay.revalidate();
         lay.invalidate();
-        if (boxEdited != null &&  command instanceof  EditBox) {
+        if (boxEdited != null && command instanceof EditBox) {
             lay.updateBox(boxEdited);
         }
         //    lay.updateText();
@@ -1092,6 +1290,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void fireUnSelect(Box box) {
+        box.setSelected(false);
+        for (Box b : box.getChildren()) {
+            b.setSelected(false);
+            fireUnSelect(b);
+        }
+    }
 //    @Override
 //    public void onDestroy() {
 //        super.onDestroy();

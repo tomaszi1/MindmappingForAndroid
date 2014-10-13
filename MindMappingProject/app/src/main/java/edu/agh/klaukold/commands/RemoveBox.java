@@ -19,4 +19,9 @@ public class RemoveBox implements Command {
     public void undo() {
 
     }
+
+    @Override
+    public void redo() {
+
+    }
 }

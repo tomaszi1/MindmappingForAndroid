@@ -34,7 +34,7 @@ public class AsyncInvalidate extends AsyncTask<Void, Void, Void> {
 	
 	@Override
     protected void onPreExecute() {
-       dialog = ProgressDialog.show(context, "adowanie", "Proszę czekać...", true);
+       dialog = ProgressDialog.show(context, "Loading", "Please wait...", true);
     }
 	
 	public void setCallback(Callback call) {

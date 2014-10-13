@@ -2,7 +2,7 @@ package edu.agh.klaukold.common;
 
 import java.io.Serializable;
 
-import edu.agh.klaukold.interfaces.Element;
+
 
 public class Note implements Serializable{
 	private Text text;

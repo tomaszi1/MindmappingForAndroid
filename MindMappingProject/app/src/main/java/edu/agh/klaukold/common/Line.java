@@ -4,15 +4,16 @@ import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
 
 import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.gui.MainActivity;
-import edu.agh.klaukold.interfaces.Element;
 
-public class Line implements Serializable {
+
+public class Line implements Serializable, Cloneable {
 	private LineStyle shape;
 	private int thickness;
 	private ColorDrawable color;
@@ -20,6 +21,8 @@ public class Line implements Serializable {
 	private Point end;
 	private boolean isVisible;
     public Position position;
+
+    public Drawable deleteLine;
 
     public Path getPath() {
         return path;
@@ -137,7 +140,9 @@ public class Line implements Serializable {
 	}
 
 
-
+    public Line Clone() throws CloneNotSupportedException {
+        return (Line) super.clone();
+    }
 
 
 }

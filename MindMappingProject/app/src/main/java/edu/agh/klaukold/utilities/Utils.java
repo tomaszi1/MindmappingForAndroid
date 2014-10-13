@@ -23,6 +23,7 @@ import java.util.Queue;
 
 
 import edu.agh.klaukold.common.Box;
+import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.enums.Actions;
@@ -46,6 +47,45 @@ public class Utils {
 	}
 
 
+    public static Box whichLine(DrawView draw, MotionEvent event, int id) {
+        float[] mClickCoords = getCoordsInView(draw, event, id);
+        int x = (int) mClickCoords[0];
+        int y = (int) mClickCoords[1];
+
+        Root c = MainActivity.root;
+        Queue<Box> q= new LinkedList<Box>();
+        for(Box b: c.getLeftChildren()) {
+            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+                return b;
+            }
+            q.add(b);
+        }
+
+        for(Box b: c.getRightChildren()) {
+            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+                return b;
+            }
+            q.add(b);
+        }
+
+        for(Box b: c.getDetached()) {
+            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+                return b;
+            }
+            q.add(b);
+        }
+
+        while(!q.isEmpty()) {
+            Box box = q.remove();
+                for(Box b: box.getChildren()) {
+                    if (box.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+                        return b;
+                    }
+                    q.add(b);
+                }
+            }
+        return null;
+    }
 	
 	//Który bloczek został kliknięty palcem o indeksie id
 	public static Box whichBox(DrawView draw, MotionEvent event, int id) {

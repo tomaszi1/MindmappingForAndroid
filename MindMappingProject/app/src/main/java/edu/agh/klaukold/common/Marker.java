@@ -5,7 +5,7 @@ import android.widget.CheckBox;
 import java.io.Serializable;
 
 import edu.agh.klaukold.enums.MarkerType;
-import edu.agh.klaukold.interfaces.Element;
+
 
 public class Marker implements  Serializable {
 

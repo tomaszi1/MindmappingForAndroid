@@ -30,6 +30,16 @@ public class Text implements  Cloneable, Serializable{
 		this.align = align;
 		this.text = text;
 	}
+
+    public void setText(Text t) {
+        this.font = t.font;
+        this.size = t.size;
+        this.isBold = t.isBold;
+        this.isItalic = t.isItalic;
+        this.isStrikeOut = t.isStrikeOut;
+        this.align = t.align;
+        this.color = t.getColor();
+    }
 	public Font getFont() {
 		return font;
 	}
