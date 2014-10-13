@@ -40,7 +40,14 @@ public class Utils {
 	public static Activity context;
 	static String base;
 	
-	
+	public static void  fireSetVisible(Box box, Boolean visible) {
+        box.setExpanded(visible);
+        for (Box b : box.getLines().keySet()) {
+            b.setVisible(visible);
+            box.getLines().get(b).setVisible(visible);
+            fireSetVisible(b, visible);
+        }
+    }
 	
 	public static boolean isBaseSet() {
 		return base != null;
@@ -55,14 +62,14 @@ public class Utils {
         Root c = MainActivity.root;
         Queue<Box> q= new LinkedList<Box>();
         for(Box b: c.getLeftChildren()) {
-            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
                 return b;
             }
             q.add(b);
         }
 
         for(Box b: c.getRightChildren()) {
-            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
                 return b;
             }
             q.add(b);
