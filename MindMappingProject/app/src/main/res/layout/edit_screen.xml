@@ -29,32 +29,32 @@
         </View>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/wallpaper"
-        android:id="@+id/textView2"
-        android:textSize="25dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:textColor="@color/black" />
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/wallpaper"-->
+        <!--android:id="@+id/textView2"-->
+        <!--android:textSize="25dp"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="30dp"-->
+        <!--android:textColor="@color/black" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/intensity"
-        android:id="@+id/textView3"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp" />
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/intensity"-->
+        <!--android:id="@+id/textView3"-->
+        <!--android:textColor="@color/black"-->
+        <!--android:textSize="20dp"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="30dp" />-->
 
-    <SeekBar
-        android:layout_width="267dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBarIntensivity"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp" />
+    <!--<SeekBar-->
+        <!--android:layout_width="267dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/seekBarIntensivity"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="30dp" />-->
 
     <LinearLayout
         android:orientation="horizontal"

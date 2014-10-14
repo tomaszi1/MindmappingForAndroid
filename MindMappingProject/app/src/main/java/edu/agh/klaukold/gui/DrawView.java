@@ -614,28 +614,34 @@ public class DrawView extends RelativeLayout {
                 }
                 drawText(box, canvas);
                 // todo sytuacja dla ciemnego tla
-                box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
-                box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
-                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                box.newNote.draw(canvas);
+                if (box.isNote) {
+                    box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
+                    box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
+                            box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                    box.newNote.draw(canvas);
+                } else {
+                    box.addNote = context.getResources().getDrawable(R.drawable.ic_action_new_event);
+                    box.addNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addNote).getBitmap().getHeight(),
+                            box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.addNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                    box.addNote.draw(canvas);
+                }
                 box.addBox = context.getResources().getDrawable(R.drawable.ic_action_new);
-                box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
-                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
+                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                 box.addBox.draw(canvas);
-                box.newMarker = context.getResources().getDrawable(R.drawable.ic_action_new_picture);
-                box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
-                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                box.newMarker.draw(canvas);
-                if (!(box instanceof Root) &&  box.isExpendable) {
+                //todomarkery
+//                box.newMarker = context.getResources().getDrawable(R.drawable.ic_action_new_picture);
+//                box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
+//                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+//                box.newMarker.draw(canvas);
+                if (!(box instanceof Root) && box.isExpendable) {
                     if (!box.isExpanded()) {
                         box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
-                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 10, box.getDrawableShape().getBounds().bottom,
-                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth() + 10, (int) (box.getDrawableShape().getBounds().bottom + 1.3 * ((BitmapDrawable) box.collapseAction).getBitmap().getHeight()));
+                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                         box.collapseAction.draw(canvas);
                     } else {
-                        box.expandAction= context.getResources().getDrawable(R.drawable.ic_action_expand);
-                        box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 10, box.getDrawableShape().getBounds().bottom,
-                                box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.expandAction).getBitmap().getWidth() + 10, (int) (box.getDrawableShape().getBounds().bottom + 1.3 * ((BitmapDrawable) box.expandAction).getBitmap().getHeight()));
+                        box.expandAction = context.getResources().getDrawable(R.drawable.ic_action_expand);
+                        box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.expandAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.expandAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                         box.expandAction.draw(canvas);
                     }
                 }
@@ -673,30 +679,33 @@ public class DrawView extends RelativeLayout {
                 paint.setColor(box.getText().getColor().getColor());
             }
             paint.setTextSize(box.getText().getSize());
-            if (box.getText().getAlign() == Align.CENTER) {
-                paint.setTextAlign(Paint.Align.CENTER);
-            } else if (box.getText().getAlign() == Align.RIGHT) {
-                paint.setTextAlign(Paint.Align.RIGHT);
-            } else if (box.getText().getAlign() == Align.LEFT) {
-                paint.setTextAlign(Paint.Align.LEFT);
-            }
-//            Log.w(s, rect.toString());
-//            Log.w("measute", String.valueOf(paint.measureText(s)));
+//            if (box.getText().getAlign() == Align.CENTER) {
+//                paint.setTextAlign(Paint.Align.CENTER);
+//            } else if (box.getText().getAlign() == Align.RIGHT) {
+//                paint.setTextAlign(Paint.Align.RIGHT);
+//            } else if (box.getText().getAlign() == Align.LEFT) {
+//                paint.setTextAlign(Paint.Align.LEFT);
+//            }
+////            Log.w(s, rect.toString());
+////            Log.w("measute", String.valueOf(paint.measureText(s)));
             if (box.getText().isItalic() && box.getText().isBold()) {
-                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD_ITALIC);
+                Typeface tf = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
                 paint.setTypeface(tf);
                 // paint.setFakeBoldText(true);
             } else if (box.getText().isItalic()) {
-                Typeface tf = Typeface.create(box.getText().typeface, Typeface.ITALIC);
+                Typeface tf = Typeface.create(Typeface.SERIF, Typeface.ITALIC);
                 paint.setTypeface(tf);
             } else if (box.getText().isBold()) {
                 Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD);
                 paint.setTypeface(tf);
-            } else if (box.getText().isStrikeOut()) {
+
+            } else if (box.getText().isStrikeOut() && box.position == Position.LFET) {
+                Typeface tf = Typeface.create(box.getText().typeface, Typeface.NORMAL);
+                paint.setTypeface(tf);
                 paint.setStrokeWidth(2);
                 paint.setStrikeThruText(true);
             } else {
-               // Typeface tf = Typeface.create(box.getText().typeface);
+                // Typeface tf = Typeface.create(box.getText().typeface);
                 paint.setTypeface(box.getText().typeface);
             }
 
@@ -710,51 +719,40 @@ public class DrawView extends RelativeLayout {
             for (int j = 0; j < parts.length; j++) {
                 String str = parts[j];
                 float start = 0.4f * box.getDrawableShape().getBounds().height() / (parts.length);
-                if (parts.length == 1) {
-//               Rect rectText = new Rect();
-//               paint.getTextBounds(box.getText().getText(), 0, box.getText().getText().length(), rectText);
-//               Log.w("f", Float.toString(f));
-//               Log.w("x", Integer.toString(box.getPoint().x));
-//               Log.w("left", Integer.toString(box.getDrawableShape().getBounds().left));
-//               Log.w("width", Integer.toString(box.getWidth()));
-//               Log.w("x-cor", Float.toString((box.getDrawableShape().getBounds().left + ((box.getWidth() - f)/2))));
-                    if (box.getText().getAlign() == Align.CENTER) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
-                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
-                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / 2);
-                        } else {
-                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / parts.length) / 2;
-                        }
-                    } else if (box.getText().getAlign() == Align.RIGHT) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
-                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
-                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / parts.length);
-                        } else {
-                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
-                        }
-                    } else if (box.getText().getAlign() == Align.LEFT) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
-                            x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
-                            x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / parts.length);
-                        } else {
-                            x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
-                            y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
-                        }
 
+                if (parts.length == 1) {
+                    Rect rectText = new Rect();
+                    paint.getTextBounds(box.getText().getText(), 0, box.getText().getText().length(), rectText);
+                    if (box.getText().getAlign() == Align.CENTER) {
+//                        if (box.getShape() == BlockShape.DIAMOND) {
+//                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
+//                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
+//                        } else if (box.getShape() == BlockShape.ELLIPSE) {
+//                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
+//                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / 2);
+//                        } else {
+                        x = box.getDrawableShape().getBounds().left + rectText.width() / 2 + (box.getDrawableShape().getBounds().width() - rectText.width()) / 2;
+                        //  }
+                    } else if (box.getText().getAlign() == Align.RIGHT) {
+//                        if (box.getShape() == BlockShape.DIAMOND) {
+//                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
+//                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
+//                        } else if (box.getShape() == BlockShape.ELLIPSE) {
+//                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
+//                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / parts.length);
+//                        } else {
+                        x = (box.getDrawableShape().getBounds().right - 10);
+//                        }
+                    } else if (box.getText().getAlign() == Align.LEFT) {
+                        x = (box.getDrawableShape().getBounds().left + 10);
+                        y = box.getDrawableShape().getBounds().top + rectText.height();
                     }
+//                    if (box.getShape() == BlockShape.ELLIPSE || box.getShape() == BlockShape.DIAMOND) {
+//                        y = box.getDrawableShape().getBounds().centerY();
+//                    }
+                    y = box.getDrawableShape().getBounds().centerY();
                     canvas.drawText(str, x, y, paint);
-                    //canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getWidth()- f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
+
                 } else {
                     if (box.getText().getAlign() == Align.CENTER) {
                         if (box.getShape() == BlockShape.DIAMOND) {
@@ -762,9 +760,15 @@ public class DrawView extends RelativeLayout {
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         } else if (box.getShape() == BlockShape.ELLIPSE) {
-                            start = 0.2f * box.getDrawableShape().getBounds().height() / (parts.length);
+                            if (j == 0) {
+                                y = box.getDrawableShape().getBounds().top + paint.getTextSize() + paint.getTextSize() / 2;
+                            } else {
+                                y = box.getDrawableShape().getBounds().top + paint.getTextSize() * (j + 1) + paint.getTextSize() / 2;
+                                // y = box.getDrawableShape().getBounds().top + (((box.getDrawableShape().getBounds().height()) / ((parts.length) * paint.getTextSize())) * (j + 1)) + 20;
+                            }
+                            //  start = 0.2f * box.getDrawableShape().getBounds().height() / (parts.length);
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-                            y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize();
+                            // y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize();
                         } else {
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
                             //y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) * paint.getTextSize();
@@ -819,6 +823,41 @@ public class DrawView extends RelativeLayout {
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
+        drawText(box, canvas);
+//        paint = new Paint();
+//        if (box != null) {
+//            float x = 0;
+//            float y = 0;
+//            if (box.getShape() != BlockShape.NO_BORDER || box.getShape() != BlockShape.UNDERLINE) {
+//                paint.setColor(box.getText().getColor().getColor());
+//            }
+//            paint.setTextSize(box.getText().getSize());
+//            if (box.getText().getAlign() == Align.CENTER) {
+//                paint.setTextAlign(Paint.Align.CENTER);
+//            } else if (box.getText().getAlign() == Align.RIGHT) {
+//                paint.setTextAlign(Paint.Align.RIGHT);
+//            } else if (box.getText().getAlign() == Align.LEFT) {
+//                paint.setTextAlign(Paint.Align.LEFT);
+//            }
+//            Log.w(s, rect.toString());
+//            Log.w("measute", String.valueOf(paint.measureText(s)));
+//            if (box.getText().isItalic() && box.getText().isBold()) {
+//                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD_ITALIC);
+//                paint.setTypeface(tf);
+//                // paint.setFakeBoldText(true);
+//            } else if (box.getText().isItalic()) {
+//                Typeface tf = Typeface.create(box.getText().typeface, Typeface.ITALIC);
+//                paint.setTypeface(tf);
+//            } else if (box.getText().isBold()) {
+//                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD);
+//                paint.setTypeface(tf);
+//            } else if (box.getText().isStrikeOut()) {
+//                paint.setStrokeWidth(2);
+//                paint.setStrikeThruText(true);
+//            } else {
+//                // Typeface tf = Typeface.create(box.getText().typeface);
+//                paint.setTypeface(box.getText().typeface);
+//            }
 //        box.getDrawableShape().setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top,
 //             box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().top + parts.length * box.getText().getSize() + 10);
 //        box.getDrawableShape().getBounds().bottom = box.getDrawableShape().getBounds().top + parts.length * 30 + 10;
@@ -847,8 +886,8 @@ public class DrawView extends RelativeLayout {
         paint.setTextSize((float) box.getText().getSize());
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
-            int w = (rect.right - rect.left) + 20;
-            if (w > box.getWidth()) {
+            int w = (rect.right - rect.left) + (rect.right - rect.left) / 2;
+            if (w > 120) {
                 box.setWidth(w);
             }
             //  box.setWidth(((int) f) * (box.getText().getSize()/3));
@@ -868,8 +907,11 @@ public class DrawView extends RelativeLayout {
             }
             box.setHeight((rect.bottom - rect.top) * parts.length + (box.getText().getSize() / 2 * parts.length));
             if (box.getShape() == BlockShape.ELLIPSE) {
-                box.setWidth(box.getWidth() + box.getWidth() / 2);
-                box.setHeight(box.getHeight() + box.getHeight() / 2);
+                if (parts.length > 1) {
+                    box.setHeight((int) (box.getHeight() * Math.sqrt(2)));
+                }
+                //  box.setWidth(box.getWidth() + box.getWidth() / 2);
+                //  box.setHeight(box.getHeight() + box.getHeight() / 2);
             }
 //            if (box.getShape() == BlockShape.ELLIPSE) {
 //                box.setWidth((int) (f * 1.5));
@@ -884,7 +926,7 @@ public class DrawView extends RelativeLayout {
         for (Box b : box.getLines().keySet()) {
             if (b.position == Position.LFET) {
                 box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().centerY()));
-            } else  {
+            } else {
                 box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
             }
         }
@@ -894,7 +936,6 @@ public class DrawView extends RelativeLayout {
 //        }
         //  box.getDrawableShape().draw(canvas);
     }
-
 //    //dodanie linii
 //    public void addLine(Box b1, Box b2) {
 //    	//Line newLine = new Line(b1, b2);
@@ -993,38 +1034,41 @@ public class DrawView extends RelativeLayout {
             if (x == null || !x.isVisible()) {
                 continue;
             } else {
-                    Paint paint = new Paint();
-                    paint.setColor(x.getColor().getColor());
-                    paint.setStrokeWidth(x.getThickness());
-                    paint.setStyle(Paint.Style.STROKE);
-                    x.preparePath();
-                    canvas.drawPath(x.getPath(), paint);
-                    if (x.getShape() == LineStyle.ARROWED_CURVE) {
-                        Path path = new Path();
-//                        path.moveTo(0, -10);
-//                        path.lineTo(5, 0);
-//                        path.lineTo(-5, 0);
-                        path.moveTo(x.getEnd().x, x.getEnd().y);
-                        path.lineTo(x.getEnd().x + 10, x.getEnd().y - 20);
-                        path.lineTo(x.getEnd().x - 10, x.getEnd().y - 20);
-                        path.close();
-                     //   path.offset(10, 40);
-                        canvas.drawPath(path, paint);
-                     //   path.offset(50, 100);
-                        path.offset(-10, -20);
-                        canvas.drawPath(path, paint);
-// offset is cumlative
-// next draw displaces 50,100 from previous
-                     //   path.offset(50, 100);
-                        canvas.drawPath(path, paint);
-                    }
-                    if (MainActivity.EDIT_CONN) {
-                        RectF rf = new RectF();
-                        x.getPath().computeBounds(rf, true);
-                        x.deleteLine = context.getResources().getDrawable(R.drawable.ic_action_cancel);
-                        x.deleteLine.setBounds((int) rf.centerX(), (int) rf.centerY(), (int) rf.centerX() + 40, (int) rf.centerY() + 40);
-                        x.deleteLine.draw(canvas);
-                    }
+                Paint paint = new Paint();
+                paint.setColor(x.getColor().getColor());
+                paint.setStrokeWidth(x.getThickness());
+                paint.setStyle(Paint.Style.STROKE);
+                if ((x.getShape() == LineStyle.ELBOW || x.getShape() == LineStyle.ROUNDED_ELBOW)) {
+                    x.box = box;
+                }
+                x.preparePath();
+                canvas.drawPath(x.getPath(), paint);
+//                    if (x.getShape() == LineStyle.ARROWED_CURVE) {
+//                        Path path = new Path();
+////                        path.moveTo(0, -10);
+////                        path.lineTo(5, 0);
+////                        path.lineTo(-5, 0);
+//                        path.moveTo(x.getEnd().x, x.getEnd().y);
+//                        path.lineTo(x.getEnd().x + 10, x.getEnd().y - 20);
+//                        path.lineTo(x.getEnd().x - 10, x.getEnd().y - 20);
+//                        path.close();
+//                     //   path.offset(10, 40);
+//                        canvas.drawPath(path, paint);
+//                     //   path.offset(50, 100);
+//                        path.offset(-10, -20);
+//                        canvas.drawPath(path, paint);
+//// offset is cumlative
+//// next draw displaces 50,100 from previous
+//                     //   path.offset(50, 100);
+//                        canvas.drawPath(path, paint);
+//                    }
+                if (MainActivity.EDIT_CONN) {
+                    RectF rf = new RectF();
+                    x.getPath().computeBounds(rf, true);
+                    x.deleteLine = context.getResources().getDrawable(R.drawable.ic_action_cancel);
+                    x.deleteLine.setBounds((int) rf.centerX(), (int) rf.centerY(), (int) rf.centerX() + 40, (int) rf.centerY() + 40);
+                    x.deleteLine.draw(canvas);
+                }
             }
         }
 
@@ -1094,7 +1138,7 @@ public class DrawView extends RelativeLayout {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 // Connect the points
-               // path.lineTo(eventX, eventY);
+                // path.lineTo(eventX, eventY);
                 break;
             default:
                 return false;

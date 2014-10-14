@@ -37,7 +37,6 @@
     <string name="line">Line</string>
     <string name="curve">Curve</string>
     <string name="straight">Straight</string>
-    <string name="arrowed_curve">Arrowed Curve</string>
     <string name="elbow">Elbow</string>
     <string name="rounded_elbow">Rounded Elbow</string>
     <string name="thinnest">Thinnest</string>
@@ -70,7 +69,6 @@
     <string-array name="lines_array">
         <item>@string/curve</item>
         <item>@string/straight</item>
-        <item>@string/arrowed_curve</item>
         <item>@string/elbow</item>
         <item>@string/rounded_elbow</item>
     </string-array>
@@ -114,4 +112,5 @@
     <string name="trash">Delete</string>
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
+    <string name="must_be_left">Supported only for left align.</string>
 </resources>

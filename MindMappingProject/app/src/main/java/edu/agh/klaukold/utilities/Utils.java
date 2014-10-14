@@ -153,10 +153,11 @@ public class Utils {
         Root c = MainActivity.root;
 
 
-        if(c.newMarker.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.NEW_MARKER);
-            return p;
-        } else if (c.newNote.getBounds().contains(x, y)) {
+//        if(c.newMarker.getBounds().contains(x, y)) {
+//            Pair p = new Pair(c, Actions.NEW_MARKER);
+//            return p;
+    //    }
+     if (c.newNote != null && c.newNote.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.NEW_NOTE);
             return p;
         } else if(c.addBox.getBounds().contains(x, y)) {
@@ -168,6 +169,9 @@ public class Utils {
         } else if(c.expandAction != null && c.expandAction.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.EXPAND);
             return  p;
+        } else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
+           Pair p = new Pair(c, Actions.ADD_NOTE);
+         return  p;
         }
 
         //BFS do przejścia drzewa
@@ -195,11 +199,12 @@ public class Utils {
 //                    return box;
 //                }
 
-                if(box.newMarker.getBounds().contains(x, y)) {
-                    Pair p = new Pair(box, Actions.NEW_MARKER);
-                    q.clear();
-                    return p;
-                } else if (box.newNote.getBounds().contains(x, y)) {
+//                if(box.newMarker.getBounds().contains(x, y)) {
+//                    Pair p = new Pair(box, Actions.NEW_MARKER);
+//                    q.clear();
+//                    return p;
+//                } else
+                if (box.newNote != null && box.newNote.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.NEW_NOTE);
                     q.clear();
                     return p;
@@ -214,6 +219,9 @@ public class Utils {
                 } else if(box.expandAction != null && box.expandAction.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.EXPAND);
                     q.clear();
+                    return  p;
+                } else if (box.addNote != null && box.addNote.getBounds().contains(x, y)) {
+                    Pair p = new Pair(box, Actions.ADD_NOTE);
                     return  p;
                 }
 

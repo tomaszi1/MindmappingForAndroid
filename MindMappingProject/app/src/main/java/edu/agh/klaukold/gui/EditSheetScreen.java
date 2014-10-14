@@ -44,8 +44,8 @@ public class EditSheetScreen extends Activity {
         Intent intent = getIntent();
         COLOR =  intent.getIntExtra(MainActivity.BACKGROUNDCOLOR, 1);
         int inten =  intent.getIntExtra(MainActivity.INTENSIVITY, 0);
-        intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
-        intensivity.setProgress((inten));
+//        intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
+//        intensivity.setProgress((inten));
         backgroud = (TextView) findViewById(R.id.textViewBackgroundColor);
         backdroundColorEditScreen = (View) findViewById(R.id.sheet_color);
         ((GradientDrawable)backdroundColorEditScreen.getBackground()).setColor(COLOR);

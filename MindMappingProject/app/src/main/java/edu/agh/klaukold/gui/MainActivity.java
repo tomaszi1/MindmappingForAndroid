@@ -19,6 +19,7 @@
 package edu.agh.klaukold.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -27,8 +28,10 @@ import edu.agh.R;
 import edu.agh.klaukold.commands.AddBox;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
+import edu.agh.klaukold.commands.RemoveBox;
 import edu.agh.klaukold.commands.RemoveLine;
 import edu.agh.klaukold.common.Box;
+import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.common.Sheet;
 import edu.agh.klaukold.common.Text;
@@ -1226,6 +1229,24 @@ public class MainActivity extends Activity {
                     commandsUndo.add(commandsRedo.getLast());
                     menu.getItem(4).setVisible(true);
                     commandsRedo.removeLast();
+                }
+                return true;
+            case R.id.action_trash:
+                RemoveBox removeBox = new RemoveBox();
+                Properties properties = new Properties();
+                HashMap<Box, Line> boxes = new HashMap<Box, Line>();
+                if (!(boxEdited instanceof  Root)) {
+                    boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
+                }
+                for (Box b : MainActivity.toEditBoxes) {
+                    if (!(b instanceof  Root)) {
+                        boxes.put(b, b.getParent().getLines().get(b));
+                    }
+                }
+                if (boxes.size() > 0) {
+                    properties.put("boxes", boxes);
+                    removeBox.execute(properties);
+                    MainActivity.addCommendUndo(removeBox);
                 }
                 return true;
             default:

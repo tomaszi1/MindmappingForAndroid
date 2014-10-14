@@ -48,7 +48,7 @@ public class Box implements  Cloneable, Serializable {
         this.isExpanded = b.isExpanded;
         this.newNote = b.newNote;
         this.addBox = b.addBox;
-        this.newMarker = b.newMarker;
+       // this.newMarker = b.newMarker;
         this.collapseAction = b.collapseAction;
         this.expandAction = b.expandAction;
         this.position = b.position;
@@ -145,9 +145,9 @@ public class Box implements  Cloneable, Serializable {
         this.point = point;
     }
 
-    protected  int height = 90;
-    protected  int width = 120;
-    protected  Point point = new Point();
+    protected  int height = 110;
+    protected  int width = 150;
+    public  Point point = new Point();
 	protected boolean isSelected = false;
 	protected Box parent;
 	protected LinkedList<Box> children = new LinkedList<Box>();
@@ -161,10 +161,13 @@ public class Box implements  Cloneable, Serializable {
     protected boolean isExpanded = true;
     public Drawable newNote;
     public Drawable addBox;
-    public Drawable newMarker;
+    public Boolean isNote = false;
+    public String note;
+    //public Drawable newMarker;
     public Drawable collapseAction;
     public Drawable expandAction;
     public Position position;
+    public Drawable addNote;
 
 
     public LineThickness getLineThickness() {
@@ -227,7 +230,6 @@ public class Box implements  Cloneable, Serializable {
     public Drawable prepareDrawableShape()
     {
         int[] colors = {Color.WHITE, color.getColor()};
-        //TODO dokonczyc ksztalty
         switch (shape)
         {
             case  RECTANGLE:

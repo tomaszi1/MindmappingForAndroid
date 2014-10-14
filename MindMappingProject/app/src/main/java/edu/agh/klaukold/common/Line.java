@@ -21,6 +21,7 @@ public class Line implements Serializable, Cloneable {
 	private Point end;
 	private boolean isVisible;
     public Position position;
+    public Box box;
 
     public Drawable deleteLine;
 
@@ -39,7 +40,7 @@ public class Line implements Serializable, Cloneable {
         path.moveTo(start.x, start.y);
         if (shape == LineStyle.STRAIGHT) {
             path.lineTo(end.x, end.y);
-        } else if (shape == LineStyle.CURVE || shape == LineStyle.ARROWED_CURVE) {
+        } else if (shape == LineStyle.CURVE) {
 //            int startAngle = (int) (180 / Math.PI * Math.atan2(start.y - end.y, end.x - start.x));
 //            float radius = 20;
 //            final RectF oval = new RectF();
@@ -74,8 +75,49 @@ public class Line implements Serializable, Cloneable {
 //                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
 //            }
 //            path.rMoveTo(end.x + ); }
-       }
-
+       } else if (shape == LineStyle.ELBOW) {
+            path.reset();
+            if (Root.up == Root.down) {
+                path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().centerX(), MainActivity.root.getDrawableShape().getBounds().top);
+                if (position == Position.LFET) {
+                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL);
+                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL);
+                    box.point.x = MainActivity.root.getDrawableShape().getBounds().left - 20 - box.getWidth();
+                    box.point = new Point();
+                    box.point.y = MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL;
+                    path.lineTo(box.point.x, box.point.y);
+                    Root.HeightUpL += box.getHeight();
+                    Root.up += 1;
+                } else {
+                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownR);
+                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().right + 20,MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownR);
+                    box.point.x = MainActivity.root.getDrawableShape().getBounds().right + 20 + box.getWidth();
+                    box.point.y = MainActivity.root.getDrawableShape().getBounds().top + Root.HeightDownL;
+                    path.lineTo(box.point.x, box.point.y);
+                    Root.HeightDownR+= box.getHeight();
+                    Root.down  += 1;
+                }
+            } else  {
+                path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().centerX(), MainActivity.root.getDrawableShape().getBounds().top);
+                if (position == Position.LFET) {
+                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().left + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL);
+                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL);
+                    box.point.x = MainActivity.root.getDrawableShape().getBounds().left - 20 - box.getWidth();
+                    box.point.y = MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL;
+                    path.lineTo(box.point.x, box.point.y);
+                    Root.HeightDownL += box.getHeight();
+                    Root.up += 1;
+                } else {
+                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownR);
+                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownR);
+                    box.point.x = MainActivity.root.getDrawableShape().getBounds().right + 20 + box.getWidth();
+                    box.point.y = MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL;
+                    path.lineTo(box.point.x, box.point.y);
+                    Root.HeightDownR += box.getHeight();
+                    Root.down  += 1;
+                }
+            }
+        }
 
 
     }

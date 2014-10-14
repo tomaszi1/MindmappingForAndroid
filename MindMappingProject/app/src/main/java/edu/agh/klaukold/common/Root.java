@@ -23,13 +23,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 
 
 public class Root extends Box implements Serializable {
     private float midX;
     private float midY;
+    public static int HeightUpL = 20;
+    public static int HeightUpR = 20;
+    public static int HeightDownR = 20;
+    public static int HeightDownL = 20;
+    public static int up = 0;
+    public static int down = 0;
 
+    public Drawable prepareDrawableShape() {
+        Drawable d = super.prepareDrawableShape();
+        return d;
+    }
     //@Attribute(name="structure-class")
     //private String structure = "org.xmind.ui.map.clockwise";
 

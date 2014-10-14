@@ -1,6 +1,8 @@
 package edu.agh.klaukold.common;
 
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 
@@ -86,9 +88,10 @@ public class Text implements  Cloneable, Serializable{
 	private boolean isBold;
 	private boolean isItalic;
 	private boolean isStrikeOut;
-	private Align align;
+	private Align align = Align.CENTER;
 	private String text;
     private ColorDrawable color = new ColorDrawable();
+    public Paint paint = new Paint();
 
 //    public Text clone() {
 //        Text text = new Text();
@@ -105,4 +108,5 @@ public class Text implements  Cloneable, Serializable{
     public Text TextClone() throws CloneNotSupportedException {
         return (Text) super.clone();
     }
+
 }

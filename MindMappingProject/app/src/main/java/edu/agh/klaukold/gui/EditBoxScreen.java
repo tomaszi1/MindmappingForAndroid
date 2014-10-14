@@ -181,8 +181,8 @@ public class EditBoxScreen extends Activity {
                     lineStyle = LineStyle.CURVE;
                 } else if (lineShape.getSelectedItem().toString().equals("Straight")) {
                     lineStyle = LineStyle.STRAIGHT;
-                } else if (lineShape.getSelectedItem().toString().equals("Arrowed Curve")) {
-                    lineStyle = LineStyle.ARROWED_CURVE;
+//                } else if (lineShape.getSelectedItem().toString().equals("Arrowed Curve")) {
+//                    lineStyle = LineStyle.ARROWED_CURVE;
                 } else if (lineShape.getSelectedItem().toString().equals("Elbow")) {
                     lineStyle = LineStyle.ELBOW;
                 } else if (lineShape.getSelectedItem().toString().equals("Rounded Elbow")) {
@@ -208,12 +208,12 @@ public class EditBoxScreen extends Activity {
             lineShape.setSelection(0);
         } else if (lineStyle == LineStyle.STRAIGHT) {
             lineShape.setSelection(1);
-        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
-            lineShape.setSelection(2);
+//        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
+//            lineShape.setSelection(2);
         } else if (lineStyle == LineStyle.ELBOW) {
-            lineShape.setSelection(3);
+            lineShape.setSelection(2);
         } else if (lineStyle == LineStyle.ROUNDED_ELBOW) {
-            lineShape.setSelection(4);
+            lineShape.setSelection(3);
         }
 
         lineThickness = (Spinner) findViewById(R.id.spinnerThin);
@@ -277,9 +277,9 @@ public class EditBoxScreen extends Activity {
         if (MainActivity.boxEdited.getText().getAlign() == Align.RIGHT) {
             textAlign.setSelection(0);
         } else if (MainActivity.boxEdited.getText().getAlign() == Align.CENTER) {
-            textAlign.setSelection(1);
-        } else if (MainActivity.boxEdited.getText().getAlign() == Align.LEFT) {
             textAlign.setSelection(2);
+        } else if (MainActivity.boxEdited.getText().getAlign() == Align.LEFT) {
+            textAlign.setSelection(1);
         }
         textAlign.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -523,7 +523,7 @@ public class EditBoxScreen extends Activity {
         strikeOut.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                                  @Override
                                                  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                     if (isChecked) {
+                                                     if (isChecked && textAlign.getSelectedItem().toString().equals("Left")) {
                                                         // MainActivity.boxEdited.getText().setStrikeOut(true);
                                                          EditBox editBox = new EditBox();
                                                          Properties properties = new Properties();
@@ -538,7 +538,7 @@ public class EditBoxScreen extends Activity {
                                                          }
                                                          editBox.execute(properties);
                                                          MainActivity.addCommendUndo(editBox);
-                                                     } else {
+                                                     } else if (textAlign.getSelectedItem().toString().equals("Left")){
                                                        //  MainActivity.boxEdited.getText().setStrikeOut(false);
                                                          EditBox editBox = new EditBox();
                                                          Properties properties = new Properties();
@@ -553,6 +553,8 @@ public class EditBoxScreen extends Activity {
                                                          }
                                                          editBox.execute(properties);
                                                          MainActivity.addCommendUndo(editBox);
+                                                     } else if (isChecked && !textAlign.getSelectedItem().toString().equals("Left")){
+                                                         strikeOut.setError("Supported only for left text align.");
                                                      }
 
                                                  }
