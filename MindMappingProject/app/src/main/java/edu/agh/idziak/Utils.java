@@ -12,4 +12,12 @@ public class Utils {
             // hush
         }
     }
+
+    public static void checkNotNull(Object... objs){
+        for(Object o : objs){
+            if(o==null)
+                throw new IllegalArgumentException("Null not allowed");
+        }
+
+    }
 }
