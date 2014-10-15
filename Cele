@@ -1,7 +1,0 @@
-Cele:
-- poprawienie sposobu dodawania i edycji bloczków
-- rozwinięcie wyświetlania map (style, czcionki)
-- poprawienie ergonomii aplikacji
-- połączenie z usługami cloud (dropbox, google drive)
-- pełna obsługa formatu XMind (wczytywanie i zapisywanie)
-- merge zmian przy nadpisywaniu nowszej wersji pliku w Cloudzie
