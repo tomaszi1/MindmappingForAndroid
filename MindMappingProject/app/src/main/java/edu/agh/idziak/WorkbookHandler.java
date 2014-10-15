@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.agh.cloudtest.dropbox.Utils;
 
 public class WorkbookHandler {
     private IWorkbook workbook;
@@ -56,7 +55,7 @@ public class WorkbookHandler {
         IRevisionRepository revRep = workbook.getRevisionRepository();
         for (ISheet sheet : workbook.getSheets()) {
             Long modTime = initModTime.get(sheet.getId());
-            if(modTime == null || !modTime.equals(sheet.getModifiedTime())){
+            if (modTime == null || !modTime.equals(sheet.getModifiedTime())) {
                 IRevisionManager revMan = revRep.getRevisionManager(sheet.getId(), IRevision.SHEET);
                 revMan.addRevision(sheet);
             }
@@ -66,15 +65,15 @@ public class WorkbookHandler {
     }
 
     public List<IRevision> getRevisionHistory(ISheet sheet) {
-        if(!sheet.getOwnedWorkbook().equals(workbook))
+        if (!sheet.getOwnedWorkbook().equals(workbook))
             throw new IllegalArgumentException("Sheet does not belong to this workbook");
-        return workbook.getRevisionRepository().getRevisionManager(sheet.getId(),IRevision.SHEET).getRevisions();
+        return workbook.getRevisionRepository().getRevisionManager(sheet.getId(), IRevision.SHEET).getRevisions();
     }
 
-    public void revertToRevision(IRevision revision){
-        if(revision==null)
+    public void revertToRevision(IRevision revision) {
+        if (revision == null)
             throw new IllegalArgumentException("Revision was null");
-        if(!revision.getOwnedWorkbook().equals(workbook))
+        if (!revision.getOwnedWorkbook().equals(workbook))
             throw new IllegalArgumentException("Revision does not belong to this workbook");
         ISheet sheet = (ISheet) workbook.getElementById(revision.getResourceId());
         workbook.removeSheet(sheet);
