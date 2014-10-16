@@ -22,6 +22,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
@@ -1121,33 +1122,56 @@ public class DrawView extends RelativeLayout {
 
     }
 
+
     public void updateText() {
         drawText(MainActivity.boxEdited, canvas);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // Get the coordinates of the touch event.
-        float eventX = event.getX();
-        float eventY = event.getY();
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                // Set a new starting point
-                //path.moveTo(eventX, eventY);
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                // Connect the points
-                // path.lineTo(eventX, eventY);
-                break;
-            default:
-                return false;
-        }
-
-        // Makes our view repaint and call onDraw
-        invalidate();
-        return true;
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if (MainActivity.EDIT_CONN) {
+//            // Get the coordinates of the touch event.
+//            float eventX = event.getX();
+//            float eventY = event.getY();
+//
+//
+//            //..p.moveTo(eventX, eventY);
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                  //  p.moveTo(event.getX() - 10, event.getY() - 50);
+//                    return true;
+//                case MotionEvent.ACTION_MOVE:
+////                    Paint paint = new Paint();
+////                    paint.setColor(Color.BLACK);
+////                    paint.setStrokeWidth(50);
+////                    paint.setStyle(Paint.Style.STROKE);
+//                    //p.lineTo(event.getX(), event.getY());
+//                  //  p.lineTo(event.getX() + 10, event.getY() + 15);
+//                   // canvas.drawPath(p,paint);
+//
+//                    // Connect the points
+//                    // path.lineTo(eventX, eventY);
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    canvas.drawText("cdsfas0", MainActivity.root.getDrawableShape().getBounds().left - 50, MainActivity.root.getDrawableShape().getBounds().top - 10,paint);
+////                    paint = new Paint();
+////                    paint.setColor(line.getColor().getColor());
+////                    paint.setStrokeWidth(line.getThickness());
+////                    paint.setStyle(Paint.Style.STROKE);
+////                    canvas.drawPath(line.getPath(),paint);
+//                 //   MainActivity.root.getLines().put(b, line);
+//                   // invalidate();
+//                break;
+//                default:
+//                    return false;
+//            }
+//
+//            // Makes our view repaint and call onDraw
+//            invalidate();
+//        }
+//        return true;
+//
+//    }
 
 
 //    @Override
@@ -1197,4 +1221,12 @@ public class DrawView extends RelativeLayout {
 //        return true;
 //
 //    }
-}
+
+    public void drawPath(Path path)  {
+                    Paint paint = new Paint();
+                    paint.setColor(Color.BLACK);
+                    paint.setStrokeWidth(50);
+                    paint.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(path, paint);
+    }
+ }

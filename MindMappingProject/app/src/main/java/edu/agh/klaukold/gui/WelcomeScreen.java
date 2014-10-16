@@ -192,7 +192,17 @@ public class WelcomeScreen extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 imageStyle = (ImageView) findViewById(R.id.imageView);
-                imageStyle.setImageResource(R.drawable.default_style);
+                if (spinner.getSelectedItem().toString().equals("Default")) {
+                    imageStyle.setImageResource(R.drawable.def);
+                } else if (spinner.getSelectedItem().toString().equals("Classic")) {
+                    imageStyle.setImageResource(R.drawable.classic);
+                } else if (spinner.getSelectedItem().toString().equals("Simple")) {
+                    imageStyle.setImageResource(R.drawable.simp);
+                } else if (spinner.getSelectedItem().toString().equals("Business")) {
+                    imageStyle.setImageResource(R.drawable.buss);
+                } else if (spinner.getSelectedItem().toString().equals("Academese")) {
+                    imageStyle.setImageResource(R.drawable.acad);
+                }
             }
 
             @Override

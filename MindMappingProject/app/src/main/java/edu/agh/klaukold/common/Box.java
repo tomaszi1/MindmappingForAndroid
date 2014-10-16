@@ -152,7 +152,7 @@ public class Box implements  Cloneable, Serializable {
 	protected Box parent;
 	protected LinkedList<Box> children = new LinkedList<Box>();
 	protected BlockShape shape;
-	protected ColorDrawable color;
+	protected ColorDrawable color = new ColorDrawable();
 	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
 	protected Text text;
 	protected LinkedList<Note> notes = new LinkedList<Note>();
@@ -253,9 +253,9 @@ public class Box implements  Cloneable, Serializable {
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + width);
                 break;
             case UNDERLINE:
-                int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
+               // int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
                 drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
-                ((GradientDrawable)drawableShape).setColors(colors2);
+              //  ((GradientDrawable)drawableShape).setColors(colors2);
                 break;
             case NO_BORDER:
                 int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
