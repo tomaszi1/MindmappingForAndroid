@@ -90,7 +90,7 @@ public class DropboxHandler {
         return dbxApi.getSession().isLinked();
     }
 
-    public void fetchMetadata(String path, boolean listFolder, TaskListener<Entry, DropboxException> listener) {
+    public void fetchFileInfo(String path, boolean listFolder, TaskListener<Entry, DropboxException> listener) {
         new MetadataFetcher(path, listFolder, listener).execute();
     }
 

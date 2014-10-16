@@ -20,4 +20,18 @@ public class Utils {
         }
 
     }
+
+    public static String colorAsHex(int r, int g, int b){
+        return "0x"
+                + makeHex(r)
+                + makeHex(g)
+                + makeHex(b);
+    }
+
+    private static String makeHex(int n){
+        String hex = Integer.toHexString(n);
+        if(hex.length()==1)
+            hex = "0" + hex;
+        return hex;
+    }
 }
