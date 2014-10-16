@@ -37,7 +37,6 @@ public class Text implements  Cloneable, Serializable{
         this.isStrikeOut = t.isStrikeOut;
         this.align = t.align;
         this.color = t.getColor();
-        this.typeface = t.typeface;
     }
     public Typeface typeface = Typeface.DEFAULT;
     public int getSize() {

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.agh.R;
-import edu.agh.idziak.WorkbookHandler;
 import edu.agh.klaukold.commands.AddBox;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
@@ -56,7 +55,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
@@ -65,7 +63,6 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Display;
@@ -84,13 +81,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
-import org.xmind.core.ISheet;
-import org.xmind.core.IWorkbook;
-import org.xmind.core.internal.Style;
-import org.xmind.core.internal.StyleSheet;
-import org.xmind.core.style.IStyle;
-import org.xmind.core.style.IStyleSheet;
 
 public class MainActivity extends Activity {
 
@@ -132,14 +122,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         lay = (DrawView) findViewById(R.id.myLay);
         res = getResources();
-        WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
-
-        // XMind API ponizej
-        IWorkbook workbook = handler.getWorkbook();
-
-        ISheet sheet1 = workbook.getPrimarySheet();
-        IStyleSheet styleSheet = workbook.getStyleSheet();
-        Log.w("app", sheet1.getTheme().toString());
         if (root == null) {
             root = new Root();
             Intent intent = getIntent();
@@ -170,68 +152,7 @@ public class MainActivity extends Activity {
                 //RorateDrawable dla diamond
                 // root.setDrawableShape((GradientDrawable)res.getDrawable(R.drawable.rect));
                 //TODO dopisac cechy stylu
-            } else if (style.equals("Classic")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ELLIPSE);
-                int color = res.getColor(R.color.lime_green);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
-                root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(res.getColor(R.color.beige)));
-                sheet.setIntensivity(0);
-            } else if (style.equals("Simple")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ELLIPSE);
-                int color = res.getColor(R.color.lime_green);
-                root.setColor(new ColorDrawable(Color.WHITE));
-                root.setText(text);
-                root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(Color.WHITE));
-                sheet.setIntensivity(0);
-            } else if (style.equals("Business")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ROUNDED_RECTANGLE);
-                int color = res.getColor(R.color.light_yellow);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
-                root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(Color.WHITE));
-                sheet.setIntensivity(0);
-            } else if (style.equals("Academese")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.WHITE));
-                text.setSize(13);
-                root.setShape(BlockShape.RECTANGLE);
-                int color = res.getColor(R.color.dark_gray);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
-                root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
-                root.setLineStyle(LineStyle.STRAIGHT);
-                root.setLineColor(Color.WHITE);
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(res.getColor(R.color.dark_gray)));
-                sheet.setIntensivity(0);
             }
-
             //TODO dopisa style
         }
         //root.draw();
@@ -249,7 +170,7 @@ public class MainActivity extends Activity {
         Utils.lay = lay;
         Utils.context = this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-//
+//		
         lay.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -258,8 +179,7 @@ public class MainActivity extends Activity {
                         return true;
 
                     case (MotionEvent.ACTION_UP):
-
-                        //  gestList.click = false;
+                      //  gestList.click = false;
                         //if (mIsScrolling) {
 //                            String txt = "default text";
 //                            Text t = new Text();
@@ -267,9 +187,9 @@ public class MainActivity extends Activity {
 //                            gestList.myRect.setText(t);
 //
 //                            gestList.myRect.setParent(gestList.clicked);
-                        //gestList.myRect.setId(Utils.giveId()+"");
+                            //gestList.myRect.setId(Utils.giveId()+"");
 
-                        //editContent(gestList.myRect);
+                            //editContent(gestList.myRect);
 
 //						if(gestList.clicked.getId().equals(root.getId())) {
 //							if(core.mid_x < gestList.myRect.rect.left) {
@@ -280,90 +200,90 @@ public class MainActivity extends Activity {
 //								lay.updateLeft = true;
 //							}
 
-                        //root.addChild(gestList.myRect);
-                        //	lay.addLine(gestList.clicked, gestList.myRect);
-                        //	Utils.db.insertTopic(gestList.myRect);
-                        //	Utils.db.updateCore(core);
-                        //   } else {
+                            //root.addChild(gestList.myRect);
+                            //	lay.addLine(gestList.clicked, gestList.myRect);
+                            //	Utils.db.insertTopic(gestList.myRect);
+                            //	Utils.db.updateCore(core);
+                     //   } else {
 //							if(gestList.clicked.position == Position.LEFT) {
 //								gestList.myRect.position = Position.LEFT;
 //								lay.updateLeft = true;
 //							} else {
 //								gestList.myRect.position = Position.RIGHT;
 //								lay.updateRight = true;
-                        //    }
+                    //    }
 
                         //	gestList.clicked.addChild(gestList.myRect);
                         //	lay.addLine(gestList.clicked, gestList.myRect);
                         //Utils.db.insertTopic(gestList.myRect);
-                        //   //Utils.db.updateTopic(gestList.clicked);
-                        // lay.revalidate();
-                        //   lay.invalidate();
+                     //   //Utils.db.updateTopic(gestList.clicked);
+                       // lay.revalidate();
+                     //   lay.invalidate();
 
-                        //   mIsScrolling = false;
+                     //   mIsScrolling = false;
 
-                        //    gestList.clicked = null;
-                        //    gestList.myRect = new Box();
+                    //    gestList.clicked = null;
+                    //    gestList.myRect = new Box();
 
                         break;
                     case MotionEvent.ACTION_POINTER_DOWN:
                         // multitouch!! - touch down
-//                        int count = event.getPointerCount(); // Number of 'fingers' in this time
+                        int count = event.getPointerCount(); // Number of 'fingers' in this time
+
+                        if (count > 1) {
+                            Box b1 = Utils.whichBox(lay, event, 0);
+                            Box b2 = Utils.whichBox(lay, event, 1);
+
+                            //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
+                            if (b1 != null && b2 != null) {
+                                if (b1.getPoint().compareTo(b2.getPoint()) == 0) {
+                                    if (b1.getPoint().compareTo(root.getPoint()) == 0) {
+                                        mIsScrolling = false;
+                                        return true;
+                                    }
+
+                                    if (mActionMode == null) {
+                                        mActionMode = startActionMode(moveCallback);
+                                        mActionMode.setTitle("Move");
+                                    }
+
+                                    if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
+                                        boolean b = b1.isSelected();
+
+                                        if (b) {
+                                            moveCallback.removeObserver();
+                                        } else {
+                                            moveCallback.setObserver(b1);
+                                        }
+
+                                        lay.revalidate();
+                                        lay.invalidate();
+                                    }
+
+                                    mIsScrolling = false;
+                                    return true;
+                                }
 //
-//                        if (count > 1) {
-//                            Box b1 = Utils.whichBox(lay, event, 0);
-//                            Box b2 = Utils.whichBox(lay, event, 1);
-//
-//                            //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
-//                            if (b1 != null && b2 != null) {
-//                                if (b1.getPoint().compareTo(b2.getPoint()) == 0) {
-//                                    if (b1.getPoint().compareTo(root.getPoint()) == 0) {
-//                                        mIsScrolling = false;
-//                                        return true;
-//                                    }
-//
-//                                    if (mActionMode == null) {
-//                                        mActionMode = startActionMode(moveCallback);
-//                                        mActionMode.setTitle("Move");
-//                                    }
-//
-//                                    if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
-//                                        boolean b = b1.isSelected();
-//
-//                                        if (b) {
-//                                            moveCallback.removeObserver();
-//                                        } else {
-//                                            moveCallback.setObserver(b1);
-//                                        }
-//
-//                                        lay.revalidate();
-//                                        lay.invalidate();
-//                                    }
-//
-//                                    mIsScrolling = false;
-//                                    return true;
-//                                }
-////
-////                                if(Utils.changeParent(b1, b2)) {
-////                                    lay.revalidate();
-////                                    lay.invalidate();
-////                                }
-//
-//                                mIsScrolling = false;
-//                                return true;
-//                            } else if (b1 != null && b2 == null) {
-//                                if (mActionMode == null) {
-//                                    Utils.unlink(b1, Utils.getCoordsInView(lay, event, 1));
+//                                if(Utils.changeParent(b1, b2)) {
 //                                    lay.revalidate();
 //                                    lay.invalidate();
 //                                }
-//
-//                                mIsScrolling = false;
-//                                return true;
-//                            } else {
-//                                return detector.onTouchEvent(event);
-//                            }
-//                        }
+
+                                mIsScrolling = false;
+                                return true;
+                            } else if (b1 != null && b2 == null) {
+                                if (mActionMode == null) {
+                                    Utils.unlink(b1, Utils.getCoordsInView(lay, event, 1));
+                                    lay.revalidate();
+                                    lay.invalidate();
+                                }
+
+                                mIsScrolling = false;
+                                return true;
+                            } else {
+                                return detector.onTouchEvent(event);
+                            }
+                        }
                         break;
                     case MotionEvent.ACTION_POINTER_UP:
                         if (event.getPointerCount() > 1) {
@@ -473,7 +393,6 @@ public class MainActivity extends Activity {
                 menu.getItem(3).setVisible(false);
                 lay.invalidate();
             }
-
             if (pair != null) {
 
                 if (pair.second == Actions.ADD_BOX) {
@@ -502,177 +421,38 @@ public class MainActivity extends Activity {
 //                    startActivity(intent);
 //                   // lay.revalidate();
 //                   // lay.invalidate();
+                } else if (pair.second == Actions.NEW_NOTE) {
+
                 } else if (pair.second == Actions.NEW_MARKER) {
 
                 } else if (pair.second == Actions.COLLAPSE) {
-                    Utils.fireSetVisible(pair.first, true);
-                    lay.revalidate();
-                    lay.invalidate();
+                    Callback call = new Callback() {
+                        @Override
+                        public void execute() {
+                           Utils.fireSetVisible(pair.first, true);
+                        }
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (pair.second == Actions.EXPAND) {
-                    Utils.fireSetVisible(pair.first, false);
-                    lay.revalidate();
-                    lay.invalidate();
-                } else if (pair.second == Actions.ADD_NOTE) {
-
-                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
-                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
-                    et.requestFocus();
-                    btn.setOnClickListener(new View.OnClickListener() {
+                    Callback call = new Callback() {
                         @Override
-                        public void onClick(View v) {
-                            Callback call = null;
-
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                            pair.first.note = et.getText().toString();
-                            if (!pair.first.note.isEmpty()) {
-                                pair.first.isNote = true;
-                            } else {
-                                pair.first.isNote = false;
-                            }
-                            dialog.dismiss();
+                        public void execute() {
+                            Utils.fireSetVisible(pair.first, false);
                         }
-                    });
-
-                    final int MAX_LINES = 3;
-
-                    //ogranicza do 3 linii widok w zawartości bloczka
-                    et.addTextChangedListener(new TextWatcher() {
-                        private int lines;
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                            lines = Utils.countLines(s.toString());
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            int counter = Utils.countLines(s.toString());
-
-                            int diff = lines - counter;
-                            if (diff > 0) {
-                                //w gore
-                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height -= 30;
-                                }
-                            } else if (diff < 0) {
-                                //w dol
-                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height += 30;
-                                }
-                            }
-                        }
-                    });
-
-                    int k = Utils.countLines(et.getText().toString());
-                    int ile = Math.min(MAX_LINES - 1, k);
-
-                    et.getLayoutParams().height = 75 + ile * 30;
-                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
-                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
-                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                    btn.setLayoutParams(buttonLayoutParams);
-
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-
-                    dialog.show();
-                    lay.revalidate();
-                    lay.invalidate();
-                } else if (pair.second == Actions.NEW_NOTE) {
-                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
-                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
-                    et.requestFocus();
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Callback call = null;
-
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                            pair.first.note = et.getText().toString();
-                            if (!pair.first.note.isEmpty()) {
-                                pair.first.isNote = true;
-                            } else {
-                                pair.first.isNote = false;
-                            }
-                            dialog.dismiss();
-                        }
-                    });
-                    et.setText(pair.first.note);
-                    final int MAX_LINES = 3;
-
-                    //ogranicza do 3 linii widok w zawartości bloczka
-                    et.addTextChangedListener(new TextWatcher() {
-                        private int lines;
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                            lines = Utils.countLines(s.toString());
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            int counter = Utils.countLines(s.toString());
-
-                            int diff = lines - counter;
-                            if (diff > 0) {
-                                //w gore
-                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height -= 30;
-                                }
-                            } else if (diff < 0) {
-                                //w dol
-                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height += 30;
-                                }
-                            }
-                        }
-                    });
-                    int k = Utils.countLines(et.getText().toString());
-                    int ile = Math.min(MAX_LINES - 1, k);
-
-                    et.getLayoutParams().height = 75 + ile * 30;
-                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
-                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
-                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                    btn.setLayoutParams(buttonLayoutParams);
-
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-
-                    dialog.show();
-
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
 //            if(mActionMode == null && clicked != null) {
@@ -785,16 +565,7 @@ public class MainActivity extends Activity {
                         }
                     }
                 }
-//                LinkedList<Box> boxes = Utils.allBoxes();
-//                if (MainActivity.EDIT_CONN) {
-//                    for (Box b : boxes) {
-//                        if (clicked.getDrawableShape().getBounds().intersect(b.getDrawableShape().getBounds())) {
-//                            clicked.setParent(b);
-//                            b.addChild(clicked);
-//                            b.getLines().put(clicked, new Line(b.getLineStyle(), (int) b.getLineThickness().getValue(), b.getColor(), new edu.agh.klaukold.common.Point(0, 0), new edu.agh.klaukold.common.Point(0, 0), true));
-//                        }
-//                    }
-//                }
+
                 lay.revalidate();
                 lay.invalidate();
                 //Rect r = new Rect(newx, newy, newx + 100, newy + 50);
@@ -1131,7 +902,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        et.setText(myClicked.getText().getText());
         final int MAX_LINES = 3;
 
         //ogranicza do 3 linii widok w zawartości bloczka
@@ -1173,6 +943,8 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        et.setText(myClicked.getText().getText());
         int k = Utils.countLines(et.getText().toString());
         int ile = Math.min(MAX_LINES - 1, k);
 
@@ -1187,7 +959,6 @@ public class MainActivity extends Activity {
         imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 
         dialog.show();
-
     }
 
     @Override
@@ -1240,7 +1011,7 @@ public class MainActivity extends Activity {
                         }
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
-                    } else if (commandsUndo.getFirst() instanceof AddBox || commandsUndo.getFirst() instanceof RemoveLine) {
+                    } else if (commandsUndo.getFirst() instanceof AddBox || commandsUndo.getFirst() instanceof  RemoveLine) {
                         Callback call = new Callback() {
                             @Override
                             public void execute() {
@@ -1260,7 +1031,7 @@ public class MainActivity extends Activity {
                     commandsUndo.removeFirst();
                     menu.getItem(5).setVisible(true);
                     menu.getItem(4).setVisible(false);
-                    // menu.getItem(5).setVisible(true);
+                   // menu.getItem(5).setVisible(true);
                 } else {
                     commandsUndo.getLast().undo();
                     if (commandsUndo.getLast() instanceof EditBox) {
@@ -1282,10 +1053,10 @@ public class MainActivity extends Activity {
                             e1.printStackTrace();
                         }
                         //lay.revalidate();
-                        // lay.invalidate();
+                       // lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
-                    } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine) {
+                    } else if (commandsUndo.getLast() instanceof  AddBox || commandsUndo.getLast() instanceof  RemoveLine) {
                         Callback call = new Callback() {
                             @Override
                             public void execute() {
@@ -1394,7 +1165,7 @@ public class MainActivity extends Activity {
 
                     } else if (commandsRedo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
-                    } else if (commandsRedo.getFirst() instanceof AddBox || commandsRedo.getFirst() instanceof RemoveLine) {
+                    } else if (commandsRedo.getFirst() instanceof AddBox || commandsRedo.getFirst() instanceof  RemoveLine) {
                         Callback call = new Callback() {
                             @Override
                             public void execute() {
@@ -1441,7 +1212,7 @@ public class MainActivity extends Activity {
 //                        lay.invalidate();
                     } else if (commandsRedo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
-                    } else if (commandsRedo.getLast() instanceof AddBox || commandsRedo.getLast() instanceof RemoveLine) {
+                    } else if (commandsRedo.getLast() instanceof  AddBox || commandsRedo.getLast() instanceof  RemoveLine) {
                         Callback call = new Callback() {
                             @Override
                             public void execute() {
@@ -1464,11 +1235,11 @@ public class MainActivity extends Activity {
                 RemoveBox removeBox = new RemoveBox();
                 Properties properties = new Properties();
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
-                if (!(boxEdited instanceof Root)) {
+                if (!(boxEdited instanceof  Root)) {
                     boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
                 }
                 for (Box b : MainActivity.toEditBoxes) {
-                    if (!(b instanceof Root)) {
+                    if (!(b instanceof  Root)) {
                         boxes.put(b, b.getParent().getLines().get(b));
                     }
                 }

@@ -39,31 +39,9 @@ public class Utils {
 	public static DrawView lay;
 	public static Activity context;
 	static String base;
-
-    public static LinkedList<Box> allBoxes() {
-        LinkedList<Box> boxes = new LinkedList<Box>();
-        boxes.addAll(MainActivity.root.getLeftChildren());
-        boxes.addAll(MainActivity.root.getRightChildren());
-        for (Box b : boxes) {
-            boxes.addAll(fireToGetChildren(b));
-        }
-        return boxes;
-    }
-
-    public static  LinkedList<Box> fireToGetChildren(Box b) {
-        for (Box b1 : b.getChildren()) {
-            fireToGetChildren(b1);
-        }
-        return b.getChildren();
-    }
-
+	
 	public static void  fireSetVisible(Box box, Boolean visible) {
         box.setExpanded(visible);
-        if (visible) {
-            box.collapseAction = null;
-        } else {
-            box.expandAction = null;
-        }
         for (Box b : box.getLines().keySet()) {
             b.setVisible(visible);
             box.getLines().get(b).setVisible(visible);
