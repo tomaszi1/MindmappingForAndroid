@@ -65,7 +65,7 @@ public class Utils {
             box.expandAction = null;
         }
         for (Box b : box.getLines().keySet()) {
-            b.setVisible(visible);
+            b.topic.setFolded(!visible);
             box.getLines().get(b).setVisible(visible);
             fireSetVisible(b, visible);
         }
@@ -148,7 +148,7 @@ public class Utils {
 		while(!q.isEmpty()) {
 			Box box = q.remove();
 			
-			if(box.isVisible()) {
+			if(!box.topic.isFolded()) {
 				Rect rec = box.getDrawableShape().getBounds();
 				if(rec.contains(x, y)) {
 					q.clear();
@@ -214,7 +214,7 @@ public class Utils {
         while(!q.isEmpty()) {
             Box box = q.remove();
 
-            if(box.isVisible()) {
+            if(!box.topic.isFolded()) {
 //                Rect rec = box.getDrawableShape().getBounds();
 //                if(rec.contains(x, y)) {
 //                    q.clear();

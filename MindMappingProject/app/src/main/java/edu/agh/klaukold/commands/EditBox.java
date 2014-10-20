@@ -6,11 +6,12 @@ import java.util.Properties;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
+import org.xmind.core.internal.Style;
+import org.xmind.core.style.IStyle;
+import org.xmind.ui.style.Styles;
+
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Text;
-import edu.agh.klaukold.enums.BlockShape;
-import edu.agh.klaukold.enums.LineStyle;
-import edu.agh.klaukold.enums.LineThickness;
 import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
 
@@ -30,6 +31,7 @@ public class EditBox implements Command{
         properties1 = (Properties)properties.clone();
         after = (Properties)properties.clone();
         box = (Box) properties.get("box");
+        IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         if (properties.containsKey("boxes")) {
             edited = (LinkedList<Box>) properties.get("boxes");
             for (Box b : edited) {
@@ -52,60 +54,67 @@ public class EditBox implements Command{
                 b.getText().setText(text);
             }
         } else if (properties.containsKey("color")) {
-            properties1.put("color", box.getColor());
+            properties1.put("color", style.getProperty(Styles.FillColor));
             ColorDrawable color = (ColorDrawable)properties.get("color");
-            box.setColor(color);
+            style.setProperty(Styles.FillColor, String.valueOf(color));
             for (Box b : edited) {
-                b.setColor(color);
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.FillColor, String.valueOf(color));
             }
         } else if (properties.containsKey("shape")) {
             properties1.put("shape", box.getDrawableShape());
-            BlockShape shape = (BlockShape)properties.get("shape");
-            box.setShape(shape);
+            String shape = (String)properties.get("shape");
+            style.setProperty(Styles.ShapeClass, shape);
             MainActivity.changeShape(box);
             box.prepareDrawableShape();
             for (Box b : edited) {
-                b.setShape(shape);
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.ShapeClass, shape);
                 MainActivity.changeShape(b);
                 b.prepareDrawableShape();
             }
         } else if (properties.containsKey("line_color")) {
-            properties1.put("line_color", new ColorDrawable(box.getLineColor()));
+            properties1.put("line_color", new ColorDrawable(Integer.parseInt(style.getProperty(Styles.LineColor))));
             ColorDrawable color = (ColorDrawable)properties.get("line_color");
-            box.setLineColor(color.getColor());
+            style.setProperty(Styles.LineColor, String.valueOf(color.getColor()));
             for (Box b : box.getLines().keySet()) {
                 box.getLines().get(b).setColor(color);
             }
             for (Box b : edited) {
-                b.setLineColor(color.getColor());
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.LineColor, String.valueOf(color.getColor()));
                 for (Box b1 : b.getLines().keySet()) {
                     b.getLines().get(b1).setColor(color);
                 }
             }
         } else if (properties.containsKey("line_thickness")) {
-            properties1.put("line_thickness", box.getLineThickness());
-            LineThickness lt = (LineThickness) properties.get("line_thickness");
-            box.setLineThickness(lt);
+            properties1.put("line_thickness", style.getProperty(Styles.LineWidth));
+            int lt = (Integer) properties.get("line_thickness");
+            style.setProperty(Styles.LineWidth, String.valueOf(lt));
             for (Box b : box.getLines().keySet()) {
-                box.getLines().get(b).setThickness((int) lt.getValue());
+                box.getLines().get(b).setThickness(lt);
             }
             for (Box b : edited) {
-                b.setLineThickness(lt);
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.LineWidth, String.valueOf(lt));
                 for (Box b1 : b.getLines().keySet()) {
-                    b.getLines().get(b1).setThickness((int) lt.getValue());
+                    box.getLines().get(b).setThickness(lt);
                 }
             }
         } else if (properties.containsKey("line_shape")) {
-            properties1.put("line_shape", box.getLineThickness());
-            LineStyle ls = (LineStyle) properties.get("line_shape");
-            box.setLineStyle(ls);
+            properties1.put("line_shape", style.getProperty(Styles.LineClass));
+            String ls = (String) properties.get("line_shape");
+            style.setProperty(Styles.LineClass, ls);
             for (Box b : box.getLines().keySet()) {
-                box.getLines().get(b).setShape(ls);
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.LineClass, ls);
             }
             for (Box b : edited) {
-                b.setLineStyle(ls);
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                s.setProperty(Styles.LineClass, ls);
                 for (Box b1 : b.getLines().keySet()) {
-                    b.getLines().get(b1).setShape(ls);
+                    IStyle s1 = MainActivity.workbook.getStyleSheet().findStyle(b1.topic.getStyleId());
+                    s1.setProperty(Styles.LineClass, ls);
                 }
             }
         }
@@ -113,22 +122,24 @@ public class EditBox implements Command{
 
     @Override
     public void undo() {
+        IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         if (properties1.containsKey("text")) {
             Text text = (Text) properties1.get("text");
             box.setText(text);
         } else if (properties1.containsKey("color")) {
             ColorDrawable color = (ColorDrawable)properties1.get("color");
-            box.setColor(color);
+            style.setProperty(Styles.FillColor, String.valueOf(color));
         } else if  (properties1.containsKey("shape")) {
             Drawable shape = (Drawable)properties1.get("shape");
             box.setDrawableShape(shape);
             box.prepareDrawableShape();
         } else if (properties1.containsKey("line_color")) {
             int color = ((ColorDrawable) properties1.get("line_color")).getColor();
-            box.setLineColor(color);
+           // box.setLineColor(color);
+            style.setProperty(Styles.LineColor, String.valueOf(color));
         } else if (properties1.containsKey("line_thickness")) {
-            LineThickness lt = (LineThickness) properties1.get("line_thickness");
-            box.setLineThickness(lt);
+            int lt = (Integer) properties1.get("line_thickness");
+            style.setProperty(Styles.LineWidth, String.valueOf(lt));
         }
         if (edited.size() != 0) {
             int i =0;

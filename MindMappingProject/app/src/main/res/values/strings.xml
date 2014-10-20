@@ -85,7 +85,7 @@
         <item>@string/center</item>
     </string-array>
     <string-array name="fonts_array">
-        <item>@string/def</item>
+        <!--<item>@string/def</item>-->
         <item>@string/mono</item>
         <item>@string/sserif</item>
         <item>@string/serif</item>

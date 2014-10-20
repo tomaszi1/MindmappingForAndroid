@@ -36,11 +36,7 @@ import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.common.Sheet;
 import edu.agh.klaukold.common.Text;
-import edu.agh.klaukold.enums.Actions;
-import edu.agh.klaukold.enums.Align;
-import edu.agh.klaukold.enums.BlockShape;
-import edu.agh.klaukold.enums.LineStyle;
-import edu.agh.klaukold.enums.LineThickness;
+import edu.agh.klaukold.enums.Actions;;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.interfaces.Command;
 import edu.agh.klaukold.utilities.AsyncInvalidate;
@@ -56,16 +52,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Display;
@@ -86,19 +79,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.xmind.core.ISheet;
+import org.xmind.core.ITopic;
 import org.xmind.core.IWorkbook;
-import org.xmind.core.internal.Style;
-import org.xmind.core.internal.StyleSheet;
 import org.xmind.core.style.IStyle;
 import org.xmind.core.style.IStyleSheet;
+import org.xmind.ui.style.Styles;
 
 public class MainActivity extends Activity {
 
     private GestureDetector gestureDetector;
     public static DrawView lay;
     public static ActionMode mActionMode;
-    private MoveBoxCallback moveCallback = new MoveBoxCallback();
-    private DeleteBoxCallback callback = new DeleteBoxCallback();
     private boolean mIsScrolling = false;
     private GestureListener gestList = new GestureListener();
     public static Root root;
@@ -121,10 +112,14 @@ public class MainActivity extends Activity {
     private ScaleGestureDetector detector;
 
     public final static String BACKGROUNDCOLOR = "COLOR";
-    public final static String WALLPAPER = "WALLPAPER";
     public final static String INTENSIVITY = "INTENSIVITY";
 
     private String style;
+
+    ///---------------------------------------
+    public static ISheet sheet1;
+    public  ITopic rootTopic;
+    public static  IWorkbook workbook;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,11 +130,16 @@ public class MainActivity extends Activity {
         WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
 
         // XMind API ponizej
-        IWorkbook workbook = handler.getWorkbook();
+        workbook = handler.getWorkbook();
 
-        ISheet sheet1 = workbook.getPrimarySheet();
+        sheet1 = workbook.getPrimarySheet();
+        rootTopic = sheet1.getRootTopic();
+        // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.
         IStyleSheet styleSheet = workbook.getStyleSheet();
-        Log.w("app", sheet1.getTheme().toString());
+        // Tworzymy styl dla topica
+        IStyle style1 = styleSheet.createStyle(IStyle.TOPIC);
+
+
         if (root == null) {
             root = new Root();
             Intent intent = getIntent();
@@ -152,87 +152,120 @@ public class MainActivity extends Activity {
             int height = size.y / 3;
             root.setPoint(new edu.agh.klaukold.common.Point(width, height));
             if (style.equals("Default")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ROUNDED_RECTANGLE);
-                int color = res.getColor(R.color.blue);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
+                // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
+                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.blue)));
+                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
+                style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+                style1.setProperty(Styles.LineWidth, "1pt");
+                style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                rootTopic.setTitleText("Central Topic");
+                // Dodajemy styl do arkusza styli
+                styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                // Nadajemy topikowi dany styl przez podanie ID
+                rootTopic.setStyleId(style1.getId());
+                root.topic = rootTopic;
+                root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                root.setLineStyle(LineStyle.STRAIGHT);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(Color.WHITE));
-                sheet.setIntensivity(0);
-                // root.setDrawableShape((RotateDrawable)res.getDrawable(R.drawable.diammond));
-                //RorateDrawable dla diamond
-                // root.setDrawableShape((GradientDrawable)res.getDrawable(R.drawable.rect));
-                //TODO dopisac cechy stylu
+                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                sheet1.setStyleId(style2.getId());
             } else if (style.equals("Classic")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ELLIPSE);
-                int color = res.getColor(R.color.lime_green);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
+                // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
+                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.lime_green)));
+                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ELLIPSE);
+                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
+                style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                style1.setProperty(Styles.LineWidth, "1pt");
+                style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                rootTopic.setTitleText("Central Topic");
+                // Dodajemy styl do arkusza styli
+                styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                // Nadajemy topikowi dany styl przez podanie ID
+                rootTopic.setStyleId(style1.getId());
+                root.topic = rootTopic;
+                root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(res.getColor(R.color.beige)));
-                sheet.setIntensivity(0);
+                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
+                styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                sheet1.setStyleId(style2.getId());
             } else if (style.equals("Simple")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ELLIPSE);
-                int color = res.getColor(R.color.lime_green);
-                root.setColor(new ColorDrawable(Color.WHITE));
-                root.setText(text);
+                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.white)));
+                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ELLIPSE);
+                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
+                style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                style1.setProperty(Styles.LineWidth, "1pt");
+                style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                rootTopic.setTitleText("Central Topic");
+                // Dodajemy styl do arkusza styli
+                styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                // Nadajemy topikowi dany styl przez podanie ID
+                rootTopic.setStyleId(style1.getId());
+                root.topic = rootTopic;
+                root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(Color.WHITE));
-                sheet.setIntensivity(0);
+                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                sheet1.setStyleId(style2.getId());
             } else if (style.equals("Business")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.BLACK));
-                text.setSize(13);
-                root.setShape(BlockShape.ROUNDED_RECTANGLE);
-                int color = res.getColor(R.color.light_yellow);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
+                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.light_yellow)));
+                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
+                style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                style1.setProperty(Styles.LineWidth, "1pt");
+                style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                rootTopic.setTitleText("Central Topic");
+                // Dodajemy styl do arkusza styli
+                styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                // Nadajemy topikowi dany styl przez podanie ID
+                rootTopic.setStyleId(style1.getId());
+                root.topic = rootTopic;
+                root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                root.setLineStyle(LineStyle.CURVE);
-                root.setLineColor(Color.rgb(128, 128, 128));
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(Color.WHITE));
-                sheet.setIntensivity(0);
+                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                sheet1.setStyleId(style2.getId());
             } else if (style.equals("Academese")) {
-                Text text = new Text();
-                text.setAlign(Align.CENTER);
-                text.setColor(new ColorDrawable(Color.WHITE));
-                text.setSize(13);
-                root.setShape(BlockShape.RECTANGLE);
-                int color = res.getColor(R.color.dark_gray);
-                root.setColor(new ColorDrawable(color));
-                root.setText(text);
+                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.white))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.dark_gray)));
+                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_RECT);
+                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
+                style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                style1.setProperty(Styles.LineWidth, "1pt");
+                style1.setProperty(Styles.LineColor, String.valueOf(res.getColor(R.color.white)));
+                rootTopic.setTitleText("Central Topic");
+                // Dodajemy styl do arkusza styli
+                styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                // Nadajemy topikowi dany styl przez podanie ID
+                rootTopic.setStyleId(style1.getId());
+                root.topic = rootTopic;
+                root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
-                root.setLineStyle(LineStyle.STRAIGHT);
-                root.setLineColor(Color.WHITE);
-                root.setLineThickness(LineThickness.THINNEST);
-                sheet.setColor(new ColorDrawable(res.getColor(R.color.dark_gray)));
-                sheet.setIntensivity(0);
+                //todo dodac kolor tla
+                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
+                styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                sheet1.setStyleId(style2.getId());
             }
 
-            //TODO dopisa style
         }
         //root.draw();
         gestureDetector = new GestureDetector(this, gestList);
@@ -411,7 +444,8 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        lay.setBackgroundColor(sheet.getColor().getColor());
+        IStyle style = MainActivity.workbook.getStyleSheet().findStyle(sheet1.getStyleId());
+       lay.setBackgroundColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
     }
 
     //tutaj rozpoznajemy przytrzymanie, jedno kliknięcie, dwa kliknięcia
@@ -451,7 +485,7 @@ public class MainActivity extends Activity {
             pair = Utils.whichBoxAction(lay, event);
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
-                box.setSelected(true);
+                box.isSelected = true;
                 MainActivity.boxEdited = box;
                 if (MainActivity.boxEdited != null) {
                     MainActivity.toEditBoxes.add(box);
@@ -460,7 +494,7 @@ public class MainActivity extends Activity {
                 menu.getItem(2).setVisible(true);
                 menu.getItem(3).setVisible(true);
             } else if (box == null) {
-                root.setSelected(false);
+                box.isSelected = false;
 
                 for (int i = 0; i < root.getLeftChildren().size(); i++) {
                     fireUnSelect(root.getLeftChildren().get(i));
@@ -768,23 +802,24 @@ public class MainActivity extends Activity {
                         }
                     }
                 }
-                if (clicked.getParent() != null) {
-                    if (clicked.getParent().getLines().get(clicked) != null) {
-                        if (clicked.getParent() instanceof Root) {
-                            if (clicked.position == Position.LFET) {
-                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                            } else {
-                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                            }
-                        } else {
-                            if (clicked.position == Position.LFET) {
-                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                            } else {
-                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                            }
-                        }
-                    }
-                }
+                //to napisac wszystko od nowa zwiazanego z polaczeniami
+//                if (clicked.getParent() != null) {
+//                    if (clicked.getParent().getLines().get(clicked) != null) {
+//                        if (clicked.getParent() instanceof Root) {
+//                            if (clicked.position == Position.LFET) {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            } else {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            }
+//                        } else {
+//                            if (clicked.position == Position.LFET) {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            } else {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            }
+//                        }
+//                    }
+//                }
 //                LinkedList<Box> boxes = Utils.allBoxes();
 //                if (MainActivity.EDIT_CONN) {
 //                    for (Box b : boxes) {
@@ -885,14 +920,14 @@ public class MainActivity extends Activity {
 
         public void addObserver(Box box) {
             if (!observers.contains(box)) {
-                box.setSelected(true);
+                box.isSelected = (true);
                 observers.add(box);
             }
         }
 
         public void removeObserver(Box box) {
             observers.remove(box);
-            box.setSelected(false);
+            box.isSelected = (false);
             if (observers.isEmpty()) {
                 mActionMode.finish();
             }
@@ -900,7 +935,7 @@ public class MainActivity extends Activity {
 
         private void notifyObservers() {
             for (Box box : observers) {
-                box.setSelected(false);
+                box.isSelected = (false);
             }
         }
 
@@ -950,127 +985,127 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class MoveBoxCallback implements ActionMode.Callback {
-        Box observer;
-
-        public void setObserver(Box box) {
-            if (observer == null && !(box instanceof Root)) {
-                observer = box;
-                observer.setSelected(true);
-            }
-        }
-
-        public void removeObserver() {
-            mActionMode.finish();
-        }
-
-        private void notifyObserver() {
-            if (observer != null) {
-                observer.setSelected(false);
-                determinePosition();
-            }
-        }
-
-        private void determinePosition() {
-            if (observer.getParent() instanceof Root) {
-                Root core = (Root) observer.getParent();
-
-                if (observer.getPoint() != null) {
-                    observer.getPoint().x = observer.getDrawableShape().getBounds().left;
-                    observer.getPoint().y = observer.getDrawableShape().getBounds().top;
-//                    if ((observer.getDrawableShape().getBounds().left + observer.getDrawableShape().getBounds().right) / 2 < core.getPoint().x/2) {
-//                         observer.position = Position.LEFT;
-//                        ;
-//                    } else {
-//                       // observer.position = Position.RIGHT;
+ //   private class MoveBoxCallback implements ActionMode.Callback {
+//        Box observer;
+//
+//        public void setObserver(Box box) {
+//            if (observer == null && !(box instanceof Root)) {
+//                observer = box;
+//                observer.setSelected(true);
+//            }
+//        }
+//
+//        public void removeObserver() {
+//            mActionMode.finish();
+//        }
+//
+//        private void notifyObserver() {
+//            if (observer != null) {
+//                observer.setSelected(false);
+//                determinePosition();
+//            }
+//        }
+//
+//        private void determinePosition() {
+//            if (observer.getParent() instanceof Root) {
+//                Root core = (Root) observer.getParent();
+//
+//                if (observer.getPoint() != null) {
+//                    observer.getPoint().x = observer.getDrawableShape().getBounds().left;
+//                    observer.getPoint().y = observer.getDrawableShape().getBounds().top;
+////                    if ((observer.getDrawableShape().getBounds().left + observer.getDrawableShape().getBounds().right) / 2 < core.getPoint().x/2) {
+////                         observer.position = Position.LEFT;
+////                        ;
+////                    } else {
+////                       // observer.position = Position.RIGHT;
+////                    }
+//                    Utils.propagatePosition(observer, observer.getPoint());
+//                    return;
+//                }
+//
+//                core.getRightChildren().remove(observer);
+//                core.getLeftChildren().remove(observer);
+//
+//                if ((core.getPoint().x / 2) < observer.getDrawableShape().getBounds().left) {
+//                    Utils.propagatePosition(observer, core.getPoint());
+//                    lay.updateRight = true;
+//
+//                    int ind = core.getRightChildren().size();
+//
+//                    for (int i = 0; i < core.getRightChildren().size(); i++) {
+//                        if (core.getRightChildren().get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
+//                            ind = i;
+//                            break;
+//                        }
 //                    }
-                    Utils.propagatePosition(observer, observer.getPoint());
-                    return;
-                }
-
-                core.getRightChildren().remove(observer);
-                core.getLeftChildren().remove(observer);
-
-                if ((core.getPoint().x / 2) < observer.getDrawableShape().getBounds().left) {
-                    Utils.propagatePosition(observer, core.getPoint());
-                    lay.updateRight = true;
-
-                    int ind = core.getRightChildren().size();
-
-                    for (int i = 0; i < core.getRightChildren().size(); i++) {
-                        if (core.getRightChildren().get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
-                            ind = i;
-                            break;
-                        }
-                    }
-
-                    core.getRightChildren().add(ind, observer);
-                } else {
-                    // Utils.propagatePosition(observer, Position.LEFT);
-                    Utils.propagatePosition(observer, observer.getPoint());
-                    lay.updateLeft = true;
-
-                    int ind = core.getLeftChildren().size();
-
-                    for (int i = 0; i < core.getLeftChildren().size(); i++) {
-                        if (core.getLeftChildren().get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
-                            ind = i;
-                            break;
-                        }
-                    }
-
-                    core.getLeftChildren().add(ind, observer);
-                }
-            } else {
-                List<Box> siblings = observer.getParent().getChildren();
-                siblings.remove(observer);
-
-                int ind = siblings.size();
-
-                for (int i = 0; i < siblings.size(); i++) {
-                    if (siblings.get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
-                        ind = i;
-                        break;
-                    }
-                }
-
-                siblings.add(ind, observer);
-            }
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.menu.map_menu:
-
-                    mode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            notifyObserver();
-            observer = null;
-
-            lay.revalidate();
-            lay.invalidate();
-
-            mActionMode = null;
-        }
-    }
+//
+//                    core.getRightChildren().add(ind, observer);
+//                } else {
+//                    // Utils.propagatePosition(observer, Position.LEFT);
+//                    Utils.propagatePosition(observer, observer.getPoint());
+//                    lay.updateLeft = true;
+//
+//                    int ind = core.getLeftChildren().size();
+//
+//                    for (int i = 0; i < core.getLeftChildren().size(); i++) {
+//                        if (core.getLeftChildren().get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
+//                            ind = i;
+//                            break;
+//                        }
+//                    }
+//
+//                    core.getLeftChildren().add(ind, observer);
+//                }
+//            } else {
+//                List<ITopic> siblings = observer.getParent().getChildren();
+//                siblings.remove(observer);
+//
+//                int ind = siblings.size();
+//
+//                for (int i = 0; i < siblings.size(); i++) {
+//                    if (siblings.get(i).getDrawableShape().getBounds().top > observer.getDrawableShape().getBounds().top) {
+//                        ind = i;
+//                        break;
+//                    }
+//                }
+//
+//                siblings.add(ind, observer);
+//            }
+//        }
+//
+//        @Override
+//        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+//            return true;
+//        }
+//
+//        @Override
+//        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+//            switch (item.getItemId()) {
+//                case R.menu.map_menu:
+//
+//                    mode.finish();
+//                    return true;
+//                default:
+//                    return false;
+//            }
+//        }
+//
+//        @Override
+//        public void onDestroyActionMode(ActionMode mode) {
+//            notifyObserver();
+//            observer = null;
+//
+//            lay.revalidate();
+//            lay.invalidate();
+//
+//            mActionMode = null;
+//        }
+ //   }
 
     private void editContent(final Box myClicked) {
         final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
@@ -1305,14 +1340,14 @@ public class MainActivity extends Activity {
                 }
                 return true;
             case R.id.action_new:
+                IStyle boxEditedStyle = workbook.getStyleSheet().findStyle(boxEdited.topic.getStyleId());
                 Intent intent1 = new Intent(MainActivity.this, EditBoxScreen.class);
-                intent1.putExtra(EditBoxScreen.BOX_COLOR, MainActivity.boxEdited.getColor().getColor());
+                intent1.putExtra(EditBoxScreen.BOX_COLOR,  boxEditedStyle.getProperty(Styles.FillColor));
                 intent1.putExtra(EditBoxScreen.TEXT_COLOR, MainActivity.boxEdited.getText().getColor().getColor());
-                intent1.putExtra(EditBoxScreen.LINE_SHAPE, MainActivity.boxEdited.getShape());
-                intent1.putExtra(EditBoxScreen.LINE_COLOR, MainActivity.boxEdited.getLineColor());
-                intent1.putExtra(EditBoxScreen.LINE_SHAPE, MainActivity.boxEdited.getLineStyle());
-                intent1.putExtra(EditBoxScreen.BOX_SHAPE, MainActivity.boxEdited.getShape());
-                intent1.putExtra(EditBoxScreen.LINE_THICKNESS, MainActivity.boxEdited.getLineThickness());
+                intent1.putExtra(EditBoxScreen.LINE_SHAPE, boxEditedStyle.getProperty(Styles.LineClass));
+                intent1.putExtra(EditBoxScreen.LINE_COLOR, boxEditedStyle.getProperty(Styles.LineColor));
+                intent1.putExtra(EditBoxScreen.BOX_SHAPE, boxEditedStyle.getProperty(Styles.ShapeClass));
+                intent1.putExtra(EditBoxScreen.LINE_THICKNESS, boxEditedStyle.getProperty(Styles.LineWidth));
                 startActivity(intent1);
                 // lay.revalidate();
                 // lay.invalidate();
@@ -1464,12 +1499,13 @@ public class MainActivity extends Activity {
                 RemoveBox removeBox = new RemoveBox();
                 Properties properties = new Properties();
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
+                //todo usuwanie boxow i linii
                 if (!(boxEdited instanceof Root)) {
-                    boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
+                  //  boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
                 }
                 for (Box b : MainActivity.toEditBoxes) {
                     if (!(b instanceof Root)) {
-                        boxes.put(b, b.getParent().getLines().get(b));
+                     //   boxes.put(b, b.getParent().getLines().get(b));
                     }
                 }
                 if (boxes.size() > 0) {
@@ -1499,25 +1535,26 @@ public class MainActivity extends Activity {
     }
 
     public static void changeShape(Box box) {
-        if (box.getShape() == BlockShape.DIAMOND) {
+        IStyle s = workbook.getStyleSheet().findStyle(box.topic.getStyleId());
+        if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
             box.setDrawableShape((RotateDrawable) res.getDrawable(R.drawable.diammond));
-        } else if (box.getShape() == BlockShape.UNDERLINE) {
+        } else if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
-        } else if (box.getShape() == BlockShape.NO_BORDER) {
+        } else if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_NO_BORDER)) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
-        } else if (box.getShape() == BlockShape.ELLIPSE) {
+        } else if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-        } else if (box.getShape() == BlockShape.RECTANGLE) {
+        } else if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
-        } else if (box.getShape() == BlockShape.ROUNDED_RECTANGLE) {
+        } else if (s.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
         }
     }
 
     private void fireUnSelect(Box box) {
-        box.setSelected(false);
+        box.isSelected = (false);
         for (Box b : box.getChildren()) {
-            b.setSelected(false);
+            box.isSelected = (false);
             fireUnSelect(b);
         }
     }

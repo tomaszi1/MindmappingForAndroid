@@ -6,15 +6,17 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
+import org.xmind.ui.style.Styles;
+
 import java.io.Serializable;
 
-import edu.agh.klaukold.enums.LineStyle;
+
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.gui.MainActivity;
 
 
 public class Line implements Serializable, Cloneable {
-	private LineStyle shape;
+	public String shape;
 	private int thickness;
 	private ColorDrawable color;
 	private Point start;
@@ -38,9 +40,9 @@ public class Line implements Serializable, Cloneable {
     public void preparePath() {
         path.reset();
         path.moveTo(start.x, start.y);
-        if (shape == LineStyle.STRAIGHT) {
+        if (shape.equals(Styles.BRANCH_CONN_STRAIGHT)) {
             path.lineTo(end.x, end.y);
-        } else if (shape == LineStyle.CURVE) {
+        } else if (shape.equals(Styles.BRANCH_CONN_CURVE)) {
 //            int startAngle = (int) (180 / Math.PI * Math.atan2(start.y - end.y, end.x - start.x));
 //            float radius = 20;
 //            final RectF oval = new RectF();
@@ -75,7 +77,7 @@ public class Line implements Serializable, Cloneable {
 //                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
 //            }
 //            path.rMoveTo(end.x + ); }
-       } else if (shape == LineStyle.ELBOW) {
+       } else if ((shape.equals(Styles.BRANCH_CONN_ELBOW))) {
             path.reset();
             if (Root.up == Root.down) {
                 path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().centerX(), MainActivity.root.getDrawableShape().getBounds().top);
@@ -122,7 +124,7 @@ public class Line implements Serializable, Cloneable {
 
     }
 
-	public Line(LineStyle shape, int thickness, ColorDrawable color, Point start,
+	public Line(String shape, int thickness, ColorDrawable color, Point start,
 			Point end, boolean isVisible) {
 		super();
 		this.shape = shape;
@@ -139,14 +141,6 @@ public class Line implements Serializable, Cloneable {
 
 	public void setVisible(boolean isVisible) {
 		this.isVisible = isVisible;
-	}
-
-	public LineStyle getShape() {
-		return shape;
-	}
-
-	public void setShape(LineStyle shape) {
-		this.shape = shape;
 	}
 
 	public int getThickness() {

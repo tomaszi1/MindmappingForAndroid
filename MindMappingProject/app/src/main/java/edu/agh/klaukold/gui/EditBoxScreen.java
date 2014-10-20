@@ -16,6 +16,9 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import org.xmind.core.style.IStyle;
+import org.xmind.ui.style.Styles;
+
 import java.util.Properties;
 
 import edu.agh.R;
@@ -23,7 +26,6 @@ import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Text;
 import edu.agh.klaukold.enums.Align;
-import edu.agh.klaukold.enums.BlockShape;
 import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.enums.LineThickness;
 
@@ -45,6 +47,7 @@ public class EditBoxScreen extends Activity {
     private int TextColor;
     private int LineColor;
     private LineThickness lineThicknessEnum;
+    private String blockShape;
 
     public static String BOX_COLOR = "BOX COLOR";
     public static String TEXT_COLOR = "TEXT COLOR";
@@ -59,21 +62,22 @@ public class EditBoxScreen extends Activity {
     public static View BOXCOLOR;
     public static View TEXTCOLOR;
     public static View LINECOLOR;
-    public BlockShape blockShape;
     public LineStyle lineStyle;
     public static Box box;
+    public static IStyle style;
 
     @Override
     public void onResume() {
         super.onResume();
-        ((GradientDrawable) BOXCOLOR.getBackground()).setColor(MainActivity.boxEdited.getColor().getColor());
+        ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
         ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(MainActivity.boxEdited.getText().getColor().getColor());
-        ((GradientDrawable) LINECOLOR.getBackground()).setColor(MainActivity.boxEdited.getLineColor());
+        ((GradientDrawable) LINECOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        style = MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId());
         setContentView(R.layout.edit_box);
         Intent intent = getIntent();
         //box = (Box)intent.getSerializableExtra(EditBoxScreen.BOX);
@@ -118,18 +122,17 @@ public class EditBoxScreen extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         boxShape.setAdapter(adapter);
-        blockShape = (BlockShape) intent.getSerializableExtra(BOX_SHAPE);
-        if (blockShape == BlockShape.RECTANGLE) {
+        if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
             boxShape.setSelection(2);
-        } else if (blockShape == BlockShape.ROUNDED_RECTANGLE) {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
             boxShape.setSelection(1);
-        } else if (blockShape == BlockShape.ELLIPSE) {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
             boxShape.setSelection(0);
-        } else if (blockShape == BlockShape.DIAMOND) {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND))  {
             boxShape.setSelection(3);
-        } else if (blockShape == BlockShape.NO_BORDER) {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_NO_BORDER)) {
             boxShape.setSelection(5);
-        } else if (blockShape == BlockShape.UNDERLINE) {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
             boxShape.setSelection(4);
         }
         //dodanie lisener'a do spinnera
@@ -137,17 +140,17 @@ public class EditBoxScreen extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (boxShape.getSelectedItem().toString().equals("Ellipse")) {
-                    blockShape = BlockShape.ELLIPSE;
+                    blockShape = Styles.TOPIC_SHAPE_ELLIPSE;
                 } else if (boxShape.getSelectedItem().toString().equals("Rounded Rectangle")) {
-                    blockShape = BlockShape.ROUNDED_RECTANGLE;
+                    blockShape = Styles.TOPIC_SHAPE_ROUNDEDRECT;
                 } else if (boxShape.getSelectedItem().toString().equals("Rectangle")) {
-                    blockShape = BlockShape.RECTANGLE;
+                    blockShape = Styles.TOPIC_SHAPE_RECT;
                 } else if (boxShape.getSelectedItem().toString().equals("Diamond")) {
-                    blockShape = BlockShape.DIAMOND;
+                    blockShape = Styles.TOPIC_SHAPE_DIAMOND;
                 } else if (boxShape.getSelectedItem().toString().equals("Underline")) {
-                    blockShape = BlockShape.UNDERLINE;
+                    blockShape = Styles.TOPIC_SHAPE_UNDERLINE;
                 } else if (boxShape.getSelectedItem().toString().equals("No Border")) {
-                    blockShape = BlockShape.NO_BORDER;
+                    blockShape = Styles.TOPIC_SHAPE_NO_BORDER;
                 }
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
