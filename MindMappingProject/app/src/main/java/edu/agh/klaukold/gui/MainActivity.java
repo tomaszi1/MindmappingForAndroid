@@ -35,7 +35,6 @@ import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.common.Sheet;
-import edu.agh.klaukold.common.Text;
 import edu.agh.klaukold.enums.Actions;;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.interfaces.Command;
@@ -118,8 +117,8 @@ public class MainActivity extends Activity {
 
     ///---------------------------------------
     public static ISheet sheet1;
-    public  ITopic rootTopic;
-    public static  IWorkbook workbook;
+    public ITopic rootTopic;
+    public static IWorkbook workbook;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,8 +137,6 @@ public class MainActivity extends Activity {
         IStyleSheet styleSheet = workbook.getStyleSheet();
         // Tworzymy styl dla topica
         IStyle style1 = styleSheet.createStyle(IStyle.TOPIC);
-
-
         if (root == null) {
             root = new Root();
             Intent intent = getIntent();
@@ -153,15 +150,16 @@ public class MainActivity extends Activity {
             root.setPoint(new edu.agh.klaukold.common.Point(width, height));
             if (style.equals("Default")) {
                 // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
-                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.blue)));
-                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ROUNDEDRECT);
-                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.blue)));
+                style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style1.setProperty(Styles.FontSize, "13pt");
                 style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                 style1.setProperty(Styles.FontFamily, "Times New Roman");
                 style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
                 style1.setProperty(Styles.LineWidth, "1pt");
                 style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
                 rootTopic.setTitleText("Central Topic");
                 // Dodajemy styl do arkusza styli
                 styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
@@ -176,16 +174,17 @@ public class MainActivity extends Activity {
                 sheet1.setStyleId(style2.getId());
             } else if (style.equals("Classic")) {
                 // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
-                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.lime_green)));
-                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ELLIPSE);
-                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.lime_green)));
+                style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                style1.setProperty(Styles.FontSize, "13pt");
                 style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                 style1.setProperty(Styles.FontFamily, "Times New Roman");
                 style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
                 style1.setProperty(Styles.LineWidth, "1pt");
                 style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
                 rootTopic.setTitleText("Central Topic");
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
                 // Dodajemy styl do arkusza styli
                 styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
                 // Nadajemy topikowi dany styl przez podanie ID
@@ -198,16 +197,17 @@ public class MainActivity extends Activity {
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setStyleId(style2.getId());
             } else if (style.equals("Simple")) {
-                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.white)));
-                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ELLIPSE);
-                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                style1.setProperty(Styles.FontSize, "13pt");
                 style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                 style1.setProperty(Styles.FontFamily, "Times New Roman");
                 style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
                 style1.setProperty(Styles.LineWidth, "1pt");
                 style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
                 rootTopic.setTitleText("Central Topic");
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
                 // Dodajemy styl do arkusza styli
                 styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
                 // Nadajemy topikowi dany styl przez podanie ID
@@ -220,16 +220,17 @@ public class MainActivity extends Activity {
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setStyleId(style2.getId());
             } else if (style.equals("Business")) {
-                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.light_yellow)));
-                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_ROUNDEDRECT);
-                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
+                style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style1.setProperty(Styles.FontSize, "13pt");
                 style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                 style1.setProperty(Styles.FontFamily, "Times New Roman");
                 style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
                 style1.setProperty(Styles.LineWidth, "1pt");
                 style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
                 rootTopic.setTitleText("Central Topic");
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
                 // Dodajemy styl do arkusza styli
                 styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
                 // Nadajemy topikowi dany styl przez podanie ID
@@ -242,16 +243,17 @@ public class MainActivity extends Activity {
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setStyleId(style2.getId());
             } else if (style.equals("Academese")) {
-                style1.setProperty(Styles.TextColor,String.valueOf(res.getColor(R.color.white))); // trzeba podać kolor w formacie "0xffffff"
-                style1.setProperty(Styles.FillColor,String.valueOf(res.getColor(R.color.dark_gray)));
-                style1.setProperty(Styles.ShapeClass,Styles.TOPIC_SHAPE_RECT);
-                style1.setProperty(Styles.FontSize,"13pt");
+                style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.white))); // trzeba podać kolor w formacie "0xffffff"
+                style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
+                style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_RECT);
+                style1.setProperty(Styles.FontSize, "13pt");
                 style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                 style1.setProperty(Styles.FontFamily, "Times New Roman");
                 style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
                 style1.setProperty(Styles.LineWidth, "1pt");
                 style1.setProperty(Styles.LineColor, String.valueOf(res.getColor(R.color.white)));
                 rootTopic.setTitleText("Central Topic");
+                style1.setProperty(Styles.FontFamily, "Times New Roman");
                 // Dodajemy styl do arkusza styli
                 styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
                 // Nadajemy topikowi dany styl przez podanie ID
@@ -266,7 +268,18 @@ public class MainActivity extends Activity {
                 sheet1.setStyleId(style2.getId());
             }
 
+
+//                root.setLineStyle(LineStyle.STRAIGHT);
+//                root.setLineColor(Color.rgb(128, 128, 128));
+//                root.setLineThickness(LineThickness.THINNEST);
+//                sheet.setColor(new ColorDrawable(Color.WHITE));
+//                sheet.setIntensivity(0);
+            // root.setDrawableShape((RotateDrawable)res.getDrawable(R.drawable.diammond));
+            //RorateDrawable dla diamond
+            // root.setDrawableShape((GradientDrawable)res.getDrawable(R.drawable.rect));
+            //TODO dopisac cechy stylu
         }
+        // }
         //root.draw();
         gestureDetector = new GestureDetector(this, gestList);
 //Object r =  findViewById(R.id.action_settings);
@@ -282,7 +295,7 @@ public class MainActivity extends Activity {
         Utils.lay = lay;
         Utils.context = this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-//
+//		
         lay.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -291,7 +304,6 @@ public class MainActivity extends Activity {
                         return true;
 
                     case (MotionEvent.ACTION_UP):
-
                         //  gestList.click = false;
                         //if (mIsScrolling) {
 //                            String txt = "default text";
@@ -341,13 +353,13 @@ public class MainActivity extends Activity {
                         break;
                     case MotionEvent.ACTION_POINTER_DOWN:
                         // multitouch!! - touch down
-//                        int count = event.getPointerCount(); // Number of 'fingers' in this time
-//
-//                        if (count > 1) {
-//                            Box b1 = Utils.whichBox(lay, event, 0);
-//                            Box b2 = Utils.whichBox(lay, event, 1);
-//
-//                            //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
+                        int count = event.getPointerCount(); // Number of 'fingers' in this time
+
+                        if (count > 1) {
+                            Box b1 = Utils.whichBox(lay, event, 0);
+                            Box b2 = Utils.whichBox(lay, event, 1);
+
+                            //Rozpoznajemy czy przepinanie, czy rozpinanie, czy przesuwanie
 //                            if (b1 != null && b2 != null) {
 //                                if (b1.getPoint().compareTo(b2.getPoint()) == 0) {
 //                                    if (b1.getPoint().compareTo(root.getPoint()) == 0) {
@@ -356,18 +368,18 @@ public class MainActivity extends Activity {
 //                                    }
 //
 //                                    if (mActionMode == null) {
-//                                        mActionMode = startActionMode(moveCallback);
+//                                       // mActionMode = startActionMode(moveCallback);
 //                                        mActionMode.setTitle("Move");
 //                                    }
 //
 //                                    if (mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
-//                                        boolean b = b1.isSelected();
+//                                     //   boolean b = b1.isSelected();
 //
-//                                        if (b) {
-//                                            moveCallback.removeObserver();
-//                                        } else {
-//                                            moveCallback.setObserver(b1);
-//                                        }
+////                                        if (b) {
+////                                           // moveCallback.removeObserver();
+////                                        } else {
+////                                            //moveCallback.setObserver(b1);
+////                                        }//
 //
 //                                        lay.revalidate();
 //                                        lay.invalidate();
@@ -376,12 +388,12 @@ public class MainActivity extends Activity {
 //                                    mIsScrolling = false;
 //                                    return true;
 //                                }
-////
-////                                if(Utils.changeParent(b1, b2)) {
-////                                    lay.revalidate();
-////                                    lay.invalidate();
-////                                }
 //
+//                                if(Utils.changeParent(b1, b2)) {
+//                                    lay.revalidate();
+//                                    lay.invalidate();
+//                                }
+
 //                                mIsScrolling = false;
 //                                return true;
 //                            } else if (b1 != null && b2 == null) {
@@ -396,7 +408,7 @@ public class MainActivity extends Activity {
 //                            } else {
 //                                return detector.onTouchEvent(event);
 //                            }
-//                        }
+                        }
                         break;
                     case MotionEvent.ACTION_POINTER_UP:
                         if (event.getPointerCount() > 1) {
@@ -445,7 +457,7 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(sheet1.getStyleId());
-       lay.setBackgroundColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
+        lay.setBackgroundColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
     }
 
     //tutaj rozpoznajemy przytrzymanie, jedno kliknięcie, dwa kliknięcia
@@ -507,7 +519,6 @@ public class MainActivity extends Activity {
                 menu.getItem(3).setVisible(false);
                 lay.invalidate();
             }
-
             if (pair != null) {
 
                 if (pair.second == Actions.ADD_BOX) {
@@ -536,177 +547,38 @@ public class MainActivity extends Activity {
 //                    startActivity(intent);
 //                   // lay.revalidate();
 //                   // lay.invalidate();
+                } else if (pair.second == Actions.NEW_NOTE) {
+
                 } else if (pair.second == Actions.NEW_MARKER) {
 
                 } else if (pair.second == Actions.COLLAPSE) {
-                    Utils.fireSetVisible(pair.first, true);
-                    lay.revalidate();
-                    lay.invalidate();
+                    Callback call = new Callback() {
+                        @Override
+                        public void execute() {
+                            Utils.fireSetVisible(pair.first, true);
+                        }
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 } else if (pair.second == Actions.EXPAND) {
-                    Utils.fireSetVisible(pair.first, false);
-                    lay.revalidate();
-                    lay.invalidate();
-                } else if (pair.second == Actions.ADD_NOTE) {
-
-                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
-                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
-                    et.requestFocus();
-                    btn.setOnClickListener(new View.OnClickListener() {
+                    Callback call = new Callback() {
                         @Override
-                        public void onClick(View v) {
-                            Callback call = null;
-
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                            pair.first.note = et.getText().toString();
-                            if (!pair.first.note.isEmpty()) {
-                                pair.first.isNote = true;
-                            } else {
-                                pair.first.isNote = false;
-                            }
-                            dialog.dismiss();
+                        public void execute() {
+                            Utils.fireSetVisible(pair.first, false);
                         }
-                    });
-
-                    final int MAX_LINES = 3;
-
-                    //ogranicza do 3 linii widok w zawartości bloczka
-                    et.addTextChangedListener(new TextWatcher() {
-                        private int lines;
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                            lines = Utils.countLines(s.toString());
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            int counter = Utils.countLines(s.toString());
-
-                            int diff = lines - counter;
-                            if (diff > 0) {
-                                //w gore
-                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height -= 30;
-                                }
-                            } else if (diff < 0) {
-                                //w dol
-                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height += 30;
-                                }
-                            }
-                        }
-                    });
-
-                    int k = Utils.countLines(et.getText().toString());
-                    int ile = Math.min(MAX_LINES - 1, k);
-
-                    et.getLayoutParams().height = 75 + ile * 30;
-                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
-                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
-                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                    btn.setLayoutParams(buttonLayoutParams);
-
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-
-                    dialog.show();
-                    lay.revalidate();
-                    lay.invalidate();
-                } else if (pair.second == Actions.NEW_NOTE) {
-                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
-                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
-                    et.requestFocus();
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Callback call = null;
-
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-                            pair.first.note = et.getText().toString();
-                            if (!pair.first.note.isEmpty()) {
-                                pair.first.isNote = true;
-                            } else {
-                                pair.first.isNote = false;
-                            }
-                            dialog.dismiss();
-                        }
-                    });
-                    et.setText(pair.first.note);
-                    final int MAX_LINES = 3;
-
-                    //ogranicza do 3 linii widok w zawartości bloczka
-                    et.addTextChangedListener(new TextWatcher() {
-                        private int lines;
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        }
-
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                            lines = Utils.countLines(s.toString());
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            int counter = Utils.countLines(s.toString());
-
-                            int diff = lines - counter;
-                            if (diff > 0) {
-                                //w gore
-                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height -= 30;
-                                }
-                            } else if (diff < 0) {
-                                //w dol
-                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
-                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
-                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                                    btn.setLayoutParams(buttonLayoutParams);
-                                    et.getLayoutParams().height += 30;
-                                }
-                            }
-                        }
-                    });
-                    int k = Utils.countLines(et.getText().toString());
-                    int ile = Math.min(MAX_LINES - 1, k);
-
-                    et.getLayoutParams().height = 75 + ile * 30;
-                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
-                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
-                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
-                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
-                    btn.setLayoutParams(buttonLayoutParams);
-
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-
-                    dialog.show();
-
+                    };
+                    try {
+                        AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                        async.setCallback(call);
+                        async.execute();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
 //            if(mActionMode == null && clicked != null) {
@@ -827,6 +699,23 @@ public class MainActivity extends Activity {
 //                            clicked.setParent(b);
 //                            b.addChild(clicked);
 //                            b.getLines().put(clicked, new Line(b.getLineStyle(), (int) b.getLineThickness().getValue(), b.getColor(), new edu.agh.klaukold.common.Point(0, 0), new edu.agh.klaukold.common.Point(0, 0), true));
+//                        }
+//                    }
+//                }
+//                if (clicked.getParent() != null) {
+//                    if (clicked.getParent().getLines().get(clicked) != null) {
+//                        if (clicked.getParent() instanceof Root) {
+//                            if (clicked.position == Position.LFET) {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            } else {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            }
+//                        } else {
+//                            if (clicked.position == Position.LFET) {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            } else {
+//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                            }
 //                        }
 //                    }
 //                }
@@ -985,7 +874,7 @@ public class MainActivity extends Activity {
         }
     }
 
- //   private class MoveBoxCallback implements ActionMode.Callback {
+    //   private class MoveBoxCallback implements ActionMode.Callback {
 //        Box observer;
 //
 //        public void setObserver(Box box) {
@@ -1105,7 +994,7 @@ public class MainActivity extends Activity {
 //
 //            mActionMode = null;
 //        }
- //   }
+    //   }
 
     private void editContent(final Box myClicked) {
         final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
@@ -1121,13 +1010,14 @@ public class MainActivity extends Activity {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
-                Text text = null;
-                try {
-                    text = (Text) myClicked.getText().TextClone();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
-                text.setText(et.getText().toString());
+
+//                try {
+//                    text = (Text) myClicked.getText().TextClone();
+//                } catch (CloneNotSupportedException e) {
+//                    e.printStackTrace();
+//                }
+//                text.setText(et.getText().toString());
+                String text = (et.getText().toString());
 //                Text text = myClicked.getText();
 //                text.setText(et.getText().toString());
                 //myClicked.getText().setText(et.getText().toString());
@@ -1166,7 +1056,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        et.setText(myClicked.getText().getText());
         final int MAX_LINES = 3;
 
         //ogranicza do 3 linii widok w zawartości bloczka
@@ -1208,6 +1097,8 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        et.setText(myClicked.topic.getTitleText());
         int k = Utils.countLines(et.getText().toString());
         int ile = Math.min(MAX_LINES - 1, k);
 
@@ -1222,7 +1113,6 @@ public class MainActivity extends Activity {
         imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 
         dialog.show();
-
     }
 
     @Override
@@ -1342,8 +1232,8 @@ public class MainActivity extends Activity {
             case R.id.action_new:
                 IStyle boxEditedStyle = workbook.getStyleSheet().findStyle(boxEdited.topic.getStyleId());
                 Intent intent1 = new Intent(MainActivity.this, EditBoxScreen.class);
-                intent1.putExtra(EditBoxScreen.BOX_COLOR,  boxEditedStyle.getProperty(Styles.FillColor));
-                intent1.putExtra(EditBoxScreen.TEXT_COLOR, MainActivity.boxEdited.getText().getColor().getColor());
+                intent1.putExtra(EditBoxScreen.BOX_COLOR, boxEditedStyle.getProperty(Styles.FillColor));
+                intent1.putExtra(EditBoxScreen.TEXT_COLOR, boxEdited.topic.getTitleText());
                 intent1.putExtra(EditBoxScreen.LINE_SHAPE, boxEditedStyle.getProperty(Styles.LineClass));
                 intent1.putExtra(EditBoxScreen.LINE_COLOR, boxEditedStyle.getProperty(Styles.LineColor));
                 intent1.putExtra(EditBoxScreen.BOX_SHAPE, boxEditedStyle.getProperty(Styles.ShapeClass));
@@ -1501,23 +1391,27 @@ public class MainActivity extends Activity {
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
                 //todo usuwanie boxow i linii
                 if (!(boxEdited instanceof Root)) {
-                  //  boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
+                    //  boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
                 }
                 for (Box b : MainActivity.toEditBoxes) {
                     if (!(b instanceof Root)) {
-                     //   boxes.put(b, b.getParent().getLines().get(b));
+                        //   boxes.put(b, b.getParent().getLines().get(b));
+                        if (!(boxEdited instanceof Root)) {
+                            //   boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
+                        }
+                        if (boxes.size() > 0) {
+                            properties.put("boxes", boxes);
+                            removeBox.execute(properties);
+                            MainActivity.addCommendUndo(removeBox);
+                        }
+                        return true;
+
                     }
+                    //  return true;
                 }
-                if (boxes.size() > 0) {
-                    properties.put("boxes", boxes);
-                    removeBox.execute(properties);
-                    MainActivity.addCommendUndo(removeBox);
-                }
-                return true;
             default:
                 return super.onContextItemSelected(item);
         }
-        //  return true;
     }
 
     public static void addCommendUndo(Command command) {

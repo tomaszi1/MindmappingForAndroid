@@ -11,7 +11,6 @@ import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
 
 import edu.agh.klaukold.common.Box;
-import edu.agh.klaukold.common.Text;
 import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
 
@@ -42,20 +41,45 @@ public class EditBox implements Command{
                 }
             }
         }
-        if (properties.containsKey("box_text")) {
-            Text text = (Text) properties.get("box_text");
-            try {
-                 properties1.put("text", box.getText().TextClone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
+        else if (properties.containsKey("text_size")) {
+            style.setProperty(Styles.FontSize, (String)properties.getProperty("text_size"));
+        } else if (properties.containsKey("bold")) {
+            properties1.put("bold", (String)properties.get("bold"));
+            if (((String)properties.get("bold")).equals("true")) {
+                style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
+                properties1.put("text_size", false);
+            } else  {
+                style.setProperty(Styles.FontStyle, "");
+                properties1.put("text_size", true);
             }
-            box.setText(text);
-            for (Box b : edited) {
-                b.getText().setText(text);
+        }
+        else if (properties.containsKey("italic")) {
+
+            if (((String)properties.get("italic")).equals("true")) {
+                style.setProperty(Styles.FontStyle, Styles.FONT_STYLE_ITALIC);
+                properties1.put("italic", "false");
+            } else  {
+                style.setProperty(Styles.FontStyle, "");
+                properties1.put("italic", "true");
             }
-        } else if (properties.containsKey("color")) {
+        }  else if (properties.containsKey("strikeout")) {
+            if (((String)properties.get("strikeout")).equals("true")) {
+                style.setProperty(Styles.TextDecoration, Styles.TEXT_DECORATION_LINE_THROUGH);
+                properties1.put("strikeout", "false");
+            } else  {
+                style.setProperty(Styles.TextDecoration, "");
+                properties1.put("strikeout", true);
+            }
+        } else if (properties.containsKey("align")) {
+            properties1.put("align", style.getProperty(Styles.TextAlign));
+            style.setProperty(Styles.TextAlign, (String)properties.getProperty("align"));
+        } else if (properties.containsKey("font")) {
+            properties1.put("font", style.getProperty(Styles.FontFamily));
+            style.setProperty(Styles.FontFamily, (String)properties.get("font"));
+        }
+        else if (properties.containsKey("box_color")) {
             properties1.put("color", style.getProperty(Styles.FillColor));
-            ColorDrawable color = (ColorDrawable)properties.get("color");
+            String color = (String)properties.get("color");
             style.setProperty(Styles.FillColor, String.valueOf(color));
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
@@ -123,12 +147,9 @@ public class EditBox implements Command{
     @Override
     public void undo() {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
-        if (properties1.containsKey("text")) {
-            Text text = (Text) properties1.get("text");
-            box.setText(text);
-        } else if (properties1.containsKey("color")) {
-            ColorDrawable color = (ColorDrawable)properties1.get("color");
-            style.setProperty(Styles.FillColor, String.valueOf(color));
+         if (properties1.containsKey("box_color")) {
+            String color = (String)properties1.get("box_color");
+            style.setProperty(Styles.FillColor, color);
         } else if  (properties1.containsKey("shape")) {
             Drawable shape = (Drawable)properties1.get("shape");
             box.setDrawableShape(shape);
@@ -140,7 +161,33 @@ public class EditBox implements Command{
         } else if (properties1.containsKey("line_thickness")) {
             int lt = (Integer) properties1.get("line_thickness");
             style.setProperty(Styles.LineWidth, String.valueOf(lt));
+        } else if (properties1.containsKey("text_size")) {
+            style.setProperty(Styles.FontSize, (String)properties1.get("text_size"));
         }
+         else if (properties1.containsKey("bold")) {
+             if (((String)properties1.get("bold")).equals("true")) {
+                 style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
+             } else  {
+                 style.setProperty(Styles.FontStyle, "");
+             }
+         }
+         else if (properties1.containsKey("italic")) {
+             if (((String)properties1.get("italic")).equals("true")) {
+                 style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
+             } else  {
+                 style.setProperty(Styles.FontStyle, "");
+             }
+         } else if (properties1.containsKey("strikeout")) {
+             if (((String)properties1.get("strikeout")).equals("true")) {
+                 style.setProperty(Styles.TextDecoration, Styles.TEXT_DECORATION_LINE_THROUGH);
+             } else  {
+                 style.setProperty(Styles.TextDecoration, "");
+             }
+         } else if (properties1.containsKey("font")) {
+             style.setProperty(Styles.FontFamily, (String)properties1.get("font"));
+         } else if (properties1.containsKey("align")) {
+             style.setProperty(Styles.TextAlign, (String)properties1.get("align"));
+         }
         if (edited.size() != 0) {
             int i =0;
             for (Box b : edited) {

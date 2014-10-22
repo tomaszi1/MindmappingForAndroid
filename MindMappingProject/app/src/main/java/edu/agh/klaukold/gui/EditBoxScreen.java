@@ -16,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import org.xmind.core.internal.Style;
 import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
 
@@ -24,10 +25,7 @@ import java.util.Properties;
 import edu.agh.R;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.common.Box;
-import edu.agh.klaukold.common.Text;
-import edu.agh.klaukold.enums.Align;
-import edu.agh.klaukold.enums.LineStyle;
-import edu.agh.klaukold.enums.LineThickness;
+
 
 public class EditBoxScreen extends Activity {
 
@@ -46,7 +44,6 @@ public class EditBoxScreen extends Activity {
     private int BoxColor;
     private int TextColor;
     private int LineColor;
-    private LineThickness lineThicknessEnum;
     private String blockShape;
 
     public static String BOX_COLOR = "BOX COLOR";
@@ -62,7 +59,6 @@ public class EditBoxScreen extends Activity {
     public static View BOXCOLOR;
     public static View TEXTCOLOR;
     public static View LINECOLOR;
-    public LineStyle lineStyle;
     public static Box box;
     public static IStyle style;
 
@@ -70,7 +66,7 @@ public class EditBoxScreen extends Activity {
     public void onResume() {
         super.onResume();
         ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
-        ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(MainActivity.boxEdited.getText().getColor().getColor());
+        ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)));
         ((GradientDrawable) LINECOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
     }
 
@@ -81,9 +77,9 @@ public class EditBoxScreen extends Activity {
         setContentView(R.layout.edit_box);
         Intent intent = getIntent();
         //box = (Box)intent.getSerializableExtra(EditBoxScreen.BOX);
-        BoxColor = intent.getIntExtra(BOX_COLOR, 0);
-        TextColor = intent.getIntExtra(TEXT_COLOR, 0);
-        LineColor = intent.getIntExtra(LINE_COLOR, 0);
+        BoxColor = Integer.parseInt(style.getProperty(Styles.FillColor));
+        TextColor = Integer.parseInt(style.getProperty(Styles.TextColor));
+        LineColor = Integer.parseInt(style.getProperty(Styles.LineColor));
         BOXCOLOR = (View) findViewById(R.id.box_color);
         ((GradientDrawable) BOXCOLOR.getBackground()).setColor(BoxColor);
         BOXCOLOR.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +124,7 @@ public class EditBoxScreen extends Activity {
             boxShape.setSelection(1);
         } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
             boxShape.setSelection(0);
-        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND))  {
+        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
             boxShape.setSelection(3);
         } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_NO_BORDER)) {
             boxShape.setSelection(5);
@@ -181,20 +177,22 @@ public class EditBoxScreen extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 if (lineShape.getSelectedItem().toString().equals("Curve")) {
-                    lineStyle = LineStyle.CURVE;
+                    style.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+
                 } else if (lineShape.getSelectedItem().toString().equals("Straight")) {
-                    lineStyle = LineStyle.STRAIGHT;
+                    ;
+                    style.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
 //                } else if (lineShape.getSelectedItem().toString().equals("Arrowed Curve")) {
 //                    lineStyle = LineStyle.ARROWED_CURVE;
                 } else if (lineShape.getSelectedItem().toString().equals("Elbow")) {
-                    lineStyle = LineStyle.ELBOW;
+                    style.setProperty(Styles.LineClass, Styles.BRANCH_CONN_ELBOW);
                 } else if (lineShape.getSelectedItem().toString().equals("Rounded Elbow")) {
-                    lineStyle = LineStyle.ROUNDED_ELBOW;
+                    style.setProperty(Styles.LineClass, Styles.BRANCH_CONN_ROUNDEDELBOW);
                 }
                 EditBox editBox = new EditBox();
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
-                properties.put("line_shape", lineStyle);
+                properties.put("line_shape", style);
                 properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
@@ -206,16 +204,16 @@ public class EditBoxScreen extends Activity {
             }
 
         });
-        lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
-        if (lineStyle == LineStyle.CURVE) {
+        //lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
+        if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
             lineShape.setSelection(0);
-        } else if (lineStyle == LineStyle.STRAIGHT) {
+        } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
             lineShape.setSelection(1);
 //        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
 //            lineShape.setSelection(2);
-        } else if (lineStyle == LineStyle.ELBOW) {
+        } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
             lineShape.setSelection(2);
-        } else if (lineStyle == LineStyle.ROUNDED_ELBOW) {
+        } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
             lineShape.setSelection(3);
         }
 
@@ -227,38 +225,36 @@ public class EditBoxScreen extends Activity {
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         lineThickness.setAdapter(adapter2);
-        lineThicknessEnum = (LineThickness) intent.getSerializableExtra(EditBoxScreen.LINE_THICKNESS);
-        if (lineThicknessEnum == LineThickness.THINNEST) {
+        if (style.getProperty(Styles.LineWidth).equals("1pt")) {
             lineThickness.setSelection(0);
-        } else if (lineThicknessEnum == LineThickness.THIN) {
+        } else if (style.getProperty(Styles.LineWidth).equals("2pt")) {
             lineThickness.setSelection(1);
-        } else if (lineThicknessEnum == LineThickness.MEDIUM) {
+        } else if (style.getProperty(Styles.LineWidth).equals("3pt")) {
             lineThickness.setSelection(2);
-        } else if (lineThicknessEnum == LineThickness.FAT) {
+        } else if (style.getProperty(Styles.LineWidth).equals("4pt")) {
             lineThickness.setSelection(3);
-        } else if (lineThicknessEnum == LineThickness.FATTEST) {
+        } else if (style.getProperty(Styles.LineWidth).equals("5pt")) {
             lineThickness.setSelection(4);
         }
 
         lineThickness.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                LineThickness lt = LineThickness.THINNEST;
                 if (lineThickness.getSelectedItem().toString().equals("Thinnest")) {
-                    lt = LineThickness.THINNEST;
+                    style.setProperty(Styles.LineWidth, "1pt");
                 } else if (lineThickness.getSelectedItem().toString().equals("Thin")) {
-                    lt = (LineThickness.THIN);
+                    style.setProperty(Styles.LineWidth, "2pt");
                 } else if (lineThickness.getSelectedItem().toString().equals("Medium")) {
-                    lt = (LineThickness.MEDIUM);
+                    style.setProperty(Styles.LineWidth, "3pt");
                 } else if (lineThickness.getSelectedItem().toString().equals("Fat")) {
-                    lt = (LineThickness.FAT);
+                    style.setProperty(Styles.LineWidth, "4pt");
                 } else if (lineThickness.getSelectedItem().toString().equals("Fattest")) {
-                    lt = (LineThickness.FATTEST);
+                    style.setProperty(Styles.LineWidth, "5pt");
                 }
                 EditBox editBox = new EditBox();
                 Properties properties = new Properties();
                 properties.put("box", MainActivity.boxEdited);
-                properties.put("line_thickness", lt);
+                properties.put("line_thickness", style);
                 properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
@@ -277,35 +273,29 @@ public class EditBoxScreen extends Activity {
         adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         textAlign.setAdapter(adapter3);
-        if (MainActivity.boxEdited.getText().getAlign() == Align.RIGHT) {
+        if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
             textAlign.setSelection(0);
-        } else if (MainActivity.boxEdited.getText().getAlign() == Align.CENTER) {
+        } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
             textAlign.setSelection(2);
-        } else if (MainActivity.boxEdited.getText().getAlign() == Align.LEFT) {
+        } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_LEFT)) {
             textAlign.setSelection(1);
         }
         textAlign.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Align align = Align.CENTER;
+                String align = "";
                 if (textAlign.getSelectedItem().toString().equals("Right")) {
-                    align = (Align.RIGHT);
+                    align = Styles.ALIGN_RIGHT;
                 } else if (textAlign.getSelectedItem().toString().equals("Center")) {
-                    align = (Align.CENTER);
+                    align = Styles.ALIGN_RIGHT;
                 } else if (textAlign.getSelectedItem().toString().equals("Left")) {
-                    align = (Align.LEFT);
+                    align = Styles.ALIGN_LEFT;
                 }
                 EditBox editBox = new EditBox();
                 Properties properties = new Properties();
-                try {
-                    Text text = MainActivity.boxEdited.getText().TextClone();
-                    text.setAlign(align);
-                    properties.put("box_text", text);
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
+                properties.put("align", align);
+                properties.put("box", MainActivity.boxEdited);
+                properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
             }
@@ -324,35 +314,35 @@ public class EditBoxScreen extends Activity {
         adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         textHeight.setAdapter(adapter4);
-        if (MainActivity.boxEdited.getText().getSize() == 8) {
+        if (style.getProperty(Styles.FontSize).equals("8pt")) {
             textHeight.setSelection(0);
-        } else if (MainActivity.boxEdited.getText().getSize() == 9) {
+        } else if (style.getProperty(Styles.FontSize).equals("9pt")) {
             textHeight.setSelection(1);
-        } else if (MainActivity.boxEdited.getText().getSize() == 10) {
+        } else if (style.getProperty(Styles.FontSize).equals("10pt")) {
             textHeight.setSelection(2);
-        } else if (MainActivity.boxEdited.getText().getSize() == 11) {
+        } else if (style.getProperty(Styles.FontSize).equals("11pt")) {
             textHeight.setSelection(3);
-        } else if (MainActivity.boxEdited.getText().getSize() == 12) {
+        } else if (style.getProperty(Styles.FontSize).equals("12pt")) {
             textHeight.setSelection(4);
-        } else if (MainActivity.boxEdited.getText().getSize() == 13) {
+        } else if (style.getProperty(Styles.FontSize).equals("13pt")) {
             textHeight.setSelection(5);
-        } else if (MainActivity.boxEdited.getText().getSize() == 14) {
+        } else if (style.getProperty(Styles.FontSize).equals("14pt")) {
             textHeight.setSelection(6);
-        } else if (MainActivity.boxEdited.getText().getSize() == 16) {
+        } else if (style.getProperty(Styles.FontSize).equals("16pt")) {
             textHeight.setSelection(7);
-        } else if (MainActivity.boxEdited.getText().getSize() == 18) {
+        } else if (style.getProperty(Styles.FontSize).equals("18pt")) {
             textHeight.setSelection(8);
-        } else if (MainActivity.boxEdited.getText().getSize() == 20) {
+        } else if (style.getProperty(Styles.FontSize).equals("20pt")) {
             textHeight.setSelection(9);
-        } else if (MainActivity.boxEdited.getText().getSize() == 22) {
+        } else if (style.getProperty(Styles.FontSize).equals("22pt")) {
             textHeight.setSelection(10);
-        } else if (MainActivity.boxEdited.getText().getSize() == 24) {
+        } else if (style.getProperty(Styles.FontSize).equals("24pt")) {
             textHeight.setSelection(11);
-        } else if (MainActivity.boxEdited.getText().getSize() == 36) {
+        } else if (style.getProperty(Styles.FontSize).equals("36pt")) {
             textHeight.setSelection(12);
-        } else if (MainActivity.boxEdited.getText().getSize() == 48) {
+        } else if (style.getProperty(Styles.FontSize).equals("48pt")) {
             textHeight.setSelection(13);
-        } else if (MainActivity.boxEdited.getText().getSize() == 56) {
+        } else if (style.getProperty(Styles.FontSize).equals("56pt")) {
             textHeight.setSelection(14);
         }
         textHeight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -360,15 +350,9 @@ public class EditBoxScreen extends Activity {
                                                  public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                                      EditBox editBox = new EditBox();
                                                      Properties properties = new Properties();
-                                                     try {
-                                                         Text text = MainActivity.boxEdited.getText().TextClone();
-                                                         text.setSize(Integer.parseInt(textHeight.getSelectedItem().toString()));
-                                                         properties.put("box_text", text);
-                                                         properties.put("box", MainActivity.boxEdited);
-                                                         properties.put("boxes", MainActivity.toEditBoxes);
-                                                     } catch (CloneNotSupportedException e) {
-                                                         e.printStackTrace();
-                                                     }
+                                                     properties.put("box_size", textHeight.getSelectedItem().toString() + "pt");
+                                                     properties.put("box", MainActivity.boxEdited);
+                                                     properties.put("boxes", MainActivity.toEditBoxes);
                                                      editBox.execute(properties);
                                                      MainActivity.addCommendUndo(editBox);
                                                  }
@@ -389,14 +373,12 @@ public class EditBoxScreen extends Activity {
         adapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         font.setAdapter(adapter5);
-        if (MainActivity.boxEdited.getText().typeface == Typeface.DEFAULT) {
+        if (style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
             font.setSelection(0);
-        } else  if (MainActivity.boxEdited.getText().typeface == Typeface.MONOSPACE) {
+        } else if (style.getProperty(Styles.FontFamily).equals("Courier New")) {
             font.setSelection(1);
-        } else if (MainActivity.boxEdited.getText().typeface == Typeface.SANS_SERIF) {
+        } else if (style.getProperty(Styles.FontFamily).equals("Arial")) {
             font.setSelection(2);
-        } else if (MainActivity.boxEdited.getText().typeface == Typeface.SERIF) {
-            font.setSelection(3);
         }
 
         font.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -404,23 +386,17 @@ public class EditBoxScreen extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 EditBox editBox = new EditBox();
                 Properties properties = new Properties();
-                try {
-                    Text text = MainActivity.boxEdited.getText().TextClone();
-                    if (font.getSelectedItem().toString().equals("DEFAULT")) {
-                        text.typeface = Typeface.DEFAULT;
-                    } else if (font.getSelectedItem().toString().equals("MONOSPACE")) {
-                        text.typeface = Typeface.MONOSPACE;
-                    } else if (font.getSelectedItem().toString().equals("SANS_SERIF")) {
-                        text.typeface = Typeface.SANS_SERIF;
-                    } else if (font.getSelectedItem().toString().equals("SERIF")) {
-                        text.typeface = Typeface.SERIF;
-                    }
-                    properties.put("box_text", text);
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
+                String f = "";
+                if (font.getSelectedItem().toString().equals("Courier New")) {
+                    f = "Courier New";
+                } else if (font.getSelectedItem().toString().equals("Arial ")) {
+                    f = "Arial";
+                } else if (font.getSelectedItem().toString().equals("Times New Roman")) {
+                    f = "Times New Roman";
                 }
+                properties.put("font", f);
+                properties.put("box", MainActivity.boxEdited);
+                properties.put("boxes", MainActivity.toEditBoxes);
                 editBox.execute(properties);
                 MainActivity.addCommendUndo(editBox);
             }
@@ -435,7 +411,7 @@ public class EditBoxScreen extends Activity {
         //todo akcja zmiany wartosci
         //todo dokonczycwartosci
         bold = (CheckBox) findViewById(R.id.checkBoxBold);
-        if (MainActivity.boxEdited.getText().isBold()) {
+        if (style.getProperty(Styles.FontStyle).equals(Styles.FONT_WEIGHT_BOLD)) {
             bold.setChecked(true);
         }
         //todo listenery
@@ -443,33 +419,22 @@ public class EditBoxScreen extends Activity {
                                             @Override
                                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                 if (isChecked) {
-                                                   // MainActivity.boxEdited.getText().setBold(true);
+                                                    // MainActivity.boxEdited.getText().setBold(true);
                                                     EditBox editBox = new EditBox();
                                                     Properties properties = new Properties();
-                                                    try {
-                                                        Text text = MainActivity.boxEdited.getText().TextClone();
-                                                        text.setBold(true);
-                                                        properties.put("box_text", text);
-                                                        properties.put("box", MainActivity.boxEdited);
-                                                        properties.put("boxes", MainActivity.toEditBoxes);
-                                                    } catch (CloneNotSupportedException e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                    properties.put("bold", true);
+                                                    properties.put("box", MainActivity.boxEdited);
+                                                    properties.put("boxes", MainActivity.toEditBoxes);
+
                                                     editBox.execute(properties);
                                                     MainActivity.addCommendUndo(editBox);
                                                 } else {
-                                                   // MainActivity.boxEdited.getText().setBold(false);
+                                                    // MainActivity.boxEdited.getText().setBold(false);
                                                     EditBox editBox = new EditBox();
                                                     Properties properties = new Properties();
-                                                    try {
-                                                        Text text = MainActivity.boxEdited.getText().TextClone();
-                                                        text.setBold(false);
-                                                        properties.put("box_text", text);
-                                                        properties.put("box", MainActivity.boxEdited);
-                                                        properties.put("boxes", MainActivity.toEditBoxes);
-                                                    } catch (CloneNotSupportedException e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                    properties.put("bold", false);
+                                                    properties.put("box", MainActivity.boxEdited);
+                                                    properties.put("boxes", MainActivity.toEditBoxes);
                                                     editBox.execute(properties);
                                                     MainActivity.addCommendUndo(editBox);
                                                 }
@@ -478,40 +443,28 @@ public class EditBoxScreen extends Activity {
                                         }
         );
         italic = (CheckBox) findViewById(R.id.checkBoxItalic);
-        if (MainActivity.boxEdited.getText().isItalic()) {
+        if (style.getProperty(Styles.FontStyle).equals(Styles.FONT_STYLE_ITALIC)) {
             italic.setChecked(true);
         }
         italic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                               @Override
                                               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                   if (isChecked) {
-                                                   //   MainActivity.boxEdited.getText().setItalic(true);
+                                                      //   MainActivity.boxEdited.getText().setItalic(true);
                                                       EditBox editBox = new EditBox();
                                                       Properties properties = new Properties();
-                                                      try {
-                                                          Text text = MainActivity.boxEdited.getText().TextClone();
-                                                          text.setItalic(true);
-                                                          properties.put("box_text", text);
-                                                          properties.put("box", MainActivity.boxEdited);
-                                                          properties.put("boxes", MainActivity.toEditBoxes);
-                                                      } catch (CloneNotSupportedException e) {
-                                                          e.printStackTrace();
-                                                      }
+                                                      properties.put("italic", true);
+                                                      properties.put("box", MainActivity.boxEdited);
+                                                      properties.put("boxes", MainActivity.toEditBoxes);
                                                       editBox.execute(properties);
                                                       MainActivity.addCommendUndo(editBox);
                                                   } else {
-                                                     // MainActivity.boxEdited.getText().setItalic(false);
+                                                      // MainActivity.boxEdited.getText().setItalic(false);
                                                       EditBox editBox = new EditBox();
                                                       Properties properties = new Properties();
-                                                      try {
-                                                          Text text = MainActivity.boxEdited.getText().TextClone();
-                                                          text.setItalic(false);
-                                                          properties.put("box_text", text);
-                                                          properties.put("box", MainActivity.boxEdited);
-                                                          properties.put("boxes", MainActivity.toEditBoxes);
-                                                      } catch (CloneNotSupportedException e) {
-                                                          e.printStackTrace();
-                                                      }
+                                                      properties.put("italic", false);
+                                                      properties.put("box", MainActivity.boxEdited);
+                                                      properties.put("boxes", MainActivity.toEditBoxes);
                                                       editBox.execute(properties);
                                                       MainActivity.addCommendUndo(editBox);
                                                   }
@@ -520,43 +473,31 @@ public class EditBoxScreen extends Activity {
                                           }
         );
         strikeOut = (CheckBox) findViewById(R.id.checkBoxStrikeOut);
-        if (MainActivity.boxEdited.getText().isStrikeOut()) {
+        if (style.getProperty(Styles.TextDecoration) == Styles.TEXT_DECORATION_LINE_THROUGH) {
             strikeOut.setChecked(true);
         }
         strikeOut.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                                  @Override
                                                  public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                      if (isChecked && textAlign.getSelectedItem().toString().equals("Left")) {
-                                                        // MainActivity.boxEdited.getText().setStrikeOut(true);
+                                                         // MainActivity.boxEdited.getText().setStrikeOut(true);
                                                          EditBox editBox = new EditBox();
                                                          Properties properties = new Properties();
-                                                         try {
-                                                             Text text = MainActivity.boxEdited.getText().TextClone();
-                                                             text.setStrikeOut(true);
-                                                             properties.put("box_text", text);
-                                                             properties.put("box", MainActivity.boxEdited);
-                                                             properties.put("boxes", MainActivity.toEditBoxes);
-                                                         } catch (CloneNotSupportedException e) {
-                                                             e.printStackTrace();
-                                                         }
+                                                         properties.put("strikeout", "true");
+                                                         properties.put("box", MainActivity.boxEdited);
+                                                         properties.put("boxes", MainActivity.toEditBoxes);
                                                          editBox.execute(properties);
                                                          MainActivity.addCommendUndo(editBox);
-                                                     } else if (textAlign.getSelectedItem().toString().equals("Left")){
-                                                       //  MainActivity.boxEdited.getText().setStrikeOut(false);
+                                                     } else if (textAlign.getSelectedItem().toString().equals("Left")) {
+                                                         //  MainActivity.boxEdited.getText().setStrikeOut(false);
                                                          EditBox editBox = new EditBox();
                                                          Properties properties = new Properties();
-                                                         try {
-                                                             Text text = MainActivity.boxEdited.getText().TextClone();
-                                                             text.setStrikeOut(false);
-                                                             properties.put("box_text", text);
-                                                             properties.put("box", MainActivity.boxEdited);
-                                                             properties.put("boxes", MainActivity.toEditBoxes);
-                                                         } catch (CloneNotSupportedException e) {
-                                                             e.printStackTrace();
-                                                         }
+                                                         properties.put("strikeout", "false");
+                                                         properties.put("box", MainActivity.boxEdited);
+                                                         properties.put("boxes", MainActivity.toEditBoxes);
                                                          editBox.execute(properties);
                                                          MainActivity.addCommendUndo(editBox);
-                                                     } else if (isChecked && !textAlign.getSelectedItem().toString().equals("Left")){
+                                                     } else if (isChecked && !textAlign.getSelectedItem().toString().equals("Left")) {
                                                          strikeOut.setError("Supported only for left text align.");
                                                      }
 

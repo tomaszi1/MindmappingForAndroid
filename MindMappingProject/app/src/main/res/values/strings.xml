@@ -18,7 +18,7 @@
         <item>Simple</item>
         <item>Business</item>
         <item>Academese</item>
-        <!--<item>Comic</item>-->
+        <item>Comic</item>
     </string-array>
     <string name="dialog_content">Wpisz zawartość</string>
     <string name="ok_button">OK</string>
@@ -54,9 +54,9 @@
     <string name="center">Center</string>
     <string name="left">Left</string>
     <string name="def">DEFAULT</string>
-    <string name="mono">MONOSPACE</string>
-    <string name="sserif">SANS_SERIF</string>
-    <string name="serif">SERIF</string>
+    <string name="mono">Courier New</string>
+    <string name="sserif">Arial</string>
+    <string name="serif">Times New Roman</string>
     <string name="height">Height</string>
     <string-array name="shapes_array">
         <item>@string/ellipse</item>
@@ -69,8 +69,8 @@
     <string-array name="lines_array">
         <item>@string/curve</item>
         <item>@string/straight</item>
-        <!--<item>@string/elbow</item>-->
-        <!--<item>@string/rounded_elbow</item>-->
+        <item>@string/elbow</item>
+        <item>@string/rounded_elbow</item>
     </string-array>
     <string-array name="thin_array">
         <item>@string/thinnest</item>

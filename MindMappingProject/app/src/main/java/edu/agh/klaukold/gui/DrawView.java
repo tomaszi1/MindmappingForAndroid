@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
@@ -575,9 +576,9 @@ public class DrawView extends RelativeLayout {
             //1float f = getLongest(parts);
             //
             IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
-            if (style.getProperty(Styles.ShapeClass) == Styles.TOPIC_SHAPE_DIAMOND ) {
+            if (style.getProperty(Styles.ShapeClass) == Styles.TOPIC_SHAPE_DIAMOND) {
                 ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
-            } else  if (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE  && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER) {
+            } else if (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER) {
                 ((GradientDrawable) box.getDrawableShape()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
             }
 
@@ -594,7 +595,7 @@ public class DrawView extends RelativeLayout {
             box.prepareDrawableShape();
             //   }
 
-            if (!box.topic.isFolded()) {
+            if (box.isSelected) {
                 box.setActiveColor();
             }// else if (!box.isExpanded()) {
 //                paint.setColor(collapsedColor);
@@ -634,7 +635,7 @@ public class DrawView extends RelativeLayout {
 //                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
 //                box.newMarker.draw(canvas);
                 if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
-                    if (!box.isExpanded()) {
+                    if (!box.topic.isFolded()) {
                         box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
                         box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                         box.collapseAction.draw(canvas);
@@ -659,7 +660,7 @@ public class DrawView extends RelativeLayout {
 //                    canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
 //                }
 //            }
-            if (box.isExpanded()) {
+            if (!box.topic.isFolded()) {
                 showLines(box);
             }
         }
@@ -675,9 +676,9 @@ public class DrawView extends RelativeLayout {
             String s = box.topic.getTitleText();
             String[] parts = s.split("\n");
             float f = getLongest(parts);
-         //   if (box.getShape() != BlockShape.NO_BORDER || box.getShape() != BlockShape.UNDERLINE) {
-                paint.setColor(Integer.parseInt(style.getProperty(Styles.TextColor)));
-        //    }
+            //   if (box.getShape() != BlockShape.NO_BORDER || box.getShape() != BlockShape.UNDERLINE) {
+            paint.setColor(Integer.parseInt(style.getProperty(Styles.TextColor)));
+            //    }
             paint.setTextSize(Integer.parseInt(remove2LastChars(style.getProperty(Styles.FontSize))));
 //            if (box.getText().getAlign() == Align.CENTER) {
 //                paint.setTextAlign(Paint.Align.CENTER);
@@ -697,14 +698,14 @@ public class DrawView extends RelativeLayout {
                 font = Typeface.MONOSPACE;
             }
 
-            if (style.getProperty(Styles.FontStyle) ==  Styles.FONT_STYLE_ITALIC && style.getProperty(Styles.FontStyle) ==  Styles.FONT_WEIGHT_BOLD) {
+            if (style.getProperty(Styles.FontStyle) == Styles.FONT_STYLE_ITALIC && style.getProperty(Styles.FontStyle) == Styles.FONT_WEIGHT_BOLD) {
                 Typeface tf = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
                 paint.setTypeface(tf);
                 // paint.setFakeBoldText(true);
-            } else if (style.getProperty(Styles.FontStyle) ==  Styles.FONT_STYLE_ITALIC ) {
+            } else if (style.getProperty(Styles.FontStyle) == Styles.FONT_STYLE_ITALIC) {
                 Typeface tf = Typeface.create(Typeface.SERIF, Typeface.ITALIC);
                 paint.setTypeface(tf);
-            } else if (style.getProperty(Styles.FontStyle) ==  Styles.FONT_WEIGHT_BOLD) {
+            } else if (style.getProperty(Styles.FontStyle) == Styles.FONT_WEIGHT_BOLD) {
                 Typeface tf = Typeface.create(font, Typeface.BOLD);
                 paint.setTypeface(tf);
 
@@ -829,7 +830,7 @@ public class DrawView extends RelativeLayout {
 
 
     public void updateBox(Box box) {
-        String s = box.getText().getText();
+        String s = box.topic.getTitleText();
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
@@ -893,7 +894,7 @@ public class DrawView extends RelativeLayout {
 //        	box.rect.left = box.rect.right - ((int) f + 50);
 //    	}
         Rect rect = new Rect();
-        paint.setTextSize((float) box.getText().getSize());
+        paint.setTextSize((float) Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)));
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
             int w = (rect.right - rect.left) + (rect.right - rect.left) / 2;
@@ -913,9 +914,9 @@ public class DrawView extends RelativeLayout {
                 }
             }
             if (width > box.getWidth()) {
-                box.setWidth(width + box.getText().getSize());
+                box.setWidth(width + Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)));
             }
-            box.setHeight((rect.bottom - rect.top) * parts.length + (box.getText().getSize() / 2 * parts.length));
+            box.setHeight((rect.bottom - rect.top) * parts.length + (Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)) / 2 * parts.length));
             if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getId()).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                 if (parts.length > 1) {
                     box.setHeight((int) (box.getHeight() * Math.sqrt(2)));
@@ -989,7 +990,7 @@ public class DrawView extends RelativeLayout {
     }
 
     public void updateCore(Root core) {
-        String s = core.getText().getText();
+        String s = core.topic.getTitleText();
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
@@ -1131,59 +1132,36 @@ public class DrawView extends RelativeLayout {
 
     }
 
-
     public void updateText() {
         drawText(MainActivity.boxEdited, canvas);
     }
 
 //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
-//        if (MainActivity.EDIT_CONN) {
-//            // Get the coordinates of the touch event.
-//            float eventX = event.getX();
-//            float eventY = event.getY();
+//        // Get the coordinates of the touch event.
+//        float eventX = event.getX();
+//        float eventY = event.getY();
 //
-//
-//            //..p.moveTo(eventX, eventY);
-//            switch (event.getAction()) {
-//                case MotionEvent.ACTION_DOWN:
-//                  //  p.moveTo(event.getX() - 10, event.getY() - 50);
-//                    return true;
-//                case MotionEvent.ACTION_MOVE:
-////                    Paint paint = new Paint();
-////                    paint.setColor(Color.BLACK);
-////                    paint.setStrokeWidth(50);
-////                    paint.setStyle(Paint.Style.STROKE);
-//                    //p.lineTo(event.getX(), event.getY());
-//                  //  p.lineTo(event.getX() + 10, event.getY() + 15);
-//                   // canvas.drawPath(p,paint);
-//
-//                    // Connect the points
-//                    // path.lineTo(eventX, eventY);
-//                    break;
-//                case MotionEvent.ACTION_UP:
-//                    canvas.drawText("cdsfas0", MainActivity.root.getDrawableShape().getBounds().left - 50, MainActivity.root.getDrawableShape().getBounds().top - 10,paint);
-////                    paint = new Paint();
-////                    paint.setColor(line.getColor().getColor());
-////                    paint.setStrokeWidth(line.getThickness());
-////                    paint.setStyle(Paint.Style.STROKE);
-////                    canvas.drawPath(line.getPath(),paint);
-//                 //   MainActivity.root.getLines().put(b, line);
-//                   // invalidate();
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                // Set a new starting point
+//                //path.moveTo(eventX, eventY);
+//                return true;
+//            case MotionEvent.ACTION_MOVE:
+//                // Connect the points
+//                // path.lineTo(eventX, eventY);
 //                break;
-//                default:
-//                    return false;
-//            }
-//
-//            // Makes our view repaint and call onDraw
-//            invalidate();
+//            default:
+//                return false;
 //        }
-//        return true;
 //
+//        // Makes our view repaint and call onDraw
+//        invalidate();
+//        return true;
 //    }
 
 
-//    @Override
+    //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
 //
 //        int x = (int) event.getX();
@@ -1230,19 +1208,7 @@ public class DrawView extends RelativeLayout {
 //        return true;
 //
 //    }
-
-    public void drawPath(Path path)  {
-                    Paint paint = new Paint();
-                    paint.setColor(Color.BLACK);
-                    paint.setStrokeWidth(50);
-                    paint.setStyle(Paint.Style.STROKE);
-        canvas.drawPath(path, paint);
+    private String remove2LastChars(String str) {
+        return str.substring(0, str.length() - 2);
     }
-
-    private String remove2LastChars(String s) {
-        if (s == null || s.length() == 0) {
-            return s;
-        }
-        return s.substring(0, s.length() - 2);
-    }
- }
+}

@@ -22,7 +22,6 @@ public class Example {
         IWorkbook workbook = handler.getWorkbook();
 
         ISheet sheet = workbook.getPrimarySheet();
-        sheet.getTheme();
 
         ITopic rootTopic = sheet.getRootTopic();
 

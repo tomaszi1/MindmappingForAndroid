@@ -23,7 +23,6 @@ import java.util.Properties;
 import edu.agh.R;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
-import edu.agh.klaukold.common.Text;
 
 
 public class ColorPalette extends Activity {
@@ -32,7 +31,7 @@ public class ColorPalette extends Activity {
     EditText editText;
     EditText editText1;
     EditText editText2;
-    public  String type;
+    public String type;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,15 +58,9 @@ public class ColorPalette extends Activity {
                     //todo kolor czcionki
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
-                    try {
-                        Text text = MainActivity.boxEdited.getText().TextClone();
-                        text.setColor(new ColorDrawable(colors.get(v)));
-                        properties.put("box_text", text);
-                        properties.put("box", MainActivity.boxEdited);
-                        properties.put("boxes", MainActivity.toEditBoxes);
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
+                    properties.put("text_color", String.valueOf(colors.get(v)));
+                    properties.put("box", MainActivity.boxEdited);
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE2)) {
@@ -80,8 +73,7 @@ public class ColorPalette extends Activity {
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                     //todo kolor lini
-                }
-                else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
+                } else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
                     EditSheet editSheet = new EditSheet();
                     Properties properties = new Properties();
                     properties.put("sheet", MainActivity.sheet);
@@ -319,7 +311,7 @@ public class ColorPalette extends Activity {
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
-                    properties.put("color", new ColorDrawable(Color.rgb(r, g, b)));
+                    properties.put("box_color", String.valueOf(Color.rgb(r, g, b)));
                     properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
@@ -327,32 +319,26 @@ public class ColorPalette extends Activity {
                     //todo kolor czcionki
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
-                    try {
-                        Text text = MainActivity.boxEdited.getText().TextClone();
-                        text.setColor(new ColorDrawable(Color.rgb(r, g, b)));
-                        properties.put("box_text", text);
+
+                        properties.put("text_color", String.valueOf(Color.rgb(r, g, b)));
                         properties.put("box", MainActivity.boxEdited);
                         properties.put("boxes", MainActivity.toEditBoxes);
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE2)) {
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
-                    properties.put("line_color", new ColorDrawable(Color.rgb(r, g, b)));
+                    properties.put("line_color", String.valueOf(Color.rgb(r, g, b)));
                     properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                     //todo kolor lini
-                }
-                else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
+                } else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
                     EditSheet editSheet = new EditSheet();
                     Properties properties = new Properties();
-                    properties.put("sheet", MainActivity.sheet);
-                    properties.put("color",new ColorDrawable(Color.rgb(r, g, b)));
+                    properties.put("sheet_color", MainActivity.sheet);
+                    properties.put("color", String.valueOf(Color.rgb(r, g, b)));
                     editSheet.execute(properties);
                     MainActivity.addCommendUndo(editSheet);
                     //MainActivity.sheet.setColor(new ColorDrawable(Color.rgb(r, g, b)));

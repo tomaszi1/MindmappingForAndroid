@@ -33,8 +33,6 @@ public class Box implements  Cloneable, Serializable {
         this.children = b.children;
         this.topic = b.topic;
         this.lines = b.lines;
-        this.text = b.text;
-        this.isExpanded = b.isExpanded;
         this.newNote = b.newNote;
         this.addBox = b.addBox;
        // this.newMarker = b.newMarker;
@@ -51,15 +49,6 @@ public class Box implements  Cloneable, Serializable {
 	public HashMap<Box, Line> getLines() {
 		return lines;
 	}
-	public Text getText() {
-		return text;
-	}
-	public void setText(Text text) {
-		this.text = text;
-	}
-
-
-
     public boolean isExpendable = false;
     public boolean isSelected = false;
 
@@ -90,10 +79,8 @@ public class Box implements  Cloneable, Serializable {
     protected  int height = 110;
     protected  int width = 150;
     public  Point point = new Point();
-	protected LinkedList<Box> children = new LinkedList<Box>();
+	protected LinkedList<Box> children = new LinkedList<Box>();;
 	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
-	protected Text text;
-    protected boolean isExpanded = true;
     public Drawable newNote;
     public Drawable addBox;
     public Boolean isNote = false;
@@ -105,13 +92,7 @@ public class Box implements  Cloneable, Serializable {
     public Drawable addNote;
     public ITopic topic;
 
-    public boolean isExpanded() {
-        return isExpanded;
-    }
 
-    public void setExpanded(boolean isExpanded) {
-        this.isExpanded = isExpanded;
-    }
     public Drawable getDrawableShape() {
         return drawableShape;
     }
@@ -155,7 +136,6 @@ public class Box implements  Cloneable, Serializable {
             int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
             ((GradientDrawable) drawableShape).setColors(colors1);
-
         }
         return  drawableShape;
     }
