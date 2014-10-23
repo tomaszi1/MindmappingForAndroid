@@ -50,7 +50,7 @@ public class ColorPalette extends Activity {
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
-                    properties.put("color", new ColorDrawable(colors.get(v)));
+                    properties.put("box_color", String.valueOf(colors.get(v)));
                     properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
@@ -68,7 +68,7 @@ public class ColorPalette extends Activity {
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
-                    properties.put("line_color", new ColorDrawable(colors.get(v)));
+                    properties.put("line_color", String.valueOf(colors.get(v)));
                     properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);

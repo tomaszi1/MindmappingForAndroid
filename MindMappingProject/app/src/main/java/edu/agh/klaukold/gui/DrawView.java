@@ -158,19 +158,16 @@ public class DrawView extends RelativeLayout {
         //przesunięcie mapy i wyskalowanie
         canvas.translate(transx, transy);
         canvas.scale(zoomx, zoomy);
-        Root root = MainActivity.root;
+        Box root = MainActivity.root;
         drawBox(root, canvas);
         if (root == null) {
             return;
         }
 
-        for (Box box : root.getLeftChildren()) {
+        for (Box box : root.getChildren()) {
             fireDrawChildren(box, canvas);
         }
 
-        for (Box box : root.getRightChildren()) {
-            fireDrawChildren(box, canvas);
-        }
 //       if(root.isExpanded()) {
 //    	   showLines(root);
 //       } else {
@@ -183,39 +180,36 @@ public class DrawView extends RelativeLayout {
 //
             // drawBox(root, canvas);
 //
-            for (Box box : root.getLeftChildren()) {
+            for (Box box : root.getChildren()) {
                 drawBox(box, canvas);
             }
 
-            for (Box box : root.getRightChildren()) {
-                drawBox(box, canvas);
-            }
 
-            for (Box box : root.getLeftChildren()) {
-                fireDrawChildren(box, canvas);
-            }
-
-            for (Box box : root.getRightChildren()) {
-                fireDrawChildren(box, canvas);
-            }
-
-            for (Box box : root.getDetached()) {
-                drawBox(box, canvas);
-            }
-
-            for (Box box : root.getDetached()) {
-                fireDrawChildren(box, canvas);
-            }
+//            for (Box box : root.getLeftChildren()) {
+//                fireDrawChildren(box, canvas);
+//            }
+//
+//            for (Box box : root.getRightChildren()) {
+//                fireDrawChildren(box, canvas);
+//            }
+//
+//            for (Box box : root.getDetached()) {
+//                drawBox(box, canvas);
+//            }
+//
+//            for (Box box : root.getDetached()) {
+//                fireDrawChildren(box, canvas);
+//            }
 
             return;
         }
 
-        if (!root.getLeftChildren().isEmpty() && updateLeft) {
-            for (Box box : root.getDetached()) {
-                // triggerDetachMove(box);
-            }
-            updateLeft = false;
-        }
+//        if (!root.getChildren().isEmpty() && updateLeft) {
+//            for (Box box : root.getDetached()) {
+//                // triggerDetachMove(box);
+//            }
+//            updateLeft = false;
+//        }
 //
 //       if(!root.right.isEmpty() && updateRight) {
 //    	   for(Box box: root.detached) {
@@ -602,16 +596,16 @@ public class DrawView extends RelativeLayout {
 //            }
             if (!box.topic.isFolded()) {
                 box.getDrawableShape().draw(canvas);
-//                if (box.getShape() == BlockShape.UNDERLINE) {
-//                    Path path = new Path();
-//                    path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
-//                    path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
-//                    Paint paint1 = new Paint();
-//                    paint1.setColor(box.getLineColor());
-//                    paint1.setStrokeWidth(box.getLineThickness().getValue());
-//                    paint1.setStyle(Paint.Style.STROKE);
-//                    canvas.drawPath(path, paint1);
-//                }
+                if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
+                    Path path = new Path();
+                    path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
+                    path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
+                    Paint paint1 = new Paint();
+                    paint1.setColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
+                    paint1.setStrokeWidth(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))));
+                    paint1.setStyle(Paint.Style.STROKE);
+                    canvas.drawPath(path, paint1);
+                }
                 drawText(box, canvas);
                 // todo sytuacja dla ciemnego tla
                 if (box.isNote) {
@@ -894,7 +888,7 @@ public class DrawView extends RelativeLayout {
 //        	box.rect.left = box.rect.right - ((int) f + 50);
 //    	}
         Rect rect = new Rect();
-        paint.setTextSize((float) Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)));
+        paint.setTextSize((float) Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))));
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
             int w = (rect.right - rect.left) + (rect.right - rect.left) / 2;
@@ -1047,7 +1041,7 @@ public class DrawView extends RelativeLayout {
             } else {
                 Paint paint = new Paint();
                 paint.setColor(x.getColor().getColor());
-                paint.setStrokeWidth(x.getThickness());
+                paint.setStrokeWidth(x.getThickness() + 1);
                 paint.setStyle(Paint.Style.STROKE);
                 if ((x.shape == Styles.BRANCH_CONN_ELBOW || x.shape == Styles.BRANCH_CONN_ROUNDEDELBOW)) {
                     x.box = box;

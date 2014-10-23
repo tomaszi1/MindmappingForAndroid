@@ -91,6 +91,11 @@ public class Box implements  Cloneable, Serializable {
     public Position position;
     public Drawable addNote;
     public ITopic topic;
+    public Box parent;
+
+    public void clear() {
+        children.clear();
+    }
 
 
     public Drawable getDrawableShape() {
@@ -128,9 +133,11 @@ public class Box implements  Cloneable, Serializable {
             ((GradientDrawable) ((RotateDrawable) drawableShape).getDrawable()).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + width);
 
-        } else if (s.equals(Styles.TOPIC_SHAPE_UNDERLINE)) {// int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
+        } else if (s.equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
+            int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
+
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
-            //  ((GradientDrawable)drawableShape).setColors(colors2);
+             ((GradientDrawable)drawableShape).setColors(colors2);
 
         } else if (s.equals(Styles.TOPIC_SHAPE_NO_BORDER)) {
             int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
@@ -164,7 +171,7 @@ public class Box implements  Cloneable, Serializable {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void setActiveColor() {
         int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
-        if ( !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
+        if ( !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
             ((GradientDrawable)drawableShape).setColors(colors);
         } else {
             ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);

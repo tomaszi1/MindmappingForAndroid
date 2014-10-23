@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 
+import org.xmind.core.ITopic;
 import org.xmind.core.ITopicPath;
 import org.xmind.core.style.IStyle;
+import org.xmind.core.style.IStyleSheet;
 import org.xmind.ui.style.Styles;
 
 import java.util.Properties;
@@ -34,32 +36,37 @@ public class AddBox implements Command {
         after = (Properties)properties.clone();
         parent = (Box)properties.get("box");
         box = (Box) properties.get("new_box");
-        root = (Root) properties.get("root");
+        box.parent = parent;
+        ITopic topic = MainActivity.workbook.createTopic();
+        IStyleSheet styleSheet = MainActivity.workbook.getStyleSheet();
+        // Tworzymy styl dla topica
+        IStyle topicStyle = styleSheet.createStyle(IStyle.TOPIC);
+        topic.setStyleId(topicStyle.getId());
+        box.topic = topic;
+        parent.topic.add(box.topic);
+     //   root = (Root) properties.get("root");
         String style = (String) properties.get("style");
         Resources res = (Resources) properties.get("res");
         Position position = Position.LFET;
 		// TODO Auto-generated method stub
-        if (parent instanceof Root) {
-            if (((Root)parent).getLeftChildren().size() == ((Root)parent).getRightChildren().size()) {
-                ((Root)parent).getLeftChildren().add(box);
-                position = Position.LFET;
-            } else {
-                ((Root)parent).getRightChildren().add(box);
+        if (parent.topic.isRoot()) {
+            if (parent.topic.getChildren(ITopic.ATTACHED).size()%2 == 0) {
                 position = Position.RIGHT;
+            } else {
+                position = Position.LFET;
             }
         } else {
-            parent.addChild(box);
             position = parent.position;
         }
-        box.setHeight(root.getHeight() - 10);
+        parent.addChild(box);
+        box.setHeight(100);
         if (position == Position.RIGHT) {
             box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().right + 30, parent.getDrawableShape().getBounds().top));
         } else {
             box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().left - box.getWidth() - 10, parent.getDrawableShape().getBounds().top));
         }
-        IStyle topicStyle = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         topicStyle.setProperty(Styles.FontFamily, "Times New Roman");
-        if (style.equals("Default")) {
+        if (parent.topic.isRoot() && style.equals("Default")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -70,7 +77,7 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (style.equals("Classic")) {
+        } else if (parent.topic.isRoot() && style.equals("Classic")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -79,7 +86,7 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-        } else if (style.equals("Simple")) {
+        } else if (!parent.topic.isRoot() || style.equals("Simple")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -89,7 +96,7 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (style.equals("Business")) {
+        } else if (parent.topic.isRoot() && style.equals("Business")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -100,7 +107,7 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (style.equals("Academese")) {
+        } else if (parent.topic.isRoot() && style.equals("Academese")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -116,13 +123,13 @@ public class AddBox implements Command {
         box.prepareDrawableShape();
         IStyle partentStyle = MainActivity.workbook.getStyleSheet().findStyle(parent.topic.getStyleId());
         if (position == Position.RIGHT) {
-            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
+            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth).substring(0,partentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
                     new Point(parent.getDrawableShape().getBounds().right,
                             parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
                     new Point(box.getDrawableShape().getBounds().left,
                             box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().bottom - box.getDrawableShape().getBounds().top) / 2), true);
         } else {
-            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
+            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth).substring(0,partentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
                     new Point(parent.getDrawableShape().getBounds().left,
                             parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
                     new Point(box.getDrawableShape().getBounds().right,

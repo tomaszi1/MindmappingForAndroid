@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
     public static ActionMode mActionMode;
     private boolean mIsScrolling = false;
     private GestureListener gestList = new GestureListener();
-    public static Root root;
+    public static Box root;
     public static Sheet sheet = new Sheet();
     public static Box boxEdited;
     public static boolean EDIT_CONN = false;
@@ -117,8 +117,9 @@ public class MainActivity extends Activity {
 
     ///---------------------------------------
     public static ISheet sheet1;
-    public ITopic rootTopic;
+    public static ITopic rootTopic;
     public static IWorkbook workbook;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -506,13 +507,11 @@ public class MainActivity extends Activity {
                 menu.getItem(2).setVisible(true);
                 menu.getItem(3).setVisible(true);
             } else if (box == null) {
-                box.isSelected = false;
 
-                for (int i = 0; i < root.getLeftChildren().size(); i++) {
-                    fireUnSelect(root.getLeftChildren().get(i));
-                }
-                for (int i = 0; i < root.getRightChildren().size(); i++) {
-                    fireUnSelect(root.getRightChildren().get(i));
+                root.isSelected = false;
+
+                for (int i = 0; i < root.getChildren().size(); i++) {
+                    fireUnSelect(root.getChildren().get(i));
                 }
                 MainActivity.toEditBoxes = new LinkedList<Box>();
                 menu.getItem(2).setVisible(false);
@@ -533,6 +532,7 @@ public class MainActivity extends Activity {
                     properties.put("style", style);
                     addBox.execute(properties);
                     MainActivity.addCommendUndo(addBox);
+                    editContent(box1);
                     lay.revalidate();
                     lay.invalidate();
 
@@ -675,23 +675,23 @@ public class MainActivity extends Activity {
                     }
                 }
                 //to napisac wszystko od nowa zwiazanego z polaczeniami
-//                if (clicked.getParent() != null) {
-//                    if (clicked.getParent().getLines().get(clicked) != null) {
-//                        if (clicked.getParent() instanceof Root) {
-//                            if (clicked.position == Position.LFET) {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-//                            } else {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-//                            }
-//                        } else {
-//                            if (clicked.position == Position.LFET) {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-//                            } else {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-//                            }
-//                        }
-//                    }
-//                }
+                if (clicked.parent != null) {
+                    if (clicked.parent.getLines().get(clicked) != null) {
+                        if (clicked.parent.topic.isRoot()) {
+                            if (clicked.position == Position.LFET) {
+                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            } else {
+                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            }
+                        } else {
+                            if (clicked.position == Position.LFET) {
+                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            } else {
+                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+                            }
+                        }
+                    }
+                }
 //                LinkedList<Box> boxes = Utils.allBoxes();
 //                if (MainActivity.EDIT_CONN) {
 //                    for (Box b : boxes) {
@@ -702,19 +702,19 @@ public class MainActivity extends Activity {
 //                        }
 //                    }
 //                }
-//                if (clicked.getParent() != null) {
-//                    if (clicked.getParent().getLines().get(clicked) != null) {
-//                        if (clicked.getParent() instanceof Root) {
+//                if (clicked.parent != null) {
+//                    if (clicked.parent.getLines().get(clicked) != null) {
+//                        if (clicked.parent.topic.isRoot()) {
 //                            if (clicked.position == Position.LFET) {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
 //                            } else {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
 //                            }
 //                        } else {
 //                            if (clicked.position == Position.LFET) {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
 //                            } else {
-//                                clicked.getParent().getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
+//                                clicked.parent.getLines().get(clicked).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
 //                            }
 //                        }
 //                    }
@@ -1190,24 +1190,24 @@ public class MainActivity extends Activity {
                     commandsUndo.getLast().undo();
                     if (commandsUndo.getLast() instanceof EditBox) {
 
-                        Callback call = new Callback() {
-                            @Override
-                            public void execute() {
+                       // Callback call = new Callback() {
+                            //@Override
+                           // public void execute() {
                                 lay.updateBox(((EditBox) commandsUndo.getLast()).box);
                                 for (Box b : ((EditBox) commandsUndo.getLast()).edited) {
                                     lay.updateBox(b);
                                 }
-                            }
-                        };
-                        try {
-                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                            async.setCallback(call);
-                            async.execute();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        //lay.revalidate();
-                        // lay.invalidate();
+                       //     }
+                       // };
+//                        try {
+//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+//                            async.setCallback(call);
+//                            async.execute();
+//                        } catch (Exception e1) {
+//                            e1.printStackTrace();
+//                        }
+                        lay.revalidate();
+                         lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(sheet.getColor().getColor());
                     } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine) {
