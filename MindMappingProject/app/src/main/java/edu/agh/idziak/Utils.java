@@ -16,7 +16,7 @@ public class Utils {
     public static void checkNotNull(Object... objs){
         for(Object o : objs){
             if(o==null)
-                throw new IllegalArgumentException("Null not allowed");
+                throw new IllegalArgumentException("Null passed");
         }
 
     }

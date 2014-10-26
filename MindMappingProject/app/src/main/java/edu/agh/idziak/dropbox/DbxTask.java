@@ -9,12 +9,12 @@ import edu.agh.idziak.Utils;
 
 
 public abstract class DbxTask<R> extends AsyncTask<Void, Long, R> {
-    private final TaskListener<R, DropboxException> taskListener;
+    private final ResultListener<R, DropboxException> resultListener;
     private DropboxException exception;
 
-    public DbxTask(TaskListener<R, DropboxException> taskListener) {
-        Utils.checkNotNull(taskListener);
-        this.taskListener = taskListener;
+    public DbxTask(ResultListener<R, DropboxException> resultListener) {
+        Utils.checkNotNull(resultListener);
+        this.resultListener = resultListener;
     }
 
     void setException(DropboxException ex) {
@@ -24,25 +24,26 @@ public abstract class DbxTask<R> extends AsyncTask<Void, Long, R> {
     @Override
     protected void onPostExecute(R result) {
         super.onPostExecute(result);
-        taskListener.onTaskDone(result, exception);
+        if(exception!=null)
+            resultListener.taskFailed(exception);
+        else
+            resultListener.taskDone(result);
     }
 
     @Override
     protected void onProgressUpdate(Long... bytes) {
         super.onProgressUpdate(bytes);
-        taskListener.publishProgress(bytes[0]);
+        resultListener.publishProgress(bytes[0]);
     }
 
     protected ProgressListener getProgressListener() {
-        return progressListener;
+        return new ProgressListener() {
+            @Override
+            public void onProgress(long bytes, long total) {
+                publishProgress(bytes);
+            }
+        };
     }
-
-    private final ProgressListener progressListener = new ProgressListener() {
-        @Override
-        public void onProgress(long bytes, long total) {
-            publishProgress(bytes);
-        }
-    };
 
     public TaskCanceller getTaskCanceller() {
         return new TaskCanceller() {

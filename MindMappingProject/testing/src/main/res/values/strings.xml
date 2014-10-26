@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">testing</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_file_browser">FileBrowserActivity</string>
+    <string name="title_activity_dropbox_browser">DropboxBrowserActivity</string>
+
+</resources>

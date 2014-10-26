@@ -4,8 +4,6 @@
       <root url="jar://$PROJECT_DIR$/app/libs/xmind-with-deps5.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/app/libs/xmind-with-deps5.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

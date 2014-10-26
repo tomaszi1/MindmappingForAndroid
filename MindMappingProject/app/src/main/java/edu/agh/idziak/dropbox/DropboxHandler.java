@@ -90,25 +90,29 @@ public class DropboxHandler {
         return dbxApi.getSession().isLinked();
     }
 
-    public void fetchFileInfo(String path, boolean listFolder, TaskListener<Entry, DropboxException> listener) {
+    public void fetchFileInfo(String path, boolean listFolder, ResultListener<Entry, DropboxException> listener) {
         new MetadataFetcher(path, listFolder, listener).execute();
     }
 
-    public void downloadFile(String dropboxPath, OutputStream dest, TaskListener<DropboxFileInfo, DropboxException> taskListener) {
-        new FileDownloader(dropboxPath, dest, taskListener).execute();
+    public void downloadFile(String dropboxPath, OutputStream dest, ResultListener<DropboxFileInfo, DropboxException> resultListener) {
+        new FileDownloader(dropboxPath, dest, resultListener).execute();
     }
 
-    public TaskCanceller uploadFile(String dropboxPath, InputStream source, long inputLength, TaskListener<Boolean, DropboxException> taskListener){
-        FileUploader fu = new FileUploader(dropboxPath, source, inputLength, taskListener);
-        fu.execute();
-        return fu.getTaskCanceller();
+    public TaskCanceller uploadFile(String dropboxPath, InputStream source, long inputLength, ResultListener<Entry, DropboxException> resultListener){
+        FileUploader uploader = new FileUploader(dropboxPath, source, inputLength, resultListener);
+        uploader.execute();
+        return uploader.getTaskCanceller();
+    }
+
+    public void createFolder(String path, ResultListener<Entry, DropboxException> resultListener){
+        new FolderCreator(path, resultListener).execute();
     }
 
     private class MetadataFetcher extends DbxTask<Entry> {
         private final String path;
         private final boolean listFolder;
 
-        private MetadataFetcher(String path, boolean listFolder, TaskListener<Entry, DropboxException> listener) {
+        private MetadataFetcher(String path, boolean listFolder, ResultListener<Entry, DropboxException> listener) {
             super(listener);
             Utils.checkNotNull(path, listener);
             this.path = path;
@@ -135,9 +139,9 @@ public class DropboxHandler {
         private final String dbxPath;
         private final OutputStream out;
 
-        private FileDownloader(String dbxPath, OutputStream out, TaskListener<DropboxFileInfo, DropboxException> taskListener) {
-            super(taskListener);
-            Utils.checkNotNull(dbxPath, out, taskListener);
+        private FileDownloader(String dbxPath, OutputStream out, ResultListener<DropboxFileInfo, DropboxException> resultListener) {
+            super(resultListener);
+            Utils.checkNotNull(dbxPath, out, resultListener);
             this.dbxPath = dbxPath;
             this.out = out;
         }
@@ -156,13 +160,13 @@ public class DropboxHandler {
         }
     }
 
-    private class FileUploader extends DbxTask<Boolean> {
+    private class FileUploader extends DbxTask<Entry> {
         private final String path;
         private final InputStream input;
         private final long inputLength;
         private UploadRequest req;
 
-        private FileUploader(String dropboxPath, InputStream input, long inputLength, TaskListener<Boolean, DropboxException> listener) {
+        private FileUploader(String dropboxPath, InputStream input, long inputLength, ResultListener<Entry, DropboxException> listener) {
             super(listener);
             this.input = input;
             this.path = dropboxPath;
@@ -170,10 +174,10 @@ public class DropboxHandler {
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected Entry doInBackground(Void... voids) {
             try{
-                req = DropboxHandler.this.dbxApi.putFileOverwriteRequest(path, input, inputLength, getProgressListener());
-                req.upload();
+                req = dbxApi.putFileOverwriteRequest(path, input, inputLength, getProgressListener());
+                return req.upload();
             }catch (DropboxException ex){
                 Log.i(TAG, "Upload failed", ex);
                 setException(ex);
@@ -183,8 +187,27 @@ public class DropboxHandler {
 
         @Override
         protected void onCancelled() {
-            super.onCancelled();
             req.abort();
+        }
+
+    }
+
+    private class FolderCreator extends DbxTask<Entry>{
+        private final String path;
+
+        private FolderCreator(String path, ResultListener<Entry, DropboxException> resultListener) {
+            super(resultListener);
+            this.path = path;
+        }
+
+        @Override
+        protected Entry doInBackground(Void... voids) {
+            try {
+                return dbxApi.createFolder(path);
+            } catch (DropboxException e) {
+                setException(e);
+            }
+            return null;
         }
     }
 
