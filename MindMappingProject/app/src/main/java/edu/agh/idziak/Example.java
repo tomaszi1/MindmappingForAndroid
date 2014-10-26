@@ -70,7 +70,6 @@ public class Example {
         // Jeśli mamy topika i chcemy się dobrać do jego stylu to:
         String styleId = rootTopic.getStyleId(); // bierzemy ID, zwróci NULL jeśli nie ma przypisanego stylu
         IStyle rootTopicStyle = styleSheet.findStyle(styleId); // wyciągamy styl z arkusza
-
         // UWAGA: Elementy nie mają żadnych domyślnych styli.
     }
 

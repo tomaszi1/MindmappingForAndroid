@@ -24,14 +24,15 @@ public class RemoveLine implements Command {
 		properties1 =  (Properties)properties.clone();
         after = properties;
 		box = (Box) properties.get("box");
-        Box parent = box.getParent();
-        try {
-            line = parent.getLines().get(box).Clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        parent.getLines().remove(box);
-        properties1.put("parent", parent);
+        //todo napisac wszystko od nowa
+      //  Box parent = box.getParent();
+       // try {
+        //    line = parent.getLines().get(box).Clone();
+        //} catch (CloneNotSupportedException e) {
+        //    e.printStackTrace();
+       // }
+       // parent.getLines().remove(box);
+       // properties1.put("parent", parent);
 	}
 
     @Override

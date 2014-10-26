@@ -8,9 +8,6 @@ import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.common.Root;
-import edu.agh.klaukold.enums.Align;
-import edu.agh.klaukold.enums.BlockShape;
-import edu.agh.klaukold.enums.LineStyle;
 import edu.agh.klaukold.enums.Position;
 
 import android.content.Context;
@@ -26,10 +23,12 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
+
+import org.xmind.core.internal.Style;
+import org.xmind.core.style.IStyle;
+import org.xmind.ui.style.Styles;
 
 public class DrawView extends RelativeLayout {
     private Paint paint = new Paint();
@@ -159,19 +158,16 @@ public class DrawView extends RelativeLayout {
         //przesunięcie mapy i wyskalowanie
         canvas.translate(transx, transy);
         canvas.scale(zoomx, zoomy);
-        Root root = MainActivity.root;
+        Box root = MainActivity.root;
         drawBox(root, canvas);
         if (root == null) {
             return;
         }
 
-        for (Box box : root.getLeftChildren()) {
+        for (Box box : root.getChildren()) {
             fireDrawChildren(box, canvas);
         }
 
-        for (Box box : root.getRightChildren()) {
-            fireDrawChildren(box, canvas);
-        }
 //       if(root.isExpanded()) {
 //    	   showLines(root);
 //       } else {
@@ -184,39 +180,36 @@ public class DrawView extends RelativeLayout {
 //
             // drawBox(root, canvas);
 //
-            for (Box box : root.getLeftChildren()) {
+            for (Box box : root.getChildren()) {
                 drawBox(box, canvas);
             }
 
-            for (Box box : root.getRightChildren()) {
-                drawBox(box, canvas);
-            }
 
-            for (Box box : root.getLeftChildren()) {
-                fireDrawChildren(box, canvas);
-            }
-
-            for (Box box : root.getRightChildren()) {
-                fireDrawChildren(box, canvas);
-            }
-
-            for (Box box : root.getDetached()) {
-                drawBox(box, canvas);
-            }
-
-            for (Box box : root.getDetached()) {
-                fireDrawChildren(box, canvas);
-            }
+//            for (Box box : root.getLeftChildren()) {
+//                fireDrawChildren(box, canvas);
+//            }
+//
+//            for (Box box : root.getRightChildren()) {
+//                fireDrawChildren(box, canvas);
+//            }
+//
+//            for (Box box : root.getDetached()) {
+//                drawBox(box, canvas);
+//            }
+//
+//            for (Box box : root.getDetached()) {
+//                fireDrawChildren(box, canvas);
+//            }
 
             return;
         }
 
-        if (!root.getLeftChildren().isEmpty() && updateLeft) {
-            for (Box box : root.getDetached()) {
-                // triggerDetachMove(box);
-            }
-            updateLeft = false;
-        }
+//        if (!root.getChildren().isEmpty() && updateLeft) {
+//            for (Box box : root.getDetached()) {
+//                // triggerDetachMove(box);
+//            }
+//            updateLeft = false;
+//        }
 //
 //       if(!root.right.isEmpty() && updateRight) {
 //    	   for(Box box: root.detached) {
@@ -571,15 +564,16 @@ public class DrawView extends RelativeLayout {
 //    }
 
     private void drawBox(Box box, Canvas canvas) {
-        if (box.isVisible()) {
+        if (!box.topic.isFolded()) {
             //String s = box.getText().getText();
             //String[] parts = s.split("\n");
             //1float f = getLongest(parts);
             //
-            if (box.getShape() != BlockShape.DIAMOND && box.getShape() != BlockShape.UNDERLINE && box.getShape() != BlockShape.NO_BORDER) {
-                ((GradientDrawable) box.getDrawableShape()).setStroke((int) box.getLineThickness().getValue(), box.getLineColor());
-            } else if (box.getShape() == BlockShape.DIAMOND) {
-                ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke((int) box.getLineThickness().getValue(), box.getLineColor());
+            IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
+            if (style.getProperty(Styles.ShapeClass) == Styles.TOPIC_SHAPE_DIAMOND) {
+                ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
+            } else if (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER) {
+                ((GradientDrawable) box.getDrawableShape()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
             }
 
             // paint.setStrokeWidth(0);
@@ -595,20 +589,20 @@ public class DrawView extends RelativeLayout {
             box.prepareDrawableShape();
             //   }
 
-            if (box.isSelected()) {
+            if (box.isSelected) {
                 box.setActiveColor();
             }// else if (!box.isExpanded()) {
 //                paint.setColor(collapsedColor);
 //            }
-            if (box.isVisible()) {
+            if (!box.topic.isFolded()) {
                 box.getDrawableShape().draw(canvas);
-                if (box.getShape() == BlockShape.UNDERLINE) {
+                if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
                     Path path = new Path();
                     path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
                     path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
                     Paint paint1 = new Paint();
-                    paint1.setColor(box.getLineColor());
-                    paint1.setStrokeWidth(box.getLineThickness().getValue());
+                    paint1.setColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
+                    paint1.setStrokeWidth(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))));
                     paint1.setStyle(Paint.Style.STROKE);
                     canvas.drawPath(path, paint1);
                 }
@@ -634,8 +628,8 @@ public class DrawView extends RelativeLayout {
 //                box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
 //                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
 //                box.newMarker.draw(canvas);
-                if (!(box instanceof Root) && box.isExpendable) {
-                    if (!box.isExpanded()) {
+                if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
+                    if (!box.topic.isFolded()) {
                         box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
                         box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
                         box.collapseAction.draw(canvas);
@@ -660,7 +654,7 @@ public class DrawView extends RelativeLayout {
 //                    canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
 //                }
 //            }
-            if (box.isExpanded()) {
+            if (!box.topic.isFolded()) {
                 showLines(box);
             }
         }
@@ -668,17 +662,18 @@ public class DrawView extends RelativeLayout {
 
     // ToDO wyswietlanie tekstu
     private void drawText(Box box, Canvas canvas) {
+        IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         paint = new Paint();
         if (box != null) {
             float x = 0;
             float y = 0;
-            String s = box.getText().getText();
+            String s = box.topic.getTitleText();
             String[] parts = s.split("\n");
             float f = getLongest(parts);
-            if (box.getShape() != BlockShape.NO_BORDER || box.getShape() != BlockShape.UNDERLINE) {
-                paint.setColor(box.getText().getColor().getColor());
-            }
-            paint.setTextSize(box.getText().getSize());
+            //   if (box.getShape() != BlockShape.NO_BORDER || box.getShape() != BlockShape.UNDERLINE) {
+            paint.setColor(Integer.parseInt(style.getProperty(Styles.TextColor)));
+            //    }
+            paint.setTextSize(Integer.parseInt(remove2LastChars(style.getProperty(Styles.FontSize))));
 //            if (box.getText().getAlign() == Align.CENTER) {
 //                paint.setTextAlign(Paint.Align.CENTER);
 //            } else if (box.getText().getAlign() == Align.RIGHT) {
@@ -688,32 +683,41 @@ public class DrawView extends RelativeLayout {
 //            }
 ////            Log.w(s, rect.toString());
 ////            Log.w("measute", String.valueOf(paint.measureText(s)));
-            if (box.getText().isItalic() && box.getText().isBold()) {
+            Typeface font = Typeface.DEFAULT;
+            if (style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
+                font = Typeface.SERIF;
+            } else if (style.getProperty(Styles.FontFamily).equals("Arial")) {
+                font = Typeface.SANS_SERIF;
+            } else if (style.getProperty(Styles.FontFamily).equals("Courier New")) {
+                font = Typeface.MONOSPACE;
+            }
+
+            if (style.getProperty(Styles.FontStyle) == Styles.FONT_STYLE_ITALIC && style.getProperty(Styles.FontStyle) == Styles.FONT_WEIGHT_BOLD) {
                 Typeface tf = Typeface.create(Typeface.SERIF, Typeface.BOLD_ITALIC);
                 paint.setTypeface(tf);
                 // paint.setFakeBoldText(true);
-            } else if (box.getText().isItalic()) {
+            } else if (style.getProperty(Styles.FontStyle) == Styles.FONT_STYLE_ITALIC) {
                 Typeface tf = Typeface.create(Typeface.SERIF, Typeface.ITALIC);
                 paint.setTypeface(tf);
-            } else if (box.getText().isBold()) {
-                Typeface tf = Typeface.create(box.getText().typeface, Typeface.BOLD);
+            } else if (style.getProperty(Styles.FontStyle) == Styles.FONT_WEIGHT_BOLD) {
+                Typeface tf = Typeface.create(font, Typeface.BOLD);
                 paint.setTypeface(tf);
 
-            } else if (box.getText().isStrikeOut() && box.position == Position.LFET) {
-                Typeface tf = Typeface.create(box.getText().typeface, Typeface.NORMAL);
+            } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_LEFT) && style.getProperty(Styles.TextDecoration) == Styles.TEXT_DECORATION_LINE_THROUGH) {
+                Typeface tf = Typeface.create(font, Typeface.NORMAL);
                 paint.setTypeface(tf);
                 paint.setStrokeWidth(2);
                 paint.setStrikeThruText(true);
             } else {
                 // Typeface tf = Typeface.create(box.getText().typeface);
-                paint.setTypeface(box.getText().typeface);
+                paint.setTypeface(font);
             }
 
-            if (box.getText().getAlign() == Align.CENTER) {
+            if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
                 paint.setTextAlign(Paint.Align.CENTER);
-            } else if (box.getText().getAlign() == Align.RIGHT) {
+            } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
                 paint.setTextAlign(Paint.Align.RIGHT);
-            } else if (box.getText().getAlign() == Align.LEFT) {
+            } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_LEFT)) {
                 paint.setTextAlign(Paint.Align.LEFT);
             }
             for (int j = 0; j < parts.length; j++) {
@@ -722,8 +726,8 @@ public class DrawView extends RelativeLayout {
 
                 if (parts.length == 1) {
                     Rect rectText = new Rect();
-                    paint.getTextBounds(box.getText().getText(), 0, box.getText().getText().length(), rectText);
-                    if (box.getText().getAlign() == Align.CENTER) {
+                    paint.getTextBounds(box.topic.getTitleText(), 0, box.topic.getTitleText().length(), rectText);
+                    if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
 //                        if (box.getShape() == BlockShape.DIAMOND) {
 //                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
 //                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
@@ -733,7 +737,7 @@ public class DrawView extends RelativeLayout {
 //                        } else {
                         x = box.getDrawableShape().getBounds().left + rectText.width() / 2 + (box.getDrawableShape().getBounds().width() - rectText.width()) / 2;
                         //  }
-                    } else if (box.getText().getAlign() == Align.RIGHT) {
+                    } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
 //                        if (box.getShape() == BlockShape.DIAMOND) {
 //                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
 //                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
@@ -743,7 +747,7 @@ public class DrawView extends RelativeLayout {
 //                        } else {
                         x = (box.getDrawableShape().getBounds().right - 10);
 //                        }
-                    } else if (box.getText().getAlign() == Align.LEFT) {
+                    } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_LEFT)) {
                         x = (box.getDrawableShape().getBounds().left + 10);
                         y = box.getDrawableShape().getBounds().top + rectText.height();
                     }
@@ -754,12 +758,12 @@ public class DrawView extends RelativeLayout {
                     canvas.drawText(str, x, y, paint);
 
                 } else {
-                    if (box.getText().getAlign() == Align.CENTER) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
+                    if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
+                        if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
                             //TODO poprawic
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
+                        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                             if (j == 0) {
                                 y = box.getDrawableShape().getBounds().top + paint.getTextSize() + paint.getTextSize() / 2;
                             } else {
@@ -774,17 +778,18 @@ public class DrawView extends RelativeLayout {
                             //y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) * paint.getTextSize();
                             if (j == 0) {
                                 y = box.getDrawableShape().getBounds().top + paint.getTextSize();
+
                             } else {
                                 y = box.getDrawableShape().getBounds().top + paint.getTextSize() * (j + 1) + paint.getTextSize() / 2;
                                 // y = box.getDrawableShape().getBounds().top + (((box.getDrawableShape().getBounds().height()) / ((parts.length) * paint.getTextSize())) * (j + 1)) + 20;
                             }
                         }
-                    } else if (box.getText().getAlign() == Align.RIGHT) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
+                    } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
+                        if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
                             //TODO poprawic
                             x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
+                        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                             start = 0.2f * box.getDrawableShape().getBounds().height() / (parts.length);
                             x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize();
@@ -793,12 +798,12 @@ public class DrawView extends RelativeLayout {
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         }
 
-                    } else if (box.getText().getAlign() == Align.LEFT) {
-                        if (box.getShape() == BlockShape.DIAMOND) {
+                    } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_LEFT)) {
+                        if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
                             //TODO poprawic
                             x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
-                        } else if (box.getShape() == BlockShape.ELLIPSE) {
+                        } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                             start = 0.2f * box.getDrawableShape().getBounds().height() / (parts.length);
                             x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize();
@@ -819,7 +824,7 @@ public class DrawView extends RelativeLayout {
 
 
     public void updateBox(Box box) {
-        String s = box.getText().getText();
+        String s = box.topic.getTitleText();
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
@@ -883,7 +888,7 @@ public class DrawView extends RelativeLayout {
 //        	box.rect.left = box.rect.right - ((int) f + 50);
 //    	}
         Rect rect = new Rect();
-        paint.setTextSize((float) box.getText().getSize());
+        paint.setTextSize((float) Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))));
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
             int w = (rect.right - rect.left) + (rect.right - rect.left) / 2;
@@ -903,10 +908,10 @@ public class DrawView extends RelativeLayout {
                 }
             }
             if (width > box.getWidth()) {
-                box.setWidth(width + box.getText().getSize());
+                box.setWidth(width + Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)));
             }
-            box.setHeight((rect.bottom - rect.top) * parts.length + (box.getText().getSize() / 2 * parts.length));
-            if (box.getShape() == BlockShape.ELLIPSE) {
+            box.setHeight((rect.bottom - rect.top) * parts.length + (Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize)) / 2 * parts.length));
+            if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getId()).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                 if (parts.length > 1) {
                     box.setHeight((int) (box.getHeight() * Math.sqrt(2)));
                 }
@@ -979,7 +984,7 @@ public class DrawView extends RelativeLayout {
     }
 
     public void updateCore(Root core) {
-        String s = core.getText().getText();
+        String s = core.topic.getTitleText();
         String[] parts = s.split("\n");
 
         float f = getLongest(parts);
@@ -1036,9 +1041,9 @@ public class DrawView extends RelativeLayout {
             } else {
                 Paint paint = new Paint();
                 paint.setColor(x.getColor().getColor());
-                paint.setStrokeWidth(x.getThickness());
+                paint.setStrokeWidth(x.getThickness() + 1);
                 paint.setStyle(Paint.Style.STROKE);
-                if ((x.getShape() == LineStyle.ELBOW || x.getShape() == LineStyle.ROUNDED_ELBOW)) {
+                if ((x.shape == Styles.BRANCH_CONN_ELBOW || x.shape == Styles.BRANCH_CONN_ROUNDEDELBOW)) {
                     x.box = box;
                 }
                 x.preparePath();
@@ -1125,32 +1130,32 @@ public class DrawView extends RelativeLayout {
         drawText(MainActivity.boxEdited, canvas);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // Get the coordinates of the touch event.
-        float eventX = event.getX();
-        float eventY = event.getY();
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                // Set a new starting point
-                //path.moveTo(eventX, eventY);
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                // Connect the points
-                // path.lineTo(eventX, eventY);
-                break;
-            default:
-                return false;
-        }
-
-        // Makes our view repaint and call onDraw
-        invalidate();
-        return true;
-    }
-
-
 //    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        // Get the coordinates of the touch event.
+//        float eventX = event.getX();
+//        float eventY = event.getY();
+//
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                // Set a new starting point
+//                //path.moveTo(eventX, eventY);
+//                return true;
+//            case MotionEvent.ACTION_MOVE:
+//                // Connect the points
+//                // path.lineTo(eventX, eventY);
+//                break;
+//            default:
+//                return false;
+//        }
+//
+//        // Makes our view repaint and call onDraw
+//        invalidate();
+//        return true;
+//    }
+
+
+    //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
 //
 //        int x = (int) event.getX();
@@ -1197,4 +1202,7 @@ public class DrawView extends RelativeLayout {
 //        return true;
 //
 //    }
+    private String remove2LastChars(String str) {
+        return str.substring(0, str.length() - 2);
+    }
 }

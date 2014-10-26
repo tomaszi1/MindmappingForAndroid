@@ -41,9 +41,9 @@ public class Utils {
 	static String base;
 	
 	public static void  fireSetVisible(Box box, Boolean visible) {
-        box.setExpanded(visible);
+        box.topic.setFolded(visible);
         for (Box b : box.getLines().keySet()) {
-            b.setVisible(visible);
+            b.topic.setFolded(!visible);
             box.getLines().get(b).setVisible(visible);
             fireSetVisible(b, visible);
         }
@@ -59,28 +59,28 @@ public class Utils {
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
 
-        Root c = MainActivity.root;
+        Box c = MainActivity.root;
         Queue<Box> q= new LinkedList<Box>();
-        for(Box b: c.getLeftChildren()) {
+        for(Box b: c.getChildren()) {
             if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
                 return b;
             }
             q.add(b);
         }
 
-        for(Box b: c.getRightChildren()) {
-            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-                return b;
-            }
-            q.add(b);
-        }
+//        for(Box b: c.getRightChildren()) {
+//            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+//                return b;
+//            }
+//            q.add(b);
+//        }
 
-        for(Box b: c.getDetached()) {
-            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-                return b;
-            }
-            q.add(b);
-        }
+//        for(Box b: c.getDetached()) {
+//            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
+//                return b;
+//            }
+//            q.add(b);
+//        }
 
         while(!q.isEmpty()) {
             Box box = q.remove();
@@ -101,7 +101,7 @@ public class Utils {
 		int x = (int) mClickCoords[0];
 		int y = (int) mClickCoords[1];
 		
-		Root c = MainActivity.root;
+		Box c = MainActivity.root;
 				
 		
 		if(c.getDrawableShape().getBounds().contains(x, y)) {
@@ -112,21 +112,21 @@ public class Utils {
 		
 		Queue<Box> q= new LinkedList<Box>();
 		
-		for(Box b: c.getLeftChildren()) {
+		for(Box b: c.getChildren()) {
 			q.add(b);
 		}
 		
-		for(Box b: c.getRightChildren()) {
-			q.add(b);
-		}
-		
-		for(Box b: c.getDetached()) {
-			q.add(b);
-		}
+//		for(Box b: c.getRightChildren()) {
+//			q.add(b);
+//		}
+//
+//		for(Box b: c.getDetached()) {
+//			q.add(b);
+//		}
 		while(!q.isEmpty()) {
 			Box box = q.remove();
 			
-			if(box.isVisible()) {
+			if(!box.topic.isFolded()) {
 				Rect rec = box.getDrawableShape().getBounds();
 				if(rec.contains(x, y)) {
 					q.clear();
@@ -150,7 +150,7 @@ public class Utils {
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
 
-        Root c = MainActivity.root;
+        Box c = MainActivity.root;
 
 
 //        if(c.newMarker.getBounds().contains(x, y)) {
@@ -178,21 +178,21 @@ public class Utils {
 
         Queue<Box> q= new LinkedList<Box>();
 
-        for(Box b: c.getLeftChildren()) {
+        for(Box b: c.getChildren()) {
             q.add(b);
         }
 
-        for(Box b: c.getRightChildren()) {
-            q.add(b);
-        }
-
-        for(Box b: c.getDetached()) {
-            q.add(b);
-        }
+//        for(Box b: c.getRightChildren()) {
+//            q.add(b);
+//        }
+//
+//        for(Box b: c.getDetached()) {
+//            q.add(b);
+//        }
         while(!q.isEmpty()) {
             Box box = q.remove();
 
-            if(box.isVisible()) {
+            if(!box.topic.isFolded()) {
 //                Rect rec = box.getDrawableShape().getBounds();
 //                if(rec.contains(x, y)) {
 //                    q.clear();

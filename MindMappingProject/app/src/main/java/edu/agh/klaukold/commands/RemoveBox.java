@@ -2,17 +2,16 @@ package edu.agh.klaukold.commands;
 
 import android.graphics.drawable.ColorDrawable;
 
+import org.xmind.core.style.IStyle;
+import org.xmind.ui.style.Styles;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
-import edu.agh.klaukold.common.Marker;
-import edu.agh.klaukold.common.Note;
-import edu.agh.klaukold.common.Point;
-import edu.agh.klaukold.common.Root;
-import edu.agh.klaukold.enums.Position;
+import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
 
 public class RemoveBox implements Command {
@@ -27,19 +26,11 @@ public class RemoveBox implements Command {
         after = (Properties) properties.clone();
         boxes = (HashMap<Box, Line>) properties.get("boxes");
         for (Box box : boxes.keySet()) {
-            if (box.getParent() instanceof Root) {
-              if  (((Root) box.getParent()).getLeftChildren().contains(box)) {
-                  ((Root) box.getParent()).getLeftChildren().remove(box);
-              } else {
-                  ((Root) box.getParent()).getRightChildren().remove(box);
-              }
-            } else {
-                box.getParent().getChildren().remove(box);
+            if (!box.topic.isRoot()) {
+              box.topic.getParent().getAllChildren().remove(box);
             }
-            box.getParent().getLines().remove(box);
-            if (box.getParent().getChildren().size() == 0) {
-                box.getParent().isExpendable = false;
-            }
+            //todo usuniecie linii
+          //  box.getParent().getLines().remove(box);
         }
 	}
 
@@ -48,25 +39,22 @@ public class RemoveBox implements Command {
         HashMap<Box, Line> boxes1 = (HashMap<Box, Line>)before.get("boxes");
         for (Box b: boxes1.keySet()) {
             b.prepareDrawableShape();
-            if (b.getParent() instanceof Root) {
-                if (((Root) b.getParent()).getLeftChildren().size() == ((Root) b.getParent()).getLeftChildren().size()) {
-                    ((Root) b.getParent()).getLeftChildren().add(b);
-                } else {
-                    ((Root) b.getParent()).getRightChildren().add(b);
-                }
-            } else {
-                b.getParent().getChildren().add(b);
+            if (!b.topic.isRoot())
+            {
+                b.topic.getParent().add(b.topic);
             }
-            Line line = new Line(b.getParent().getLineStyle(),(int) b.getParent().getLineThickness().getValue(), new ColorDrawable(b.getParent().getLineColor()), new Point(), new Point(), true);
-            if (b.position == Position.LFET) {
-                line.setStart(new Point(b.getParent().getDrawableShape().getBounds().left, b.getParent().getDrawableShape().getBounds().centerY()));
-                line.setEnd(new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()));
-            } else {
-                line.setStart(new Point( b.getParent().getDrawableShape().getBounds().right, b.getParent().getDrawableShape().getBounds().centerY()));
-                line.setEnd(new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()));
-            }
-            b.getParent().getLines().put(b, line);
-            b.getParent().isExpendable = true;
+            IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getParent().getStyleId());
+            //todo wyszstko napisac od nowa
+//            Line line = new Line(b.getParent().getLineStyle(), Integer.parseInt(s.getProperty(Styles.LineWidth)), new ColorDrawable(b.getParent().getLineColor()), new Point(), new Point(), true);
+//            if (b.position == Position.LFET) {
+//                line.setStart(new Point(b.getParent().getDrawableShape().getBounds().left, b.getParent().getDrawableShape().getBounds().centerY()));
+//                line.setEnd(new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()));
+//            } else {
+//                line.setStart(new Point( b.getParent().getDrawableShape().getBounds().right, b.getParent().getDrawableShape().getBounds().centerY()));
+//                line.setEnd(new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()));
+//            }
+//            b.getParent().getLines().put(b, line);
+//            b.getParent().isExpendable = true;
         }
     }
 

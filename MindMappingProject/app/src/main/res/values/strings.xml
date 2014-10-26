@@ -54,9 +54,9 @@
     <string name="center">Center</string>
     <string name="left">Left</string>
     <string name="def">DEFAULT</string>
-    <string name="mono">MONOSPACE</string>
-    <string name="sserif">SANS_SERIF</string>
-    <string name="serif">SERIF</string>
+    <string name="mono">Courier New</string>
+    <string name="sserif">Arial</string>
+    <string name="serif">Times New Roman</string>
     <string name="height">Height</string>
     <string-array name="shapes_array">
         <item>@string/ellipse</item>
@@ -85,7 +85,7 @@
         <item>@string/center</item>
     </string-array>
     <string-array name="fonts_array">
-        <item>@string/def</item>
+        <!--<item>@string/def</item>-->
         <item>@string/mono</item>
         <item>@string/sserif</item>
         <item>@string/serif</item>

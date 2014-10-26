@@ -35,30 +35,31 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 public class WelcomeScreen extends Activity {
-	private Spinner styles;
-	public Spinner getStyles() {
-		return styles;
-	}
+    private Spinner styles;
 
-	public void setStyles(Spinner styles) {
-		this.styles = styles;
-	}
+    public Spinner getStyles() {
+        return styles;
+    }
 
-	public Button getButtonCreateMindMap() {
-		return buttonCreateMindMap;
-	}
+    public void setStyles(Spinner styles) {
+        this.styles = styles;
+    }
+
+    public Button getButtonCreateMindMap() {
+        return buttonCreateMindMap;
+    }
 
     public void setButtonCreateMindMap(Button buttonCreateMindMap) {
         this.buttonCreateMindMap = buttonCreateMindMap;
     }
 
-	private Button buttonCreateMindMap;
+    private Button buttonCreateMindMap;
     private ImageView imageStyle;
     public final static String STYLE = "WELCOME_SCREEN_STYLE";
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 //		
 //		if(!Utils.isBaseSet()) {
 //			Properties props = new Properties();
@@ -74,11 +75,11 @@ public class WelcomeScreen extends Activity {
 //		}
 //		
 //		//Utils.initDB(this);
-    	Utils.context = this;
-	}
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+        Utils.context = this;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("text", "logging");
         setContentView(R.layout.welcome_screen);
@@ -183,16 +184,27 @@ public class WelcomeScreen extends Activity {
 //				startActivity(intent);
 //			}
 //		});
-	}
+    }
 
-    private void addListenerSpinerStyles()
-    {
+    private void addListenerSpinerStyles() {
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 imageStyle = (ImageView) findViewById(R.id.imageView);
-                imageStyle.setImageResource(R.drawable.default_style);
+                if (spinner.getSelectedItem().toString().equals("Default")) {
+                    imageStyle.setImageResource(R.drawable.def);
+                } else if (spinner.getSelectedItem().toString().equals("Classic")) {
+                    imageStyle.setImageResource(R.drawable.classic);
+                } else if (spinner.getSelectedItem().toString().equals("Simple")) {
+                    imageStyle.setImageResource(R.drawable.simp);
+                } else if (spinner.getSelectedItem().toString().equals("Business")) {
+                    imageStyle.setImageResource(R.drawable.buss);
+                } else if (spinner.getSelectedItem().toString().equals("Academese")) {
+                    imageStyle.setImageResource(R.drawable.acad);
+                } else if (spinner.getSelectedItem().toString().equals("Comic")) {
+                    imageStyle.setImageResource(R.drawable.acad);
+                }
             }
 
             @Override
@@ -202,15 +214,15 @@ public class WelcomeScreen extends Activity {
 
         });
     }
-    private void addListenerOnButtonCreateMindMap()
-    {
+
+    private void addListenerOnButtonCreateMindMap() {
         buttonCreateMindMap = (Button) findViewById(R.id.buttonCreateMindMap);
         buttonCreateMindMap.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-                Spinner spinner= (Spinner) findViewById(R.id.spinnerStyles);
+                Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
                 String style = (String) spinner.getSelectedItem();
                 intent.putExtra(STYLE, style);
                 if (MainActivity.root != null) {
@@ -221,9 +233,9 @@ public class WelcomeScreen extends Activity {
             }
         });
     }
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

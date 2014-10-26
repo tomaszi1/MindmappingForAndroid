@@ -119,8 +119,5 @@ public class Root extends Box implements Serializable {
 
     }
 
-    public void clear() {
-        leftChildren.clear();
-        rightChildren.clear();
-    }
+
 }

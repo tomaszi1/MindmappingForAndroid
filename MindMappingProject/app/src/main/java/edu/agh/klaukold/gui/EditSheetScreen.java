@@ -20,35 +20,35 @@ import edu.agh.klaukold.commands.EditSheet;
 
 public class EditSheetScreen extends Activity {
 
-	private ColorPalette colorPalette;
-	private CheckBox muliBranchColor;
-	private SeekBar intensivity;
-	private Wallpaper wallPaper;
+    private ColorPalette colorPalette;
+    private CheckBox muliBranchColor;
+    private SeekBar intensivity;
+    private Wallpaper wallPaper;
     public static TextView backgroud;
     public static View backdroundColorEditScreen;
     public static int COLOR;
     public static String ACTIVITY_TYPE = "EDIT_SHEET";
 
     //ToDO obsługa wallpaper oraz multibranch color
-	@Override
-	public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
         ((GradientDrawable) backdroundColorEditScreen.getBackground()).setColor(COLOR);
 
-	}
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_screen);
         Intent intent = getIntent();
-        COLOR =  intent.getIntExtra(MainActivity.BACKGROUNDCOLOR, 1);
-        int inten =  intent.getIntExtra(MainActivity.INTENSIVITY, 0);
+        COLOR = intent.getIntExtra(MainActivity.BACKGROUNDCOLOR, 1);
+        int inten = intent.getIntExtra(MainActivity.INTENSIVITY, 0);
 //        intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
 //        intensivity.setProgress((inten));
         backgroud = (TextView) findViewById(R.id.textViewBackgroundColor);
         backdroundColorEditScreen = (View) findViewById(R.id.sheet_color);
-        ((GradientDrawable)backdroundColorEditScreen.getBackground()).setColor(COLOR);
+        ((GradientDrawable) backdroundColorEditScreen.getBackground()).setColor(COLOR);
         backdroundColorEditScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,11 +57,11 @@ public class EditSheetScreen extends Activity {
                 startActivity(intent);
             }
         });
-	}
+    }
 
-	@Override
-	public void onDestroy() {
+    @Override
+    public void onDestroy() {
         super.onDestroy();
-	}
+    }
 
 }
