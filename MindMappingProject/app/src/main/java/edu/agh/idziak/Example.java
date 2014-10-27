@@ -46,6 +46,7 @@ public class Example {
         WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
         IWorkbook workbook = handler.getWorkbook();
         ISheet sheet = workbook.getPrimarySheet();
+
         ITopic rootTopic = sheet.getRootTopic();
 
         // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.

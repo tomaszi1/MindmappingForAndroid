@@ -5,9 +5,12 @@ import android.util.Log;
 
 import org.xmind.core.Core;
 import org.xmind.core.CoreException;
+import org.xmind.core.IRevision;
+import org.xmind.core.IRevisionManager;
+import org.xmind.core.IRevisionRepository;
+import org.xmind.core.ISheet;
 import org.xmind.core.IWorkbook;
 import org.xmind.core.io.ByteArrayStorage;
-import org.xmind.core.io.IStorage;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -20,35 +23,44 @@ import edu.agh.idziak.dropbox.ResultListener;
 
 public class LocalWorkbookManager {
     public static final String TAG = LocalWorkbookManager.class.getSimpleName();
-    private IWorkbook workbook;
-    private File file;
 
-    private LocalWorkbookManager(IWorkbook workbook, File file) {
-        this.workbook = workbook;
-        this.file = file;
+    public void saveWorkbook(File file, IWorkbook workbook, ResultListener<Void, Exception> resultListener) {
+        Utils.checkNotNull(file, workbook, resultListener);
+        new WorkbookSaver(file, workbook, resultListener).execute();
     }
 
-    private void saveWorkbook(ResultListener<Void, Exception> resultListener){
-        new WorkbookSaver(resultListener).execute();
+    public static void loadWorkbook(File file, ResultListener<IWorkbook, Exception> resultListener) {
+        Utils.checkNotNull(file, resultListener);
+        new WorkbookLoader(file, resultListener).execute();
     }
 
-    public static void loadWorkbook(File workbookFile, ResultListener<LocalWorkbookManager, Exception> resultListener) {
-        Utils.checkNotNull(workbookFile, resultListener);
-        new WorkbookLoader(workbookFile, resultListener).execute();
+    public static IWorkbook createNewWorkbook() {
+        IWorkbook workbook = Core.getWorkbookBuilder().createWorkbook();
+        workbook.setTempStorage(new ByteArrayStorage());
+        return workbook;
     }
 
-    private class WorkbookSaver extends AsyncTask<Void, Void, Void>{
+    private static class WorkbookSaver extends AsyncTask<Void, Void, Void> {
         public final String TAG = LocalWorkbookManager.TAG + "." + WorkbookSaver.class.getSimpleName();
-        private ResultListener<Void, Exception> resultListener;
+        private final ResultListener<Void, Exception> resultListener;
         private Exception ex;
+        private final IWorkbook workbook;
+        private final File file;
 
-        public WorkbookSaver(ResultListener<Void, Exception> resultListener){
+        public WorkbookSaver(File file, IWorkbook workbook, ResultListener<Void, Exception> resultListener) {
             this.resultListener = resultListener;
+            this.workbook = workbook;
+            this.file = file;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             try {
+                IRevisionRepository revRep = workbook.getRevisionRepository();
+                for (ISheet sheet : workbook.getSheets()) {
+                    IRevisionManager revMan = revRep.getRevisionManager(sheet.getId(), IRevision.SHEET);
+                    revMan.addRevision(sheet);
+                }
                 workbook.save(new FileOutputStream(file));
             } catch (IOException e) {
                 ex = e;
@@ -69,23 +81,21 @@ public class LocalWorkbookManager {
         }
     }
 
-    private static class WorkbookLoader extends AsyncTask<Void, Void, LocalWorkbookManager> {
+    private static class WorkbookLoader extends AsyncTask<Void, Void, IWorkbook> {
         private final String TAG = LocalWorkbookManager.TAG + "." + WorkbookLoader.class.getSimpleName();
-        private ResultListener<LocalWorkbookManager, Exception> resultListener;
+        private ResultListener<IWorkbook, Exception> resultListener;
         private File file;
         private Exception ex;
 
-        public WorkbookLoader(File file, ResultListener<LocalWorkbookManager, Exception> resultListener) {
+        public WorkbookLoader(File file, ResultListener<IWorkbook, Exception> resultListener) {
             this.file = file;
             this.resultListener = resultListener;
         }
 
         @Override
-        protected LocalWorkbookManager doInBackground(Void... voids) {
+        protected IWorkbook doInBackground(Void... voids) {
             try {
-                IStorage storage = new ByteArrayStorage();
-                IWorkbook workbook = Core.getWorkbookBuilder().loadFromStream(new BufferedInputStream(new FileInputStream(file)), storage);
-                return new LocalWorkbookManager(workbook, file);
+                return Core.getWorkbookBuilder().loadFromStream(new BufferedInputStream(new FileInputStream(file)), new ByteArrayStorage());
             } catch (IOException e) {
                 Log.e(TAG, "Error while loading file", e);
                 ex = e;
@@ -97,11 +107,13 @@ public class LocalWorkbookManager {
         }
 
         @Override
-        protected void onPostExecute(LocalWorkbookManager localWorkbookManager) {
-            if (localWorkbookManager == null)
+        protected void onPostExecute(IWorkbook workbook) {
+            if (workbook == null)
                 resultListener.taskFailed(ex);
             else
-                resultListener.taskDone(localWorkbookManager);
+                resultListener.taskDone(workbook);
         }
     }
+
+
 }
