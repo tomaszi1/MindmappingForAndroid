@@ -25,7 +25,6 @@ import java.util.Queue;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
-import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.enums.Actions;
 import edu.agh.klaukold.gui.DrawView;
 import edu.agh.klaukold.gui.MainActivity;

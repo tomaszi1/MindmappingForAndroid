@@ -7,7 +7,6 @@ import edu.agh.R;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
-import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.enums.Position;
 
 import android.content.Context;
@@ -26,6 +25,7 @@ import android.util.AttributeSet;
 import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 
+import org.xmind.core.INotes;
 import org.xmind.core.internal.Style;
 import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
@@ -608,7 +608,7 @@ public class DrawView extends RelativeLayout {
                 }
                 drawText(box, canvas);
                 // todo sytuacja dla ciemnego tla
-                if (box.isNote) {
+                if (box.topic.getNotes().getContent(INotes.PLAIN) != null && !box.topic.getNotes().getContent(INotes.PLAIN).getFormat().equals("")) {
                     box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
                     box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
                             box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
@@ -983,15 +983,15 @@ public class DrawView extends RelativeLayout {
         }
     }
 
-    public void updateCore(Root core) {
-        String s = core.topic.getTitleText();
-        String[] parts = s.split("\n");
-
-        float f = getLongest(parts);
-
-        core.getDrawableShape().getBounds().bottom = core.getDrawableShape().getBounds().top + parts.length * 30 + 10;
-        core.getDrawableShape().getBounds().right = core.getDrawableShape().getBounds().left + (int) f + 50;
-    }
+//    public void updateCore(Root core) {
+//        String s = core.topic.getTitleText();
+//        String[] parts = s.split("\n");
+//
+//        float f = getLongest(parts);
+//
+//        core.getDrawableShape().getBounds().bottom = core.getDrawableShape().getBounds().top + parts.length * 30 + 10;
+//        core.getDrawableShape().getBounds().right = core.getDrawableShape().getBounds().left + (int) f + 50;
+//    }
 
 //    //usuwanie linii wychodzących z bloczka lub wchodzących do niego i usunięcie bloczka z listy dzieci rodzica
 //    private void clear(Box b) {

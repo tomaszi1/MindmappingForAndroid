@@ -43,7 +43,7 @@ public class EditSheetScreen extends Activity {
         setContentView(R.layout.edit_screen);
         Intent intent = getIntent();
         COLOR = intent.getIntExtra(MainActivity.BACKGROUNDCOLOR, 1);
-        int inten = intent.getIntExtra(MainActivity.INTENSIVITY, 0);
+      //  int inten = intent.getIntExtra(MainActivity.INTENSIVITY, 0);
 //        intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
 //        intensivity.setProgress((inten));
         backgroud = (TextView) findViewById(R.id.textViewBackgroundColor);

@@ -17,7 +17,6 @@ import edu.agh.R;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
-import edu.agh.klaukold.common.Root;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
@@ -28,7 +27,6 @@ public class AddBox implements Command {
     Properties after;
     Box parent;
     Line line;
-    Root root;
 
 	@Override
 	public void execute(Properties properties) {
@@ -167,23 +165,26 @@ public class AddBox implements Command {
 
     @Override
     public void undo() {
-          if   ( root.getLeftChildren().contains(box)) {
-              root.getLeftChildren().remove(box);
-              root.getLines().remove(box);
-          } else if   ( root.getRightChildren().contains(box)) {
-              root.getRightChildren().remove(box);
-              root.getLines().remove(box);
-          }
-         else {
-            parent.getChildren().remove(box);
-            parent.getLines().remove(box);
-        }
-        if (root.getRightChildren().size() == 0 && root.getLeftChildren().size() == 0) {
-            root.isExpendable = false;
-        }
-        if (parent.getChildren().size() == 0) {
-            parent.isExpendable = false;
-        }
+        parent.topic.remove(box.topic);
+        parent.getLines().remove(box);
+        parent.getChildren().remove(box);
+//          if   ( root.getLeftChildren().contains(box)) {
+//              root.getLeftChildren().remove(box);
+//              root.getLines().remove(box);
+//          } else if   ( root.getRightChildren().contains(box)) {
+//              root.getRightChildren().remove(box);
+//              root.getLines().remove(box);
+//          }
+//         else {
+//            parent.getChildren().remove(box);
+//            parent.getLines().remove(box);
+//        }
+//        if (root.getRightChildren().size() == 0 && root.getLeftChildren().size() == 0) {
+//            root.isExpendable = false;
+//        }
+//        if (parent.getChildren().size() == 0) {
+//            parent.isExpendable = false;
+//        }
     }
 
     @Override

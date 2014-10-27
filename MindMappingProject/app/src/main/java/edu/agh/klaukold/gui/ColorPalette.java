@@ -76,7 +76,7 @@ public class ColorPalette extends Activity {
                 } else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
                     EditSheet editSheet = new EditSheet();
                     Properties properties = new Properties();
-                    properties.put("sheet", MainActivity.sheet);
+                    properties.put("sheet", MainActivity.sheet1);
                     properties.put("color", new ColorDrawable(colors.get(v)));
                     editSheet.execute(properties);
                     MainActivity.addCommendUndo(editSheet);
@@ -337,8 +337,8 @@ public class ColorPalette extends Activity {
                 } else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
                     EditSheet editSheet = new EditSheet();
                     Properties properties = new Properties();
-                    properties.put("sheet_color", MainActivity.sheet);
-                    properties.put("color", String.valueOf(Color.rgb(r, g, b)));
+                    properties.put("sheet", MainActivity.sheet1);
+                    properties.put("color", new ColorDrawable(Color.rgb(r, g, b)));
                     editSheet.execute(properties);
                     MainActivity.addCommendUndo(editSheet);
                     //MainActivity.sheet.setColor(new ColorDrawable(Color.rgb(r, g, b)));

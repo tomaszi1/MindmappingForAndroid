@@ -27,15 +27,14 @@ import java.util.Properties;
 import edu.agh.R;
 import edu.agh.idziak.WorkbookHandler;
 import edu.agh.klaukold.commands.AddBox;
+import edu.agh.klaukold.commands.AddNote;
 import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
 import edu.agh.klaukold.commands.RemoveBox;
 import edu.agh.klaukold.commands.RemoveLine;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
-import edu.agh.klaukold.common.Root;
-import edu.agh.klaukold.common.Sheet;
-import edu.agh.klaukold.enums.Actions;;
+import edu.agh.klaukold.enums.Actions;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.interfaces.Command;
 import edu.agh.klaukold.utilities.AsyncInvalidate;
@@ -53,6 +52,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -77,6 +77,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import org.xmind.core.INotes;
 import org.xmind.core.ISheet;
 import org.xmind.core.ITopic;
 import org.xmind.core.IWorkbook;
@@ -92,7 +93,6 @@ public class MainActivity extends Activity {
     private boolean mIsScrolling = false;
     private GestureListener gestList = new GestureListener();
     public static Box root;
-    public static Sheet sheet = new Sheet();
     public static Box boxEdited;
     public static boolean EDIT_CONN = false;
     public static LinkedList<Box> toEditBoxes = new LinkedList<Box>();
@@ -121,6 +121,7 @@ public class MainActivity extends Activity {
     public static IWorkbook workbook;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,7 +140,7 @@ public class MainActivity extends Activity {
         // Tworzymy styl dla topica
         IStyle style1 = styleSheet.createStyle(IStyle.TOPIC);
         if (root == null) {
-            root = new Root();
+            root = new Box();
             Intent intent = getIntent();
             style = intent.getStringExtra(WelcomeScreen.STYLE);
             Resources res = getResources();
@@ -169,10 +170,10 @@ public class MainActivity extends Activity {
                 root.topic = rootTopic;
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setStyleId(style2.getId());
+                sheet1.setThemeId(style2.getId());
             } else if (style.equals("Classic")) {
                 // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
@@ -193,10 +194,10 @@ public class MainActivity extends Activity {
                 root.topic = rootTopic;
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setStyleId(style2.getId());
+                sheet1.setThemeId(style2.getId());
             } else if (style.equals("Simple")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
@@ -216,10 +217,10 @@ public class MainActivity extends Activity {
                 root.topic = rootTopic;
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setStyleId(style2.getId());
+                sheet1.setThemeId(style2.getId());
             } else if (style.equals("Business")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
@@ -239,10 +240,10 @@ public class MainActivity extends Activity {
                 root.topic = rootTopic;
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setStyleId(style2.getId());
+                sheet1.setThemeId(style2.getId());
             } else if (style.equals("Academese")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.white))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
@@ -263,10 +264,10 @@ public class MainActivity extends Activity {
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
                 //todo dodac kolor tla
-                IStyle style2 = styleSheet.createStyle(IStyle.SUMMARY);
+                IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setStyleId(style2.getId());
+                sheet1.setThemeId(style2.getId());
             }
 
 
@@ -457,8 +458,7 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        IStyle style = MainActivity.workbook.getStyleSheet().findStyle(sheet1.getStyleId());
-        lay.setBackgroundColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
+        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
     }
 
     //tutaj rozpoznajemy przytrzymanie, jedno kliknięcie, dwa kliknięcia
@@ -548,6 +548,113 @@ public class MainActivity extends Activity {
 //                   // lay.revalidate();
 //                   // lay.invalidate();
                 } else if (pair.second == Actions.NEW_NOTE) {
+                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
+                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
+                    et.requestFocus();
+
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Callback call = null;
+
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
+
+//                try {
+//                    text = (Text) myClicked.getText().TextClone();
+//                } catch (CloneNotSupportedException e) {
+//                    e.printStackTrace();
+//                }
+//                text.setText(et.getText().toString());
+                            String text = (et.getText().toString());
+//                Text text = myClicked.getText();
+//                text.setText(et.getText().toString());
+                            //myClicked.getText().setText(et.getText().toString());
+                            AddNote addNote = new AddNote();
+                            Properties properties = new Properties();
+                            properties.put("box", pair.first);
+                            properties.put("text", text);
+                            addNote.execute(properties);
+                            addCommendUndo(addNote);
+                            MainActivity.menu.getItem(4).setVisible(true);
+                                call = new Callback() {
+                                    @Override
+                                    public void execute() {
+                                        lay.updateBox(pair.first);
+
+                                    }
+                                };
+
+                            dialog.dismiss();
+                            try {
+                                AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                                async.setCallback(call);
+                                async.execute();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    });
+
+                    final int MAX_LINES = 3;
+
+                    //ogranicza do 3 linii widok w zawartości bloczka
+                    et.addTextChangedListener(new TextWatcher() {
+                        private int lines;
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            lines = Utils.countLines(s.toString());
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            int counter = Utils.countLines(s.toString());
+
+                            int diff = lines - counter;
+                            if (diff > 0) {
+                                //w gore
+                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
+                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
+                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                    btn.setLayoutParams(buttonLayoutParams);
+                                    et.getLayoutParams().height -= 30;
+                                }
+                            } else if (diff < 0) {
+                                //w dol
+                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
+                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
+                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                    btn.setLayoutParams(buttonLayoutParams);
+                                    et.getLayoutParams().height += 30;
+                                }
+                            }
+                        }
+                    });
+
+                    et.setText(pair.first.topic.getNotes().getContent(INotes.PLAIN).getFormat());
+                    int k = Utils.countLines(et.getText().toString());
+                    int ile = Math.min(MAX_LINES - 1, k);
+
+                    et.getLayoutParams().height = 75 + ile * 30;
+                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
+                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
+                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                    btn.setLayoutParams(buttonLayoutParams);
+
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+
+                    dialog.show();
 
                 } else if (pair.second == Actions.NEW_MARKER) {
 
@@ -1028,14 +1135,6 @@ public class MainActivity extends Activity {
                 editBox.execute(properties);
                 addCommendUndo(editBox);
                 MainActivity.menu.getItem(4).setVisible(true);
-                if (myClicked instanceof Root) {
-                    call = new Callback() {
-                        @Override
-                        public void execute() {
-                            lay.updateBox(myClicked);
-                        }
-                    };
-                } else {
                     call = new Callback() {
                         @Override
                         public void execute() {
@@ -1043,8 +1142,6 @@ public class MainActivity extends Activity {
 
                         }
                     };
-                }
-
                 dialog.dismiss();
                 try {
                     AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
@@ -1135,8 +1232,8 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(MainActivity.this, EditSheetScreen.class);
-                intent.putExtra(BACKGROUNDCOLOR, sheet.getColor().getColor());
-                intent.putExtra(INTENSIVITY, sheet.getIntensivity());
+                intent.putExtra(BACKGROUNDCOLOR, Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
+               // intent.putExtra(INTENSIVITY, sheet.getIntensivity());
                 startActivity(intent);
                 //               commandsUndo.getFirst().undo();
 //                lay.updateBox(root);
@@ -1164,7 +1261,7 @@ public class MainActivity extends Activity {
                             e1.printStackTrace();
                         }
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
-                        lay.setBackgroundColor(sheet.getColor().getColor());
+                        lay.setBackgroundColor((Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor))));
                     } else if (commandsUndo.getFirst() instanceof AddBox || commandsUndo.getFirst() instanceof RemoveLine) {
                         Callback call = new Callback() {
                             @Override
@@ -1209,7 +1306,7 @@ public class MainActivity extends Activity {
                         lay.revalidate();
                          lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
-                        lay.setBackgroundColor(sheet.getColor().getColor());
+                        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
                     } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine) {
                         Callback call = new Callback() {
                             @Override
@@ -1294,22 +1391,22 @@ public class MainActivity extends Activity {
                 if (commandsRedo.size() == 1) {
                     commandsRedo.getFirst().redo();
                     if (commandsRedo.getFirst() instanceof EditBox) {
-                        Callback call = new Callback() {
-                            @Override
-                            public void execute() {
+                   //     Callback call = new Callback() {
+                   //         @Override
+                    //        public void execute() {
                                 lay.updateBox(((EditBox) commandsRedo.getFirst()).box);
                                 for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
                                     lay.updateBox(b);
                                 }
-                            }
-                        };
-                        try {
-                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                            async.setCallback(call);
-                            async.execute();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
+                       //     }
+                      //  };
+//                        try {
+//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+//                            async.setCallback(call);
+//                            async.execute();
+//                        } catch (Exception e1) {
+//                            e1.printStackTrace();
+//                        }
 //                        lay.updateBox(((EditBox) commandsRedo.getFirst()).box);
 //                        for (Box b : ((EditBox) commandsRedo.getLast()).edited) {
 //                            lay.updateBox(b);
@@ -1318,7 +1415,7 @@ public class MainActivity extends Activity {
 //                        lay.invalidate();
 
                     } else if (commandsRedo.getFirst() instanceof EditSheet) {
-                        lay.setBackgroundColor(sheet.getColor().getColor());
+                        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
                     } else if (commandsRedo.getFirst() instanceof AddBox || commandsRedo.getFirst() instanceof RemoveLine) {
                         Callback call = new Callback() {
                             @Override
@@ -1365,7 +1462,7 @@ public class MainActivity extends Activity {
 //                        lay.revalidate();
 //                        lay.invalidate();
                     } else if (commandsRedo.getLast() instanceof EditSheet) {
-                        lay.setBackgroundColor(sheet.getColor().getColor());
+                        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
                     } else if (commandsRedo.getLast() instanceof AddBox || commandsRedo.getLast() instanceof RemoveLine) {
                         Callback call = new Callback() {
                             @Override
@@ -1390,15 +1487,11 @@ public class MainActivity extends Activity {
                 Properties properties = new Properties();
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
                 //todo usuwanie boxow i linii
-                if (!(boxEdited instanceof Root)) {
                     //  boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
-                }
                 for (Box b : MainActivity.toEditBoxes) {
-                    if (!(b instanceof Root)) {
-                        //   boxes.put(b, b.getParent().getLines().get(b));
-                        if (!(boxEdited instanceof Root)) {
-                            //   boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
-                        }
+                        //boxes.put(b, b.getParent().getLines().get(b));
+                        //boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.getParent().getLines().get(MainActivity.boxEdited));
+
                         if (boxes.size() > 0) {
                             properties.put("boxes", boxes);
                             removeBox.execute(properties);
@@ -1406,7 +1499,7 @@ public class MainActivity extends Activity {
                         }
                         return true;
 
-                    }
+
                     //  return true;
                 }
             default:

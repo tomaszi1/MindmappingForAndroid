@@ -83,7 +83,6 @@ public class Box implements  Cloneable, Serializable {
 	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
     public Drawable newNote;
     public Drawable addBox;
-    public Boolean isNote = false;
     public String note;
     //public Drawable newMarker;
     public Drawable collapseAction;
