@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
@@ -38,6 +39,16 @@ public class DrawView extends RelativeLayout {
     private static int activeColor;
     private static int collapsedColor;
     private Canvas canvas;
+    public int left = 0;
+    public int right = 0;
+    public static int LUheight = 0;
+    public static int LDHehight = 0;
+    public static int RUheight = 0;
+    public static int RDHehight = 0;
+    public static int count = 0;
+    boolean UL = true;
+    boolean UR = true;
+
     // private LinkedList<Style> style = new LinkedList<Style>();
 
     public DrawView(Context context) {
@@ -159,11 +170,24 @@ public class DrawView extends RelativeLayout {
         canvas.translate(transx, transy);
         canvas.scale(zoomx, zoomy);
         Box root = MainActivity.root;
+        count = root.getChildren().size();
+        if (count%2 == 0) {
+            left = count/2;
+            right = count/2;
+        } else {
+            left = count/2;
+            right = count/2 + 1;
+        }
         drawBox(root, canvas);
         if (root == null) {
             return;
         }
-
+        if (LUheight == 0 && LDHehight == 0 && RUheight == 0 &&  RDHehight == 0) {
+            LUheight = root.getDrawableShape().getBounds().centerY();
+            LDHehight = root.getDrawableShape().getBounds().centerY();
+            RUheight = root.getDrawableShape().getBounds().centerY();
+            RDHehight = root.getDrawableShape().getBounds().centerY();
+        }
         for (Box box : root.getChildren()) {
             fireDrawChildren(box, canvas);
         }
@@ -586,6 +610,9 @@ public class DrawView extends RelativeLayout {
 //                Log.w("app",Float.toString(paint.measureText(box.getText().getText())));
 //                box.setWidth(box.getWidth() + (int)(paint.measureText(box.getText().getText())));
             //paint.getTextBounds(box.getText().getText(), width - 10,height - 10, box.getDrawableShape().getBounds());
+            if (box.point == null) {
+                calculatePosition(box);
+            }
             box.prepareDrawableShape();
             //   }
 
@@ -629,15 +656,16 @@ public class DrawView extends RelativeLayout {
 //                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
 //                box.newMarker.draw(canvas);
                 if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
-                    if (!box.topic.isFolded()) {
-                        box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
-                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                        box.collapseAction.draw(canvas);
-                    } else {
-                        box.expandAction = context.getResources().getDrawable(R.drawable.ic_action_expand);
-                        box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.expandAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.expandAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                        box.expandAction.draw(canvas);
-                    }
+                    //todo Odkomentowac!!!!
+//                    if (!box.topic.isFolded()) {
+//                        box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
+//                        box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+//                        box.collapseAction.draw(canvas);
+//                    } else {
+//                        box.expandAction = context.getResources().getDrawable(R.drawable.ic_action_expand);
+//                        box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.expandAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.expandAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+//                        box.expandAction.draw(canvas);
+//                    }
                 }
 //                Rect rect = new Rect();
 //                rect.set(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
@@ -654,9 +682,12 @@ public class DrawView extends RelativeLayout {
 //                    canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
 //                }
 //            }
-            if (!box.topic.isFolded()) {
+         //   if (!box.topic.isFolded()) {
                 showLines(box);
-            }
+                if (MainActivity.style.equals("ReadyMap")) {
+                    showLines(MainActivity.root);
+                }
+         //   }
         }
     }
 
@@ -1204,5 +1235,120 @@ public class DrawView extends RelativeLayout {
 //    }
     private String remove2LastChars(String str) {
         return str.substring(0, str.length() - 2);
+    }
+
+
+    private void calculatePosition(Box b) {
+        if (b.topic.getParent().isRoot()) {
+            int off = 1;
+            if (count%8 == 0) {
+                off = count/8 + 1;
+            }
+            if (left < right) {
+                    if (!(right % 2 == 0) &&  RDHehight == RUheight ) {
+                        b.point = new Point(b.parent.getDrawableShape().getBounds().right + off * 50 , b.parent.getDrawableShape().getBounds().centerY() - b.getHeight()/2);
+                        if (b.parent.getLines().get(b) != null) {
+                            b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()));
+                            b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().right + 50, b.parent.getDrawableShape().getBounds().centerY()));
+                        } else {
+                            IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                            Line l = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                    new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()),
+                                    new Point(b.parent.getDrawableShape().getBounds().right + off * 50  + b.getWidth(), b.parent.getDrawableShape().getBounds().centerY()), true);
+                            b.parent.getLines().put(b, l);
+
+                        }
+                        RUheight -= b.getHeight()/2;
+                        RDHehight += b.getHeight()/2;
+                    } else {
+                        if (UR) {
+                            b.point = new Point(b.parent.getDrawableShape().getBounds().right + off * 50 , RUheight - 40 - b.getHeight());
+                            if (b.parent.getLines().get(b) != null) {
+                                b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()));
+                                b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().right + 50,RUheight - b.getHeight()/2));
+                            } else {
+                                IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                                Line l = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                        new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()),
+                                        new Point(b.parent.getDrawableShape().getBounds().right + off * 50,RUheight - b.getHeight()/2), true);
+                                l.off = 10;
+                                b.parent.getLines().put(b, l);
+
+                            }
+                            RUheight -= b.getHeight() + 20;
+
+                          UR = false;
+                        } else {
+                            b.point = new Point(b.parent.getDrawableShape().getBounds().right + off *  50 , RDHehight + 40);
+                            if (b.parent.getLines().get(b) != null) {
+                                b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()));
+                                b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().right + 50,RDHehight + b.getHeight()));
+                            } else {
+                                IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                                Line l = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                        new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()),
+                                        new Point(b.parent.getDrawableShape().getBounds().right + off * 50,RDHehight + b.getHeight()), true);
+                                b.parent.getLines().put(b, l);
+
+                            }
+                            RDHehight += b.getHeight() + 20;
+                            UR = true;
+                        }
+                    }
+                b.position = Position.RIGHT;
+                right--;
+            } else {
+                if (!(left % 2 == 0) &&  LDHehight == LUheight ) {
+                    b.point = new Point(b.parent.getDrawableShape().getBounds().left - off * 50 - b.getWidth(), b.parent.getDrawableShape().getBounds().centerY() - b.getHeight()/2);
+                    if (b.parent.getLines().get(b) != null) {
+                        b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY()));
+                        b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().left - 50 - b.getWidth(), b.parent.getDrawableShape().getBounds().centerY()));
+                    } else {
+                        IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                        b.parent.getLines().put(b, new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY()),
+                                new Point(b.parent.getDrawableShape().getBounds().left - off *  50, b.parent.getDrawableShape().getBounds().centerY()), true));
+
+                    }
+                    LUheight -= b.getHeight()/2;
+                    LDHehight += b.getHeight()/2;
+                } else {
+                    if (UL) {
+                        b.point = new Point(b.parent.getDrawableShape().getBounds().left - off * 50  - b.getWidth() , LUheight - 40 - b.getHeight());
+                        if (b.parent.getLines().get(b) != null) {
+                            b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY()));
+                            b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().left - 50 - b.getHeight(),LUheight - b.getHeight()));
+                        } else {
+                            IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                            Line l = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                    new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY()),
+                                    new Point(b.parent.getDrawableShape().getBounds().left - off * 50,LUheight - b.getHeight()), true);
+                            l.off = 10;
+                            b.parent.getLines().put(b, l);
+
+                        }
+                        LUheight -= b.getHeight() + 20;
+                        UL = false;
+                    } else {
+                        b.point = new Point(b.parent.getDrawableShape().getBounds().left - off *  50  - b.getWidth() , LDHehight + 40);
+                        if (b.parent.getLines().get(b) != null) {
+                            b.parent.getLines().get(b).setStart(new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY()));
+                            b.parent.getLines().get(b).setEnd(new Point(b.parent.getDrawableShape().getBounds().right + 50,LDHehight + b.getHeight()));
+                        } else {
+                            IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(b.parent.topic.getStyleId());
+                            Line l = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                                    new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY()),
+                                    new Point(b.parent.getDrawableShape().getBounds().left - off * 50,LDHehight + b.getHeight()/2), true);
+                            b.parent.getLines().put(b, l);
+
+                        }
+                        LDHehight += b.getHeight() + 20;
+                        UL = true;
+                    }
+                }
+                b.position = Position.LFET;
+                left--;
+            }
+        }
     }
 }

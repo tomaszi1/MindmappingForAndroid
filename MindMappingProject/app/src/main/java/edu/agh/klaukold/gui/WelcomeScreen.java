@@ -126,96 +126,8 @@ public class WelcomeScreen extends Activity {
         });
 
 
-//
-//		Button btn = (Button) findViewById(R.id.welcomeNewBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.newMapDialog(WelcomeScreen.this);
-//				Button btn = (Button) dialog.findViewById(R.id.saveFile);
-//				final EditText et = (EditText) dialog.findViewById(R.id.newMapEditText);
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//
-//				btn.setOnClickListener(new OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						if(!et.getText().toString().isEmpty()) {
-//							dialog.dismiss();
-//							intent.putExtra("filename", et.getText().toString());
-//							startActivity(intent);
-//						}
-//					}
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeReadBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.readMapDialog(WelcomeScreen.this);
-//				final ListView listview = (ListView) dialog.findViewById(R.id.listview);
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//
-//				//listview.setAdapter(new ArrayAdapter<String>(WelcomeScreen.this,
-//				//		android.R.layout.simple_list_item_1 , Utils.db.getMaps()));
-//
-//				listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//					@Override
-//					public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-//						final String item = (String) parent.getItemAtPosition(position);
-//						dialog.dismiss();
-//						intent.putExtra("filename", item);
-//						intent.putExtra("present", true);
-//						startActivity(intent);
-//					}
-//
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeDeleteBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.deleteMapDialog(WelcomeScreen.this);
-//				final ListView listview = (ListView) dialog.findViewById(R.id.listview);
-//
-//			//	listview.setAdapter(new ArrayAdapter<String>(WelcomeScreen.this,
-//				//		android.R.layout.simple_list_item_1 , Utils.db.getMaps()));
-//
-//				listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//					@Override
-//					public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-//						final String item = (String) parent.getItemAtPosition(position);
-//						dialog.dismiss();
-//						//Utils.db.deleteAll(item);
-//					}
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeImportBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//				intent.putExtra("import", true);
-//				startActivity(intent);
-//			}
-//		});
+
+
     }
 
     @Override
@@ -229,6 +141,11 @@ public class WelcomeScreen extends Activity {
                 LocalWorkbookManager.loadWorkbook(file, new ResultListener() {
                     @Override
                     public void taskDone(Object result) {
+                        progressDialog.dismiss();
+                        DrawView.LUheight = 0;
+                        DrawView.LDHehight = 0;
+                        DrawView.RUheight = 0;
+                        DrawView.RDHehight = 0;
                         MainActivity.workbook = (Workbook) result;
                         Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                         String style = "ReadyMap";
@@ -243,7 +160,7 @@ public class WelcomeScreen extends Activity {
 
                     @Override
                     public void taskFailed(Exception exception) {
-
+                        progressDialog.cancel();
                     }
                 });
             } else {
@@ -260,6 +177,7 @@ public class WelcomeScreen extends Activity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
                 imageStyle = (ImageView) findViewById(R.id.imageView);
                 if (spinner.getSelectedItem().toString().equals("Default")) {
                     imageStyle.setImageResource(R.drawable.def);
@@ -290,6 +208,10 @@ public class WelcomeScreen extends Activity {
 
             @Override
             public void onClick(View arg0) {
+                DrawView.LUheight = 0;
+                DrawView.LDHehight = 0;
+                DrawView.RUheight = 0;
+                DrawView.RDHehight = 0;
                 Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                 Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
                 String style = (String) spinner.getSelectedItem();

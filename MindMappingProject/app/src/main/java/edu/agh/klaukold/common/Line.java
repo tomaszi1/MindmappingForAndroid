@@ -24,6 +24,7 @@ public class Line implements Serializable, Cloneable {
 	private boolean isVisible;
     public Position position;
     public Box box;
+    public int off = 0;
 
     public Drawable deleteLine;
 
@@ -51,9 +52,9 @@ public class Line implements Serializable, Cloneable {
 //            if (end.x < 0) {
 //                if (LineDirection.UP_RIGHT) {
             if (position == Position.RIGHT) {
-                path.cubicTo(start.x, start.y, start.x + (start.x - start.y), start.y + 20, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (start.x - start.y), start.y + off, end.x, end.y);
             } else {
-                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + off, end.x, end.y);
             }
 
 //                    LineDirection.UP_RIGHT = false;

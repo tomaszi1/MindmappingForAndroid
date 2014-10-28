@@ -78,7 +78,7 @@ public class Box implements  Cloneable, Serializable {
 
     protected  int height = 110;
     protected  int width = 150;
-    public  Point point = new Point();
+    public  Point point;
 	protected LinkedList<Box> children = new LinkedList<Box>();;
 	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
     public Drawable newNote;

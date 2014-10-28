@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
     public final static String BACKGROUNDCOLOR = "COLOR";
     public final static String INTENSIVITY = "INTENSIVITY";
 
-    private String style;
+    public static String style;
 
     ///---------------------------------------
     public static ISheet sheet1;
@@ -132,13 +132,14 @@ public class MainActivity extends Activity {
         WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
         IStyle style1 = null;
         // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.
-        IStyleSheet styleSheet = workbook.getStyleSheet();
+        IStyleSheet styleSheet = null;
         if (workbook == null) {
             workbook = handler.getWorkbook();
             // Tworzymy styl dla topica
+            styleSheet = workbook.getStyleSheet();
             style1 = styleSheet.createStyle(IStyle.TOPIC);
         }
-
+        styleSheet = workbook.getStyleSheet();
         sheet1 = workbook.getPrimarySheet();
         rootTopic = sheet1.getRootTopic();
         if (root == null) {
@@ -271,25 +272,24 @@ public class MainActivity extends Activity {
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
             } else if (style.equals("ReadyMap")) {
+                root.setPoint(new edu.agh.klaukold.common.Point(width, height));
                 style1 = workbook.getStyleSheet().findStyle(rootTopic.getStyleId());
                 if (style1 == null) {
                     style1 = styleSheet.createStyle(IStyle.TOPIC);
                     style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                    style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
-                    style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                    style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.blue)));
+                    style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
                     style1.setProperty(Styles.FontSize, "13pt");
                     style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
                     style1.setProperty(Styles.FontFamily, "Times New Roman");
-                    style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                    style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
                     style1.setProperty(Styles.LineWidth, "1pt");
                     style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-                    rootTopic.setTitleText("Central Topic");
+                   // rootTopic.setTitleText("Central Topic");
                     style1.setProperty(Styles.FontFamily, "Times New Roman");
                     // Dodajemy styl do arkusza styli
                     styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
                     // Nadajemy topikowi dany styl przez podanie ID
-                    rootTopic.setStyleId(style1.getId());
-                    root.topic.setFolded(false);
                     root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
                     IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                     style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
@@ -297,6 +297,29 @@ public class MainActivity extends Activity {
                     sheet1.setThemeId(style2.getId());
                 }
                 root.topic = rootTopic;
+                rootTopic.setStyleId(style1.getId());
+                root.topic.setFolded(false);
+                for (ITopic t : root.topic.getChildren(ITopic.ATTACHED)) {
+                    Box b = new Box();
+                    b.topic = t;
+                    IStyle s = styleSheet.createStyle(IStyle.TOPIC);
+                    s = styleSheet.createStyle(IStyle.TOPIC);
+                    s.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                    s.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                    s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                    s.setProperty(Styles.FontSize, "13pt");
+                    s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                    s.setProperty(Styles.FontFamily, "Times New Roman");
+                    s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+                    s.setProperty(Styles.LineWidth, "1pt");
+                    s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                    s.setProperty(Styles.FontFamily, "Times New Roman");
+                    styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
+                    b.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+                    b.topic.setStyleId(s.getId());
+                    b.parent = root;
+                    root.addChild(b);
+                }
             }
 
 
@@ -1576,11 +1599,12 @@ public class MainActivity extends Activity {
             fireUnSelect(b);
         }
     }
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        root.clear();
-//        root = null;
-//    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        root.clear();
+        root = null;
+        workbook = null;
+    }
 }
 
