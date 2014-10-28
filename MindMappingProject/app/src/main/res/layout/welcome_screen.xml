@@ -53,52 +53,62 @@
         <!--android:text="@string/str_import"-->
         <!--/>-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello!"
-        android:textColor="@color/black"
-        android:id="@+id/textViewHello"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="31dp"
-        android:layout_marginTop="29dp" />
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Choose style"
-        android:textColor="@color/black"
-        android:id="@+id/textViewChangeStyle"
-        android:layout_below="@+id/textViewHello"
-        android:layout_alignLeft="@+id/textViewHello"
-        android:layout_marginTop="29dp"
-        android:enabled="true" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-    <Spinner
-        android:layout_width="wrap_content"
-        android:textColor="@color/black"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinnerStyles"
-        android:layout_marginTop="32dp"
-        android:layout_below="@+id/textViewChangeStyle"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
- />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="Hello!"
+                android:textColor="@color/black"
+                android:id="@+id/textViewHello"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="31dp"
+                android:layout_marginTop="29dp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="30dp" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_below="@+id/spinnerStyles"
-        android:layout_alignParentLeft="true" />
+            <Spinner
+                android:layout_width="wrap_content"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinnerStyles"
+                android:layout_marginTop="32dp"
+                android:layout_below="@+id/textViewHello" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create New Mind Map"
-        android:id="@+id/buttonCreateMindMap"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/textViewChangeStyle"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="250dp"
+                android:id="@+id/imageView"
+                android:layout_below="@id/spinnerStyles"
+                android:src="@drawable/classic" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create New Mind Map"
+                android:id="@+id/buttonCreateMindMap"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/imageView"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Open From File"
+                android:id="@+id/buttonLoad"
+                android:layout_below="@id/imageView"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>

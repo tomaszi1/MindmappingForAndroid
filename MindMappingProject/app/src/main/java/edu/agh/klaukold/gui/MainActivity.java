@@ -58,6 +58,7 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Display;
@@ -129,16 +130,17 @@ public class MainActivity extends Activity {
         lay = (DrawView) findViewById(R.id.myLay);
         res = getResources();
         WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
-
-        // XMind API ponizej
-        workbook = handler.getWorkbook();
+        IStyle style1 = null;
+        // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.
+        IStyleSheet styleSheet = workbook.getStyleSheet();
+        if (workbook == null) {
+            workbook = handler.getWorkbook();
+            // Tworzymy styl dla topica
+            style1 = styleSheet.createStyle(IStyle.TOPIC);
+        }
 
         sheet1 = workbook.getPrimarySheet();
         rootTopic = sheet1.getRootTopic();
-        // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.
-        IStyleSheet styleSheet = workbook.getStyleSheet();
-        // Tworzymy styl dla topica
-        IStyle style1 = styleSheet.createStyle(IStyle.TOPIC);
         if (root == null) {
             root = new Box();
             Intent intent = getIntent();
@@ -268,6 +270,33 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
+            } else if (style.equals("ReadyMap")) {
+                style1 = workbook.getStyleSheet().findStyle(rootTopic.getStyleId());
+                if (style1 == null) {
+                    style1 = styleSheet.createStyle(IStyle.TOPIC);
+                    style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+                    style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                    style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                    style1.setProperty(Styles.FontSize, "13pt");
+                    style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+                    style1.setProperty(Styles.FontFamily, "Times New Roman");
+                    style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                    style1.setProperty(Styles.LineWidth, "1pt");
+                    style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+                    rootTopic.setTitleText("Central Topic");
+                    style1.setProperty(Styles.FontFamily, "Times New Roman");
+                    // Dodajemy styl do arkusza styli
+                    styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                    // Nadajemy topikowi dany styl przez podanie ID
+                    rootTopic.setStyleId(style1.getId());
+                    root.topic.setFolded(false);
+                    root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+                    IStyle style2 = styleSheet.createStyle(IStyle.THEME);
+                    style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
+                    styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
+                    sheet1.setThemeId(style2.getId());
+                }
+                root.topic = rootTopic;
             }
 
 
@@ -458,7 +487,9 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
+        if (lay != null && sheet1 != null && sheet1.getTheme() != null) {
+            lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
+        }
     }
 
     //tutaj rozpoznajemy przytrzymanie, jedno kliknięcie, dwa kliknięcia

@@ -19,10 +19,17 @@
 package edu.agh.klaukold.gui;
 
 import edu.agh.R;
+import edu.agh.idziak.FileBrowserActivity;
+import edu.agh.idziak.dropbox.DbxBrowser;
+import edu.agh.idziak.dropbox.DropboxHandler;
+import edu.agh.idziak.dropbox.DropboxWorkbookManager;
+import edu.agh.idziak.dropbox.ResultListener;
+import edu.agh.idziak.local.LocalWorkbookManager;
 import edu.agh.klaukold.utilities.Utils;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,6 +40,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import org.xmind.core.IWorkbook;
+import org.xmind.core.internal.Workbook;
+
+import java.io.File;
 
 public class WelcomeScreen extends Activity {
     private Spinner styles;
@@ -54,8 +67,13 @@ public class WelcomeScreen extends Activity {
     }
 
     private Button buttonCreateMindMap;
+    private Button buttonLoad;
     private ImageView imageStyle;
     public final static String STYLE = "WELCOME_SCREEN_STYLE";
+    public static final int REQUEST_FILE = 1;
+    private ProgressDialog progressDialog;
+    private DropboxHandler dropboxHandler;
+    private DropboxWorkbookManager dropboxWorkbookManager;
 
     @Override
     public void onResume() {
@@ -94,6 +112,20 @@ public class WelcomeScreen extends Activity {
         //dodanie lisener'a do spinnera i przycisku
         addListenerOnButtonCreateMindMap();
         addListenerSpinerStyles();
+
+        buttonLoad = (Button) findViewById(R.id.buttonLoad);
+        buttonLoad.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Intent intent1 = new Intent(WelcomeScreen.this, FileBrowserActivity.class);
+                startActivityForResult(intent1,  REQUEST_FILE);
+
+
+            }
+        });
+
+
 //
 //		Button btn = (Button) findViewById(R.id.welcomeNewBtn);
 //		btn.setOnClickListener(new OnClickListener() {
@@ -184,6 +216,43 @@ public class WelcomeScreen extends Activity {
 //				startActivity(intent);
 //			}
 //		});
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FILE) {
+            if (resultCode == RESULT_OK) {
+                progressDialog = ProgressDialog.show(this, "Pobieranie", "Chwila...", true, false);
+                File file = (File) data.getExtras().get(FileBrowserActivity.SELECTED_FILE);
+               // DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
+
+                LocalWorkbookManager.loadWorkbook(file, new ResultListener() {
+                    @Override
+                    public void taskDone(Object result) {
+                        MainActivity.workbook = (Workbook) result;
+                        Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
+                        String style = "ReadyMap";
+                        intent.putExtra(STYLE, style);
+                      //  intent.putExtra("workbook", ((Workbook) result));
+                        if (MainActivity.root != null) {
+                            MainActivity.root.clear();
+                        }
+                        MainActivity.root = null;
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void taskFailed(Exception exception) {
+
+                    }
+                });
+            } else {
+                showToast("Anulowano");
+            }
+        }
+    }
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void addListenerSpinerStyles() {
