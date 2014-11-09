@@ -13,7 +13,6 @@
         <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugJava" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugTest" />
         <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
-        <option name="TEST_SOURCE_GEN_TASK_NAME" value="generateDebugTestSources" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
@@ -89,7 +88,6 @@
     <orderEntry type="library" exported="" name="dropbox-android-sdk-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="bcprov-jdk16-146" level="project" />
     <orderEntry type="library" exported="" name="commons-logging-1.1.1" level="project" />
-    <orderEntry type="module" module-name="testing" />
   </component>
 </module>
 

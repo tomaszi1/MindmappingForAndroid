@@ -32,7 +32,11 @@ public class AddNote implements Command {
 		before = (Properties) properties.clone();
         after = (Properties) properties.clone();
 		box = (Box) properties.get("box");
-        before.put("text", box.topic.getNotes().getContent(INotes.PLAIN).getFormat());
+        if (box.topic.getNotes().getContent(INotes.PLAIN) != null) {
+            before.put("text", ((IPlainNotesContent)box.topic.getNotes().getContent(INotes.PLAIN)).getTextContent() );
+        } else {
+            before.put("text", "");
+        }
         String note = (String) properties.get("text");
         IPlainNotesContent plainContent = (IPlainNotesContent) MainActivity.workbook.createNotesContent(INotes.PLAIN);
         plainContent.setTextContent(note);

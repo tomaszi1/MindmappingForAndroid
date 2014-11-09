@@ -115,7 +115,7 @@ public class EditBox implements Command{
             String color = (String)properties.get("line_color");
             style.setProperty(Styles.LineColor, color);
             for (Box b : box.getLines().keySet()) {
-               // box.getLines().get(b).setColor(color);
+                box.getLines().get(b).setColor(new ColorDrawable(Integer.parseInt(color)));
             }
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
@@ -139,7 +139,11 @@ public class EditBox implements Command{
                 }
             }
         } else if (properties.containsKey("line_shape")) {
-            properties1.put("line_shape", style.getProperty(Styles.LineClass));
+            if (style.getProperty(Styles.LineClass) != null) {
+                properties1.put("line_shape", style.getProperty(Styles.LineClass));
+            } else {
+                properties1.put("line_shape", "");
+            }
             String ls = (String) properties.get("line_shape");
             style.setProperty(Styles.LineClass, ls);
             for (Box b : box.getLines().keySet()) {

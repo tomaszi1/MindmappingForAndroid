@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 
+import edu.agh.R;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
@@ -29,15 +30,59 @@ import edu.agh.klaukold.enums.Actions;
 import edu.agh.klaukold.gui.DrawView;
 import edu.agh.klaukold.gui.MainActivity;
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.MotionEvent;
+
+import org.xmind.core.ITopic;
+import org.xmind.core.style.IStyle;
+import org.xmind.core.style.IStyleSheet;
+import org.xmind.ui.style.Styles;
 
 public class Utils {
 	public static DrawView lay;
 	public static Activity context;
 	static String base;
+
+
+    public static void fireUnSelect(Box box) {
+        box.isSelected = (false);
+        for (Box b : box.getChildren()) {
+            box.isSelected = (false);
+            fireUnSelect(b);
+        }
+    }
+
+    public static
+    void fireAddSubtopic(Box p) {
+        for (ITopic t : p.topic.getChildren(ITopic.ATTACHED)) {
+
+            Box b = new Box();
+            b.setWidth(70);
+            b.setHeight(50);
+            b.topic = t;
+            IStyle s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
+            s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
+            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
+            // s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+            s.setProperty(Styles.FontSize, "13pt");
+            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+            s.setProperty(Styles.FontFamily, "Times New Roman");
+            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+            s.setProperty(Styles.LineWidth, "1pt");
+            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+            s.setProperty(Styles.FontFamily, "Times New Roman");
+            MainActivity.workbook.getStyleSheet().addStyle(s, IStyleSheet.NORMAL_STYLES);
+            b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
+            b.topic.setStyleId(s.getId());
+            b.parent = p;
+            p.addChild(b);
+        }
+    }
 	
 	public static void  fireSetVisible(Box box, Boolean visible) {
         box.topic.setFolded(visible);
@@ -151,24 +196,18 @@ public class Utils {
 
         Box c = MainActivity.root;
 
-
+//
 //        if(c.newMarker.getBounds().contains(x, y)) {
 //            Pair p = new Pair(c, Actions.NEW_MARKER);
 //            return p;
-    //    }
+//        }
      if (c.newNote != null && c.newNote.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.NEW_NOTE);
             return p;
         } else if(c.addBox.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.ADD_BOX);
             return p;
-        } else if(c.collapseAction != null && c.collapseAction.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.COLLAPSE);
-            return p;
-        } else if(c.expandAction != null && c.expandAction.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.EXPAND);
-            return  p;
-        } else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
+        }  else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
            Pair p = new Pair(c, Actions.ADD_NOTE);
          return  p;
         }
@@ -213,10 +252,12 @@ public class Utils {
                     return p;
                 } else if(box.collapseAction != null && box.collapseAction.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.COLLAPSE);
+                    box.collapseAction = null;
                     q.clear();
                     return p;
                 } else if(box.expandAction != null && box.expandAction.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.EXPAND);
+                    box.expandAction = null;
                     q.clear();
                     return  p;
                 } else if (box.addNote != null && box.addNote.getBounds().contains(x, y)) {

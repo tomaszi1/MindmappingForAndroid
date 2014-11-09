@@ -3,27 +3,19 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" 
     android:focusable="true"
-    android:focusableInTouchMode="true">
- 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FFF" />
- 
+    android:focusableInTouchMode="false">
+
     <edu.agh.klaukold.utilities.VerticalScrollview
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/text">
+        android:layout_height="wrap_content">
 
         <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
-    	android:focusableInTouchMode="true"
-         >
-        
-	    <EditText 
+    	android:focusableInTouchMode="true">
+
+	    <EditText
 	        android:id="@+id/editText"
 	        android:layout_width="0dp"
 	        android:layout_weight="0.7"
@@ -33,8 +25,8 @@
 	        android:overScrollMode="always"
 	        android:inputType="textMultiLine|textNoSuggestions"
 	        />
-	    
-	     <Button
+
+            <Button
 	        android:id="@+id/dialogButtonOK"
 	        android:layout_width="0dp"
 	        android:layout_weight="0.3"
@@ -43,8 +35,18 @@
 	        android:layout_margin="5dp"
              android:text="@string/ok_button"
 	        />
-	        
-	    </LinearLayout>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:id="@+id/button2"
+                android:layout_weight="0.4"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp" />
+
+        </LinearLayout>
     </edu.agh.klaukold.utilities.VerticalScrollview>
- 
+
 </RelativeLayout>

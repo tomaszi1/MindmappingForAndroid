@@ -23,7 +23,6 @@ public class EditSheetScreen extends Activity {
     private ColorPalette colorPalette;
     private CheckBox muliBranchColor;
     private SeekBar intensivity;
-    private Wallpaper wallPaper;
     public static TextView backgroud;
     public static View backdroundColorEditScreen;
     public static int COLOR;

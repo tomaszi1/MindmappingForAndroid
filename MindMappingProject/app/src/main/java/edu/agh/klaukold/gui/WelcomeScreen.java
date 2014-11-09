@@ -25,12 +25,15 @@ import edu.agh.idziak.dropbox.DropboxHandler;
 import edu.agh.idziak.dropbox.DropboxWorkbookManager;
 import edu.agh.idziak.dropbox.ResultListener;
 import edu.agh.idziak.local.LocalWorkbookManager;
+import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.utilities.Utils;
 
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,8 +45,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.xmind.core.ITopic;
 import org.xmind.core.IWorkbook;
 import org.xmind.core.internal.Workbook;
+import org.xmind.core.style.IStyle;
+import org.xmind.core.style.IStyleSheet;
+import org.xmind.ui.style.Styles;
 
 import java.io.File;
 
@@ -147,12 +154,34 @@ public class WelcomeScreen extends Activity {
                         DrawView.RUheight = 0;
                         DrawView.RDHehight = 0;
                         MainActivity.workbook = (Workbook) result;
+//                        for (ITopic t : MainActivity.root.topic.getChildren(ITopic.ATTACHED)) {
+//                            Box b = new Box();
+//                            b.topic = t;
+//                            IStyle s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+//                            s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+//                            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+//                            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
+//                            //   s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+//                            s.setProperty(Styles.FontSize, "13pt");
+//                            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+//                            s.setProperty(Styles.FontFamily, "Times New Roman");
+//                            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+//                            s.setProperty(Styles.LineWidth, "1pt");
+//                            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+//                            s.setProperty(Styles.FontFamily, "Times New Roman");
+//                            MainActivity.styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
+//                            b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
+//                            b.topic.setStyleId(s.getId());
+//                            b.parent = MainActivity.root;
+//                            MainActivity.root.addChild(b);
+//                            Utils.fireAddSubtopic(b);
+//                        }
                         Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                         String style = "ReadyMap";
                         intent.putExtra(STYLE, style);
                       //  intent.putExtra("workbook", ((Workbook) result));
                         if (MainActivity.root != null) {
-                            MainActivity.root.clear();
+                            MainActivity.root.getChildren().clear();
                         }
                         MainActivity.root = null;
                         startActivity(intent);

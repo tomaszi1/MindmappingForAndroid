@@ -27,7 +27,6 @@ public class AddBox implements Command {
     Properties after;
     Box parent;
     Line line;
-
 	@Override
 	public void execute(Properties properties) {
         before = (Properties)properties.clone();
@@ -41,28 +40,13 @@ public class AddBox implements Command {
         IStyle topicStyle = styleSheet.createStyle(IStyle.TOPIC);
         topic.setStyleId(topicStyle.getId());
         box.topic = topic;
+       // box.topic.setFolded(true);
         parent.topic.add(box.topic);
-     //   root = (Root) properties.get("root");
         String style = (String) properties.get("style");
         Resources res = (Resources) properties.get("res");
-        Position position = Position.LFET;
-		// TODO Auto-generated method stub
-//        if (parent.topic.isRoot()) {
-//            if (parent.topic.getChildren(ITopic.ATTACHED).size()%2 == 0) {
-//                position = Position.RIGHT;
-//            } else {
-//                position = Position.LFET;
-//            }
-//        } else {
-//            position = parent.position;
-//        }
         parent.addChild(box);
+        box.level = parent.level + 1;
         box.setHeight(100);
-        if (position == Position.RIGHT) {
-          //  box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().right + 30, parent.getDrawableShape().getBounds().top));
-        } else {
-           // box.setPoint(new edu.agh.klaukold.common.Point(parent.getDrawableShape().getBounds().left - box.getWidth() - 10, parent.getDrawableShape().getBounds().top));
-        }
         topicStyle.setProperty(Styles.FontFamily, "Times New Roman");
         if (parent.topic.isRoot() && style.equals("Default")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
@@ -77,6 +61,8 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineWidth, "1pt");
         } else if (parent.topic.isRoot() && style.equals("Classic")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
+            int color = res.getColor(R.color.light_blue);
+            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
             topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
@@ -84,7 +70,7 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-        } else if (!parent.topic.isRoot() || style.equals("Simple")) {
+        } else if (parent.topic.isRoot() && style.equals("Simple")) {
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -117,8 +103,10 @@ public class AddBox implements Command {
             topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
             topicStyle.setProperty(Styles.LineWidth, "1pt");
         } else {
-            //box.setWidth(70);
-            //box.setHeight(50);
+            if (!parent.topic.isRoot()) {
+                box.setWidth(70);
+                box.setHeight(50);
+            }
             topicStyle.setProperty(Styles.FontSize, "13pt");
             topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
             topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
@@ -174,6 +162,7 @@ public class AddBox implements Command {
 //>>>>>>> dfef7fd21da727269753511592462b2ad0d98f65
 //        parent.setExpanded(true);
         parent.isExpendable = true;
+
 	}
 
     @Override
@@ -181,6 +170,7 @@ public class AddBox implements Command {
         parent.topic.remove(box.topic);
         parent.getLines().remove(box);
         parent.getChildren().remove(box);
+
 //          if   ( root.getLeftChildren().contains(box)) {
 //              root.getLeftChildren().remove(box);
 //              root.getLines().remove(box);

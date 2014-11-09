@@ -119,6 +119,9 @@ public class EditBoxScreen extends Activity {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             boxShape.setAdapter(adapter);
+            if (style.getProperty(Styles.ShapeClass) == null) {
+
+            } else
             if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
                 boxShape.setSelection(2);
             } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
@@ -164,7 +167,6 @@ public class EditBoxScreen extends Activity {
                 }
 
             });
-
             lineShape = (Spinner) findViewById(R.id.spinnerLines);
             // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
@@ -173,6 +175,22 @@ public class EditBoxScreen extends Activity {
             adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             lineShape.setAdapter(adapter1);
+            //lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
+            if (style.getProperty(Styles.LineClass) == null) {
+                //lineShape.setSelection(1);
+            } else  if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
+                lineShape.setSelection(0);
+            } else if (  style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
+                lineShape.setSelection(1);
+//        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
+//            lineShape.setSelection(2);
+            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
+                lineShape.setSelection(2);
+            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
+                lineShape.setSelection(3);
+            }
+
+
             //dodanie lisener'a do spinnera
             lineShape.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -190,13 +208,15 @@ public class EditBoxScreen extends Activity {
                     } else if (lineShape.getSelectedItem().toString().equals("Rounded Elbow")) {
                         ls =  Styles.BRANCH_CONN_ROUNDEDELBOW;
                     }
-                    EditBox editBox = new EditBox();
-                    Properties properties = new Properties();
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("line_shape", ls);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                    editBox.execute(properties);
-                    MainActivity.addCommendUndo(editBox);
+                    if (!ls.equals("")) {
+                        EditBox editBox = new EditBox();
+                        Properties properties = new Properties();
+                        properties.put("box", MainActivity.boxEdited);
+                        properties.put("line_shape", ls);
+                        properties.put("boxes", MainActivity.toEditBoxes);
+                        editBox.execute(properties);
+                        MainActivity.addCommendUndo(editBox);
+                    }
                 }
 
                 @Override
@@ -205,18 +225,6 @@ public class EditBoxScreen extends Activity {
                 }
 
             });
-            //lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
-            if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
-                lineShape.setSelection(0);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
-                lineShape.setSelection(1);
-//        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
-//            lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
-                lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
-                lineShape.setSelection(3);
-            }
 
             lineThickness = (Spinner) findViewById(R.id.spinnerThin);
             // Create an ArrayAdapter using the string array and a default spinner layout

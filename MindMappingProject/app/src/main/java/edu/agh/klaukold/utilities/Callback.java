@@ -18,6 +18,8 @@
 
 package edu.agh.klaukold.utilities;
 
+import edu.agh.klaukold.common.Box;
+
 public interface Callback {
 	void execute();
 }
