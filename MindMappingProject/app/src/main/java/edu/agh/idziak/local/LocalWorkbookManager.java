@@ -24,16 +24,31 @@ import edu.agh.idziak.dropbox.ResultListener;
 public class LocalWorkbookManager {
     public static final String TAG = LocalWorkbookManager.class.getSimpleName();
 
+    /**
+     * Saves workbook to given file asynchronously.
+     * @param file
+     * @param workbook
+     * @param resultListener taskDone or taskFailed are called after save.
+     */
     public void saveWorkbook(File file, IWorkbook workbook, ResultListener<Void, Exception> resultListener) {
         Utils.checkNotNull(file, workbook, resultListener);
         new WorkbookSaver(file, workbook, resultListener).execute();
     }
 
+    /**
+     * Loads workbook from given file.
+     * @param file
+     * @param resultListener taskDone is called with loaded workbook. TaskFailed is called if loading failed.
+     */
     public static void loadWorkbook(File file, ResultListener<IWorkbook, Exception> resultListener) {
         Utils.checkNotNull(file, resultListener);
         new WorkbookLoader(file, resultListener).execute();
     }
 
+    /**
+     * Creates new workbook.
+     * @return
+     */
     public static IWorkbook createNewWorkbook() {
         IWorkbook workbook = Core.getWorkbookBuilder().createWorkbook();
         workbook.setTempStorage(new ByteArrayStorage());

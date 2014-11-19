@@ -38,6 +38,8 @@
         <activity
             android:name=".idziak.FileBrowserActivity"
             android:label="@string/title_activity_file_browser"></activity>
+        <activity android:name=".idziak.FileSaverActivity"
+            android:label="Zapisz plik"></activity>
 
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"
