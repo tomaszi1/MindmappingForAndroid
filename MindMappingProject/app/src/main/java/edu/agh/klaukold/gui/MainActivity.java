@@ -381,9 +381,6 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-
-        lay.holder = lay.getHolder();
-        lay.holder.addCallback(lay);
     }
 
     @Override

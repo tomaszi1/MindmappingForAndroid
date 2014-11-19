@@ -39,6 +39,12 @@ public class DropboxHandler {
         dbxApi = new DropboxAPI<AndroidAuthSession>(session);
     }
 
+    /**
+     * Starts activity in which user allows app to access Dropbox.
+     * After authentication callbackContext is run.
+     * This method doesn't do anything if account is already linked!
+     * @param callbackContext activity to which the result is returned
+     */
     public void linkAccount(Context callbackContext) {
         if (dbxApi.getSession().isLinked()) {
             Log.i(TAG, "Account already linked");
@@ -47,6 +53,9 @@ public class DropboxHandler {
         dbxApi.getSession().startOAuth2Authentication(callbackContext);
     }
 
+    /**
+     * Deletes link to Dropbox.
+     */
     public void unlinkAccount() {
         dbxApi.getSession().unlink();
         SharedPreferences prefs = context.getSharedPreferences(ACCOUNT_PREFS_NAME, Context.MODE_PRIVATE);
@@ -55,6 +64,9 @@ public class DropboxHandler {
         e.apply();
     }
 
+    /**
+     * Needs to be called in onResume method to finish authentication.
+     */
     public void onResume() {
         AndroidAuthSession session = dbxApi.getSession();
         if (session.authenticationSuccessful()) {
@@ -86,24 +98,53 @@ public class DropboxHandler {
             Log.w(TAG, "Access token was null");
     }
 
+    /**
+     * Checks if app is linked to Dropbox.
+     * @return True if app is linked to Dropbox, false otherwise.
+     */
     public boolean isLinked() {
         return dbxApi.getSession().isLinked();
     }
 
-    public void fetchFileInfo(String path, boolean listFolder, ResultListener<Entry, DropboxException> listener) {
-        new MetadataFetcher(path, listFolder, listener).execute();
+    /**
+     * Fetches info about file or folder under given path asynchronously.
+     * @param path path to file at Dropbox
+     * @param listFolder true if content of given folder should be fetched
+     * @param resultListener taskDone is called if fetch was successful, otherwise taskFailed is called
+     */
+    public void fetchFileInfo(String path, boolean listFolder, ResultListener<Entry, DropboxException> resultListener) {
+        new MetadataFetcher(path, listFolder, resultListener).execute();
     }
 
-    public void downloadFile(String dropboxPath, OutputStream dest, ResultListener<DropboxFileInfo, DropboxException> resultListener) {
-        new FileDownloader(dropboxPath, dest, resultListener).execute();
+    /**
+     * Downloads file content from Dropbox.
+     * @param path path to file which should be downloaded.
+     * @param dest stream into which data will be written.
+     * @param resultListener taskDone or taskFailed are called after download.
+     */
+    public void downloadFile(String path, OutputStream dest, ResultListener<DropboxFileInfo, DropboxException> resultListener) {
+        new FileDownloader(path, dest, resultListener).execute();
     }
 
+    /**
+     * Uploads file to Dropbox.
+     * @param dropboxPath path to which file should be uploaded.
+     * @param source stream from which data will be read and uploaded.
+     * @param inputLength number of bytes in uploaded file.
+     * @param resultListener taskDone or taskFailed are called after upload.
+     * @return TaskCanceller allows to cancel upload in progress.
+     */
     public TaskCanceller uploadFile(String dropboxPath, InputStream source, long inputLength, ResultListener<Entry, DropboxException> resultListener){
         FileUploader uploader = new FileUploader(dropboxPath, source, inputLength, resultListener);
         uploader.execute();
         return uploader.getTaskCanceller();
     }
 
+    /**
+     * Creates folder in Dropbox.
+     * @param path path to folder.
+     * @param resultListener taskDone or taskFailed are called after creation. TaskDone method provides folder info.
+     */
     public void createFolder(String path, ResultListener<Entry, DropboxException> resultListener){
         new FolderCreator(path, resultListener).execute();
     }

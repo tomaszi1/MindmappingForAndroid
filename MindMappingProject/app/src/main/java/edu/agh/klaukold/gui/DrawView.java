@@ -747,7 +747,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         holder.lockCanvas();
-        onDraw(canvas);
+//        onDraw(canvas);
         holder.unlockCanvasAndPost(canvas);
     }
 
