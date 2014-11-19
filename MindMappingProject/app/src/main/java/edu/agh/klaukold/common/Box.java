@@ -17,6 +17,7 @@ import android.graphics.drawable.RotateDrawable;
 import android.os.Build;
 
 
+import org.xmind.core.IRelationship;
 import org.xmind.core.ITopic;
 import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
@@ -54,7 +55,6 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         this.drawableShape = b.drawableShape;
     }
 
-    public Box related;
     public Path relationPath;
 	public LinkedList<Box> getChildren() {
 		return children;
@@ -64,6 +64,8 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 	}
     public boolean isExpendable = false;
     public boolean isSelected = false;
+    public HashMap<Box, String> relationships = new HashMap<Box, String>();
+    public IRelationship relationship;
 
 
     public int getHeight() {
@@ -102,7 +104,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     public Drawable addNote;
     public ITopic topic;
     public Box parent;
-    public int level = 0;
+
 
     public void clear() {
         children.clear();
@@ -123,8 +125,15 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     public Drawable prepareDrawableShape()
     {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId());
-        int[] colors = {Color.WHITE, Integer.parseInt(style.getProperty(Styles.FillColor))};
-        String s = style.getProperty(Styles.ShapeClass);
+        int c = Color.BLUE;
+        if (style!=null && style.getProperty(Styles.FillColor) != null) {
+            c = Integer.parseInt(style.getProperty(Styles.FillColor));
+        }
+        int[] colors = {Color.WHITE, c};
+        String s = null;
+        if (style != null) {
+            s = style.getProperty(Styles.ShapeClass);
+        }
 //        if (s.equals(Styles.TOPIC_SHAPE_RECT)) {
 //            ((GradientDrawable) drawableShape).setColors(colors);
 //            drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
@@ -190,10 +199,15 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void setActiveColor() {
         int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
-        if (MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass) == null ||   !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
+        if (topic.getStyleId() != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()) != null && (MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass) == null ||   !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND))) {
+            ((GradientDrawable)drawableShape).setColors(colors);
+        } else if (topic.getStyleId() != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)){
+            ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);
+        } else if (isSelected) {
             ((GradientDrawable)drawableShape).setColors(colors);
         } else {
-            ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);
+            int[] colors1 = {Color.WHITE, Color.BLUE};
+            ((GradientDrawable)drawableShape).setColors(colors1);
         }
     }
 

@@ -31,6 +31,10 @@ public class EditBox implements Command{
         after = (Properties)properties.clone();
         box = (Box) properties.get("box");
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
+        if (style == null) {
+            style = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
+            box.topic.setStyleId(style.getId());
+        }
         if (properties.containsKey("boxes")) {
             edited = (LinkedList<Box>) properties.get("boxes");
             for (Box b : edited) {

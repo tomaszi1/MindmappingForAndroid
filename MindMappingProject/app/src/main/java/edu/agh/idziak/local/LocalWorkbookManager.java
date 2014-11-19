@@ -24,7 +24,7 @@ import edu.agh.idziak.dropbox.ResultListener;
 public class LocalWorkbookManager {
     public static final String TAG = LocalWorkbookManager.class.getSimpleName();
 
-    public void saveWorkbook(File file, IWorkbook workbook, ResultListener<Void, Exception> resultListener) {
+    public static void saveWorkbook(File file, IWorkbook workbook, ResultListener<Void, Exception> resultListener) {
         Utils.checkNotNull(file, workbook, resultListener);
         new WorkbookSaver(file, workbook, resultListener).execute();
     }

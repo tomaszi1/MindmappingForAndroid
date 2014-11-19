@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import edu.agh.R;
 import edu.agh.idziak.WorkbookHandler;
@@ -34,6 +35,7 @@ import edu.agh.klaukold.commands.EditBox;
 import edu.agh.klaukold.commands.EditSheet;
 import edu.agh.klaukold.commands.RemoveBox;
 import edu.agh.klaukold.commands.RemoveLine;
+import edu.agh.klaukold.commands.RemoveRelationship;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.enums.Actions;
@@ -51,6 +53,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -70,6 +73,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
@@ -81,6 +86,7 @@ import android.widget.LinearLayout;
 
 import org.xmind.core.INotes;
 import org.xmind.core.IPlainNotesContent;
+import org.xmind.core.IRelationship;
 import org.xmind.core.ISheet;
 import org.xmind.core.ITopic;
 import org.xmind.core.IWorkbook;
@@ -113,6 +119,8 @@ public class MainActivity extends Activity {
     private ScaleGestureDetector detector;
 
     public final static String BACKGROUNDCOLOR = "COLOR";
+    public static int width;
+    public static int height;
 
     public static String style;
 
@@ -122,21 +130,21 @@ public class MainActivity extends Activity {
     public static IWorkbook workbook;
     public static IStyleSheet styleSheet;
     public static Resources res;
+    public static  IStyle style1;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        workbook = WelcomeScreen.workbook;
         res = getResources();
         if (root == null) {
             WorkbookHandler handler = WorkbookHandler.createNewWorkbook();
-            IStyle style1 = null;
-            // Klasa przechowujaca wszystkie style. Wiele elementów może mieć ten sam styl.
-            //  IStyleSheet styleSheet = null;
+            style1 = null;
+
             if (workbook == null) {
                 workbook = handler.getWorkbook();
-                // Tworzymy styl dla topica
                 styleSheet = workbook.getStyleSheet();
                 style1 = styleSheet.createStyle(IStyle.TOPIC);
             }
@@ -150,9 +158,11 @@ public class MainActivity extends Activity {
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
-            int width = size.x / 3;
-            int height = size.y / 3;
+            width = size.x / 3;
+            height = size.y / 3;
             root.setPoint(new edu.agh.klaukold.common.Point(width, height));
+            lay = (DrawView) findViewById(R.id.myLay);
+            lay.context = this;
             if (style.equals("Default")) {
                 // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
@@ -176,9 +186,7 @@ public class MainActivity extends Activity {
                 IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                sheet1.setThemeId(style2.getId());
-                lay = (DrawView) findViewById(R.id.myLay);
-                lay.context = this;
+                sheet1.setThemeId(style2.getId());;
             } else if (style.equals("Classic")) {
                 // Edytujemy styl (możliwe wartości masz na stronce UsingXMindAPI):
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
@@ -203,8 +211,6 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
-                lay = (DrawView) findViewById(R.id.myLay);
-                lay.context = this;
             } else if (style.equals("Simple")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
@@ -228,8 +234,6 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
-                lay = (DrawView) findViewById(R.id.myLay);
-                lay.context = this;
             } else if (style.equals("Business")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
@@ -253,8 +257,6 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
-                lay = (DrawView) findViewById(R.id.myLay);
-                lay.context = this;
             } else if (style.equals("Academese")) {
                 style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.white))); // trzeba podać kolor w formacie "0xffffff"
                 style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
@@ -279,156 +281,30 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
-                lay = (DrawView) findViewById(R.id.myLay);
-                lay.context = this;
             } else if (style.equals("ReadyMap")) {
-                root.setPoint(new edu.agh.klaukold.common.Point(width, height));
-                style1 = workbook.getStyleSheet().findStyle(rootTopic.getStyleId());
-                if (style1 == null) {
-                    style1 = styleSheet.createStyle(IStyle.TOPIC);
-                    style1.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                    style1.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.blue)));
-                    //style1.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-                    style1.setProperty(Styles.FontSize, "13pt");
-                    style1.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-                    //  style1.setProperty(Styles.FontFamily, "Times New Roman");
-                    style1.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-                    style1.setProperty(Styles.LineWidth, "1pt");
-                    style1.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-                    // rootTopic.setTitleText("Central Topic");
-                    style1.setProperty(Styles.FontFamily, "Times New Roman");
-                    // Dodajemy styl do arkusza styli
-                    styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
-                    // Nadajemy topikowi dany styl przez podanie ID
-                    root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                    IStyle style2 = styleSheet.createStyle(IStyle.THEME);
-                    style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
-                    styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
-                    sheet1.setThemeId(style2.getId());
-                }
-                root.topic = rootTopic;
-                rootTopic.setStyleId(style1.getId());
-                root.topic.setFolded(false);
-//                for (ITopic t : root.topic.getChildren(ITopic.ATTACHED)) {
-//                    Box b = new Box();
-//                    b.topic = t;
-//                    IStyle s = styleSheet.createStyle(IStyle.TOPIC);
-//                    s = styleSheet.createStyle(IStyle.TOPIC);
-//                    s.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-//                    s.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
-//                 //   s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-//                    s.setProperty(Styles.FontSize, "13pt");
-//                    s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-//                    s.setProperty(Styles.FontFamily, "Times New Roman");
-//                  //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-//                    s.setProperty(Styles.LineWidth, "1pt");
-//                    s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-//                    s.setProperty(Styles.FontFamily, "Times New Roman");
-//                    styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
-//                    b.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-//                    b.topic.setStyleId(s.getId());
-//                    b.parent = root;
-//                    root.addChild(b);
-                Callback call = new Callback() {
-                    @Override
-                    public void execute() {
-                        boolean marge = root.topic.getChildren(ITopic.ATTACHED).addAll(root.topic.getChildren(ITopic.DETACHED));
-                        for (ITopic t : root.topic.getChildren(ITopic.ATTACHED)) {
+                        root.setPoint(new edu.agh.klaukold.common.Point(width, height));
+                        //style1 = workbook.getStyleSheet().findStyle(rootTopic.getStyleId());
+                        final HashMap<String, Box> boxes = new HashMap<String, Box>();
+                        root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+                        root.topic = rootTopic;
+                        root.topic.setFolded(false);
+
+                        boxes.put(root.topic.getId(), root);
+
+                        for (ITopic t : root.topic.getAllChildren()) {
                             Box b = new Box();
                             b.topic = t;
-                            IStyle s = styleSheet.createStyle(IStyle.TOPIC);
-                            s = styleSheet.createStyle(IStyle.TOPIC);
-                            s.setProperty(Styles.TextColor, String.valueOf(res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-                            s.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
-                            //   s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-                            s.setProperty(Styles.FontSize, "13pt");
-                            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-                            s.setProperty(Styles.FontFamily, "Times New Roman");
-                            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-                            s.setProperty(Styles.LineWidth, "1pt");
-                            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-                            s.setProperty(Styles.FontFamily, "Times New Roman");
-                            styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
+                            boxes.put(root.topic.getId(), root);
                             b.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-                            b.topic.setStyleId(s.getId());
                             b.parent = root;
                             root.addChild(b);
-                            sheet1.getRelationships();
-                            Utils.fireAddSubtopic(b);
-
-                        }
-                        lay = (DrawView) findViewById(R.id.myLay);
-                        lay.setOnTouchListener(new OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                switch (event.getActionMasked()) {
-                                    case (MotionEvent.ACTION_OUTSIDE):
-                                        return true;
-
-                                    case (MotionEvent.ACTION_UP):
-
-                                        break;
-                                    case MotionEvent.ACTION_POINTER_DOWN:
-//                                            // multitouch!! - touch down
-//                                            int count = event.getPointerCount(); // Number of 'fingers' in this time
-//
-//                                            if (count > 1) {
-//                                                Box b1 = Utils.whichBox(lay, event, 0);
-//                                                Box b2 = Utils.whichBox(lay, event, 1);
-//                                            }
-                                        break;
-                                    case MotionEvent.ACTION_POINTER_UP:
-                                        if (event.getPointerCount() > 1) {
-                                            return detector.onTouchEvent(event);
-                                        }
-
-                                        break;
-                                    case MotionEvent.ACTION_MOVE:
-                                        if (event.getPointerCount() > 1) {
-                                            return detector.onTouchEvent(event);
-                                        }
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                                boolean response = gestureDetector.onTouchEvent(event);
-                                lay.requestFocus();
-                                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                in.hideSoftInputFromWindow(lay.getApplicationWindowToken(), 0);
-                                return response;
-                            }
-                        });
+                            Utils.fireAddSubtopic(b, boxes);
+                            boxes.put(t.getId(), b);
                     }
-                };
-
-                try {
-                    AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                    async.setCallback(call);
-                    async.execute();
-                    Utils.lay = lay;
-                    lay.context = this;
-                    Log.w("APP", async.getStatus().name());
-
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-                // Utils.fireAddSubtopic(b);
-                // }
+                Utils.findRelationships(boxes);
             }
 
-
-//                root.setLineStyle(LineStyle.STRAIGHT);
-//                root.setLineColor(Color.rgb(128, 128, 128));
-//                root.setLineThickness(LineThickness.THINNEST);
-//                sheet.setColor(new ColorDrawable(Color.WHITE));
-//                sheet.setIntensivity(0);
-            // root.setDrawableShape((RotateDrawable)res.getDrawable(R.drawable.diammond));
-            //RorateDrawable dla diamond
-            // root.setDrawableShape((GradientDrawable)res.getDrawable(R.drawable.rect));
-            //TODO dopisac cechy stylu
         }
-        // }
         gestureDetector = new GestureDetector(this, gestList);
         Utils.lay = lay;
         if (lay != null) {
@@ -505,19 +381,21 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+
+        lay.holder = lay.getHolder();
+        lay.holder.addCallback(lay);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (lay != null && sheet1 != null && sheet1.getTheme() != null) {
+        if (lay != null && sheet1 != null && sheet1.getTheme() != null && sheet1.getTheme().getProperty(Styles.FillColor) != null) {
             lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
         }
     }
 
     //tutaj rozpoznajemy przytrzymanie, jedno kliknięcie, dwa kliknięcia
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-        Box myRect = new Box();
         Box clicked;
         boolean click = false;
 
@@ -527,6 +405,8 @@ public class MainActivity extends Activity {
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.isSelected = true;
+                lay.invalidate();
+                //lay.invalidate(box.drawableShape.getBounds().left, box.drawableShape.getBounds().top, box.drawableShape.getBounds().right, box.drawableShape.getBounds().bottom);
                 MainActivity.boxEdited = box;
                 if (MainActivity.boxEdited != null && !MainActivity.toEditBoxes.contains(box)) {
                     MainActivity.toEditBoxes.add(box);
@@ -543,21 +423,26 @@ public class MainActivity extends Activity {
                     menu.getItem(4).setVisible(false);
                     menu.getItem(1).setVisible(false);
                 }
-                lay.invalidate();
+
                 menu.getItem(2).setVisible(true);
-                menu.getItem(3).setVisible(true);
+                if (!box.topic.isRoot()) {
+                    menu.getItem(3).setVisible(true);
+                }
             } else if (box == null) {
-                MainActivity.toEditBoxes.clear();
+
                 menu.getItem(1).setVisible(false);
                 menu.getItem(4).setVisible(false);
                 root.isSelected = false;
 
-                for (int i = 0; i < root.getChildren().size(); i++) {
-                    Utils.fireUnSelect(root.getChildren().get(i));
+                for (int i = 0; i < MainActivity.toEditBoxes.size(); i++) {
+                    MainActivity.toEditBoxes.get(i).isSelected = false;
+                    lay.invalidate();
+                  //  lay.invalidate(MainActivity.toEditBoxes.get(i).drawableShape.getBounds().left, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().top, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().right, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().bottom);
                 }
                 menu.getItem(2).setVisible(false);
                 menu.getItem(3).setVisible(false);
-                lay.invalidate();
+                MainActivity.toEditBoxes.clear();
+              //  lay.invalidate();
             }
             if (pair != null) {
 
@@ -574,20 +459,7 @@ public class MainActivity extends Activity {
                     addBox.execute(properties);
                     MainActivity.addCommendUndo(addBox);
                     editContent(box1);
-                    lay.revalidate();
-                    lay.invalidate();
-
-//                    Intent intent = new Intent(MainActivity.this, EditBoxScreen.class);
-//                    intent.putExtra(EditBoxScreen.BOX_COLOR, pair.first.getColor().getColor());
-//                    intent.putExtra(EditBoxScreen.TEXT_COLOR, pair.first.getText().getColor().getColor());
-//                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getShape());
-//                    intent.putExtra(EditBoxScreen.LINE_COLOR, pair.first.getLineColor());
-//                    intent.putExtra(EditBoxScreen.LINE_SHAPE, pair.first.getLineStyle());
-//                    intent.putExtra(EditBoxScreen.BOX_SHAPE, pair.first.getShape());
-//                    intent.putExtra(EditBoxScreen.LINE_THICKNESS, pair.first.getLineThickness());
-//                    startActivity(intent);
-//                   // lay.revalidate();
-//                   // lay.invalidate();
+                   lay.invalidateDrawable(box1.drawableShape);
                 } else if (pair.second == Actions.ADD_NOTE) {
                     final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
                     final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
@@ -609,24 +481,14 @@ public class MainActivity extends Activity {
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
-
-//                try {
-//                    text = (Text) myClicked.getText().TextClone();
-//                } catch (CloneNotSupportedException e) {
-//                    e.printStackTrace();
-//                }
-//                text.setText(et.getText().toString());
                             String text = (et.getText().toString());
-//                Text text = myClicked.getText();
-//                text.setText(et.getText().toString());
-                            //myClicked.getText().setText(et.getText().toString());
                             AddNote addNote = new AddNote();
                             Properties properties = new Properties();
                             properties.put("box", pair.first);
                             properties.put("text", text);
                             addNote.execute(properties);
                             addCommendUndo(addNote);
-                            MainActivity.menu.getItem(4).setVisible(true);
+                            MainActivity.menu.getItem(5).setVisible(true);
                             call = new Callback() {
                                 @Override
                                 public void execute() {
@@ -728,24 +590,14 @@ public class MainActivity extends Activity {
                             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
 
-
-//                try {
-//                    text = (Text) myClicked.getText().TextClone();
-//                } catch (CloneNotSupportedException e) {
-//                    e.printStackTrace();
-//                }
-//                text.setText(et.getText().toString());
                             String text = (et.getText().toString());
-//                Text text = myClicked.getText();
-//                text.setText(et.getText().toString());
-                            //myClicked.getText().setText(et.getText().toString());
                             AddNote addNote = new AddNote();
                             Properties properties = new Properties();
                             properties.put("box", pair.first);
                             properties.put("text", text);
                             addNote.execute(properties);
                             addCommendUndo(addNote);
-                            MainActivity.menu.getItem(4).setVisible(true);
+                            MainActivity.menu.getItem(5).setVisible(true);
                             call = new Callback() {
                                 @Override
                                 public void execute() {
@@ -857,15 +709,7 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-//            if(mActionMode == null && clicked != null) {
-//            	if(clicked.isVisible()) {
-//            		//clicked.changeDescendantsVisibility();
-//            	}
-//            	clicked = null;
-//            	lay.revalidate();
-//            	lay.invalidate();
-//            }
-//            
+
             return true;
         }
 
@@ -896,7 +740,22 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-             if (click && clicked != null && (clicked.topic.isRoot() || clicked.topic.getParent().isRoot())) {
+            if (click && clicked != null && clicked.topic.getParent() == null && !clicked.topic.isRoot()) {
+                mIsScrolling = true;
+                int newx = (int) (e2.getX() - lay.transx);
+                int newy = (int) (e2.getY() - lay.transy);
+
+                newx /= lay.zoomx;
+                newy /= lay.zoomy;
+
+                clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
+                clicked.setPoint(new edu.agh.klaukold.common.Point(newx, newy));
+                clicked.prepareDrawableShape();
+                lay.revalidate();
+                lay.invalidate();
+                return false;
+            }
+           else  if (click && clicked != null && (clicked.topic.isRoot()  || clicked.topic.getParent().isRoot())) {
                 mIsScrolling = true;
                 int newx = (int) (e2.getX() - lay.transx);
                 int newy = (int) (e2.getY() - lay.transy);
@@ -945,8 +804,9 @@ public class MainActivity extends Activity {
 //                                }
                     }
                 }
-                lay.revalidate();
+                //lay.revalidate();
                 lay.invalidate();
+                //lay.invalidate(clicked.drawableShape.getBounds().left - 20, clicked.drawableShape.getBounds().top - 20, clicked.drawableShape.getBounds().right + 20, clicked.drawableShape.getBounds().bottom + 20);
                 return false;
             }
 
@@ -1253,30 +1113,20 @@ public class MainActivity extends Activity {
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
-
-
-//                try {
-//                    text = (Text) myClicked.getText().TextClone();
-//                } catch (CloneNotSupportedException e) {
-//                    e.printStackTrace();
-//                }
-//                text.setText(et.getText().toString());
                 String text = (et.getText().toString());
-//                Text text = myClicked.getText();
-//                text.setText(et.getText().toString());
-                //myClicked.getText().setText(et.getText().toString());
                 EditBox editBox = new EditBox();
                 Properties properties = new Properties();
                 properties.put("box", myClicked);
                 properties.put("box_text", text);
                 editBox.execute(properties);
-                addCommendUndo(editBox);
-                MainActivity.menu.getItem(4).setVisible(true);
+            //    addCommendUndo(editBox);
+                MainActivity.menu.getItem(5).setVisible(true);
                 lay.updateBoxWithText(myClicked);
-
+                myClicked.drawableShape.invalidateSelf();
+                lay.invalidate(myClicked.getDrawableShape().getBounds().right, myClicked.getDrawableShape().getBounds().top, myClicked.getDrawableShape().getBounds().bottom, myClicked.getDrawableShape().getBounds().right + 30);
                 dialog.dismiss();
-               lay.invalidate();
-                lay.revalidate();
+               // lay.invalidate();
+               // lay.revalidate();
             }
         });
 
@@ -1433,7 +1283,6 @@ public class MainActivity extends Activity {
 //                        } catch (Exception e1) {
 //                            e1.printStackTrace();
 //                        }
-                        lay.revalidate();
                         lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
@@ -1459,15 +1308,17 @@ public class MainActivity extends Activity {
             case R.id.action_new:
                 IStyle boxEditedStyle = workbook.getStyleSheet().findStyle(boxEdited.topic.getStyleId());
                 Intent intent1 = new Intent(MainActivity.this, EditBoxScreen.class);
-                intent1.putExtra(EditBoxScreen.BOX_COLOR, boxEditedStyle.getProperty(Styles.FillColor));
-                intent1.putExtra(EditBoxScreen.TEXT_COLOR, boxEdited.topic.getTitleText());
-                intent1.putExtra(EditBoxScreen.LINE_SHAPE, boxEditedStyle.getProperty(Styles.LineClass));
-                intent1.putExtra(EditBoxScreen.LINE_COLOR, boxEditedStyle.getProperty(Styles.LineColor));
-                intent1.putExtra(EditBoxScreen.BOX_SHAPE, boxEditedStyle.getProperty(Styles.ShapeClass));
-                intent1.putExtra(EditBoxScreen.LINE_THICKNESS, boxEditedStyle.getProperty(Styles.LineWidth));
+                if (boxEditedStyle != null ) {
+
+                    intent1.putExtra(EditBoxScreen.BOX_COLOR, boxEditedStyle.getProperty(Styles.FillColor));
+                    intent1.putExtra(EditBoxScreen.TEXT_COLOR, boxEdited.topic.getTitleText());
+                    intent1.putExtra(EditBoxScreen.LINE_SHAPE, boxEditedStyle.getProperty(Styles.LineClass));
+                    intent1.putExtra(EditBoxScreen.LINE_COLOR, boxEditedStyle.getProperty(Styles.LineColor));
+                    intent1.putExtra(EditBoxScreen.BOX_SHAPE, boxEditedStyle.getProperty(Styles.ShapeClass));
+                    intent1.putExtra(EditBoxScreen.LINE_THICKNESS, boxEditedStyle.getProperty(Styles.LineWidth));
+                }
                 startActivity(intent1);
-                lay.revalidate();
-                lay.invalidate();
+                lay.invalidateDrawable(boxEdited.drawableShape);
                 return true;
             case R.id.new_line:
                 Properties properties1 = new Properties();
@@ -1479,7 +1330,7 @@ public class MainActivity extends Activity {
                 addLine.execute(properties1);
                 MainActivity.addCommendUndo(addLine);
 //                lay.revalidate();
-//                lay.invalidate();
+                lay.invalidate();
                 return true;
             case R.id.action_redo:
                 if (commandsRedo.size() == 1) {
@@ -1574,15 +1425,113 @@ public class MainActivity extends Activity {
                     //  return true;
                 }
             case R.id.new_rel:
-                //todo uzupelnic
-                AddRelationship addRel = new AddRelationship();
-                Properties p = new Properties();
-                p.put("boxes", MainActivity.toEditBoxes);
-                addRel.execute(p);
-                MainActivity.addCommendUndo(addRel);
-                menu.getItem(6).setVisible(false);
-                lay.revalidate();
-                lay.invalidate();
+                if (!MainActivity.toEditBoxes.getFirst().relationships.containsKey(MainActivity.toEditBoxes.getLast())) {
+                    final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
+                    final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                    final EditText et = (EditText) dialog.findViewById(R.id.editText);
+                    et.requestFocus();
+                    final Button btn2 = (Button) dialog.findViewById(R.id.button2);
+                    btn2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Callback call = null;
+
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                            String text = (et.getText().toString());
+                            AddRelationship addRel = new AddRelationship();
+                            Properties p = new Properties();
+                            p.put("boxes", MainActivity.toEditBoxes);
+                            p.put("text", text);
+                            addRel.execute(p);
+                            MainActivity.addCommendUndo(addRel);
+                            lay.drawRelationship(MainActivity.toEditBoxes.getFirst(), MainActivity.toEditBoxes.getLast());
+                            lay.invalidate();
+//                            lay.invalidate(Math.min(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().left, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().left)
+//                                    ,Math.min(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().top, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().top)
+//                            ,Math.max(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().right, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().right)
+//                                    ,Math.max(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().bottom, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().bottom));
+                            dialog.dismiss();
+
+                        }
+                    });
+
+                    final int MAX_LINES = 3;
+
+                    //ogranicza do 3 linii widok w zawartości bloczka
+                    et.addTextChangedListener(new TextWatcher() {
+                        private int lines;
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            lines = Utils.countLines(s.toString());
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            int counter = Utils.countLines(s.toString());
+
+                            int diff = lines - counter;
+                            if (diff > 0) {
+                                //w gore
+                                if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
+                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
+                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                    btn.setLayoutParams(buttonLayoutParams);
+                                    btn2.setLayoutParams(buttonLayoutParams);
+                                    et.getLayoutParams().height -= 30;
+                                }
+                            } else if (diff < 0) {
+                                //w dol
+                                if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
+                                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
+                                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                    btn.setLayoutParams(buttonLayoutParams);
+                                    btn2.setLayoutParams(buttonLayoutParams);
+                                    et.getLayoutParams().height += 30;
+                                }
+                            }
+                        }
+                    });
+
+//                    et.setText(pair.first.topic.getNotes().getContent(INotes.PLAIN).getFormat());
+                    int k = Utils.countLines(et.getText().toString());
+                    int ile = Math.min(MAX_LINES - 1, k);
+
+                    et.getLayoutParams().height = 75 + ile * 30;
+                    LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                    buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
+                            buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
+                            buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                    btn.setLayoutParams(buttonLayoutParams);
+                    btn2.setLayoutParams(buttonLayoutParams);
+
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+
+                    dialog.show();
+                } else {
+                    RemoveRelationship remRel = new RemoveRelationship();
+                    Properties p = new Properties();
+                    p.put("boxes", MainActivity.toEditBoxes);
+                    remRel.execute(p);
+                    MainActivity.addCommendUndo(remRel);
+                    lay.invalidate();
+                }
+
             default:
                 return super.onContextItemSelected(item);
         }
@@ -1594,8 +1543,10 @@ public class MainActivity extends Activity {
         }
         commandsUndo.add(command);
         menu.getItem(5).setVisible(true);
-        MainActivity.lay.revalidate();
-        MainActivity.lay.invalidate();
+        if (!(command instanceof AddBox)) {
+            //MainActivity.lay.revalidate();
+            //MainActivity.lay.invalidate();
+        }
         if (boxEdited != null && command instanceof EditBox) {
             Utils.lay.updateBoxWithText(boxEdited);
         }
@@ -1623,9 +1574,7 @@ public class MainActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        root.clear();
-        root = null;
-        workbook = null;
+
     }
 }
 

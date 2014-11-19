@@ -45,7 +45,6 @@ public class AddBox implements Command {
         String style = (String) properties.get("style");
         Resources res = (Resources) properties.get("res");
         parent.addChild(box);
-        box.level = parent.level + 1;
         box.setHeight(100);
         topicStyle.setProperty(Styles.FontFamily, "Times New Roman");
         if (parent.topic.isRoot() && style.equals("Default")) {

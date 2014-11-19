@@ -41,9 +41,9 @@ public class EditBoxScreen extends Activity {
     private CheckBox italic;
     private CheckBox bold;
     private CheckBox strikeOut;
-    private int BoxColor;
-    private int TextColor;
-    private int LineColor;
+    private int BoxColor = 0;
+    private int TextColor = 0;
+    private int LineColor = 0;
     private String blockShape;
 
     public static String BOX_COLOR = "BOX COLOR";
@@ -61,13 +61,16 @@ public class EditBoxScreen extends Activity {
     public static View LINECOLOR;
     public static Box box;
     public static IStyle style;
+    private int sCount  = 6;
 
     @Override
     public void onResume() {
         super.onResume();
-        ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
-        ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)));
-        ((GradientDrawable) LINECOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
+        if (MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId())  != null) {
+            ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
+            ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)));
+            ((GradientDrawable) LINECOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
+        }
     }
 
     @Override
@@ -78,9 +81,11 @@ public class EditBoxScreen extends Activity {
             setContentView(R.layout.edit_box);
             Intent intent = getIntent();
             //box = (Box)intent.getSerializableExtra(EditBoxScreen.BOX);
-            BoxColor = Integer.parseInt(style.getProperty(Styles.FillColor));
-            TextColor = Integer.parseInt(style.getProperty(Styles.TextColor));
-            LineColor = Integer.parseInt(style.getProperty(Styles.LineColor));
+            if (style != null) {
+                BoxColor = Integer.parseInt(style.getProperty(Styles.FillColor));
+                TextColor = Integer.parseInt(style.getProperty(Styles.TextColor));
+                LineColor = Integer.parseInt(style.getProperty(Styles.LineColor));
+            }
             BOXCOLOR = (View) findViewById(R.id.box_color);
             ((GradientDrawable) BOXCOLOR.getBackground()).setColor(BoxColor);
             BOXCOLOR.setOnClickListener(new View.OnClickListener() {
@@ -119,10 +124,9 @@ public class EditBoxScreen extends Activity {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             boxShape.setAdapter(adapter);
-            if (style.getProperty(Styles.ShapeClass) == null) {
-
-            } else
-            if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
+            if (style == null) {
+                boxShape.setSelection(2);
+            } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
                 boxShape.setSelection(2);
             } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
                 boxShape.setSelection(1);
@@ -152,13 +156,16 @@ public class EditBoxScreen extends Activity {
                     } else if (boxShape.getSelectedItem().toString().equals("No Border")) {
                         blockShape = Styles.TOPIC_SHAPE_NO_BORDER;
                     }
-                    Properties properties = new Properties();
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("shape", blockShape);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                    EditBox editBox = new EditBox();
-                    editBox.execute(properties);
-                    MainActivity.addCommendUndo(editBox);
+                    if (sCount <= 0) {
+                        Properties properties = new Properties();
+                        properties.put("box", MainActivity.boxEdited);
+                        properties.put("shape", blockShape);
+                        properties.put("boxes", MainActivity.toEditBoxes);
+                        EditBox editBox = new EditBox();
+                        editBox.execute(properties);
+                        MainActivity.addCommendUndo(editBox);
+                    }
+                    sCount--;
                 }
 
                 @Override
@@ -176,11 +183,11 @@ public class EditBoxScreen extends Activity {
             // Apply the adapter to the spinner
             lineShape.setAdapter(adapter1);
             //lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
-            if (style.getProperty(Styles.LineClass) == null) {
+            if (style  == null) {
                 //lineShape.setSelection(1);
-            } else  if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
+            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
                 lineShape.setSelection(0);
-            } else if (  style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
+            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
                 lineShape.setSelection(1);
 //        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
 //            lineShape.setSelection(2);
@@ -197,18 +204,18 @@ public class EditBoxScreen extends Activity {
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                     String ls = "";
                     if (lineShape.getSelectedItem().toString().equals("Curve")) {
-                        ls =  Styles.BRANCH_CONN_CURVE;
+                        ls = Styles.BRANCH_CONN_CURVE;
 
                     } else if (lineShape.getSelectedItem().toString().equals("Straight")) {
-                        ls =  Styles.BRANCH_CONN_STRAIGHT;
+                        ls = Styles.BRANCH_CONN_STRAIGHT;
 //                } else if (lineShape.getSelectedItem().toString().equals("Arrowed Curve")) {
 //                    lineStyle = LineStyle.ARROWED_CURVE;
                     } else if (lineShape.getSelectedItem().toString().equals("Elbow")) {
-                        ls =  Styles.BRANCH_CONN_ELBOW;
+                        ls = Styles.BRANCH_CONN_ELBOW;
                     } else if (lineShape.getSelectedItem().toString().equals("Rounded Elbow")) {
-                        ls =  Styles.BRANCH_CONN_ROUNDEDELBOW;
+                        ls = Styles.BRANCH_CONN_ROUNDEDELBOW;
                     }
-                    if (!ls.equals("")) {
+                    if (!ls.equals("") && sCount <= 0) {
                         EditBox editBox = new EditBox();
                         Properties properties = new Properties();
                         properties.put("box", MainActivity.boxEdited);
@@ -217,6 +224,7 @@ public class EditBoxScreen extends Activity {
                         editBox.execute(properties);
                         MainActivity.addCommendUndo(editBox);
                     }
+                    sCount--;
                 }
 
                 @Override
@@ -234,7 +242,7 @@ public class EditBoxScreen extends Activity {
             adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             lineThickness.setAdapter(adapter2);
-            if (style.getProperty(Styles.LineWidth).equals("1pt")) {
+            if (style == null ||  style.getProperty(Styles.LineWidth).equals("1pt")) {
                 lineThickness.setSelection(0);
             } else if (style.getProperty(Styles.LineWidth).equals("2pt")) {
                 lineThickness.setSelection(1);
@@ -251,23 +259,26 @@ public class EditBoxScreen extends Activity {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     String lt = "";
                     if (lineThickness.getSelectedItem().toString().equals("Thinnest")) {
-                        lt =  "1pt";
+                        lt = "1pt";
                     } else if (lineThickness.getSelectedItem().toString().equals("Thin")) {
-                        lt =  "2pt";
+                        lt = "2pt";
                     } else if (lineThickness.getSelectedItem().toString().equals("Medium")) {
-                        lt =  "3pt";
+                        lt = "3pt";
                     } else if (lineThickness.getSelectedItem().toString().equals("Fat")) {
                         lt = "4pt";
                     } else if (lineThickness.getSelectedItem().toString().equals("Fattest")) {
-                        lt =  "5pt";
+                        lt = "5pt";
                     }
-                    EditBox editBox = new EditBox();
-                    Properties properties = new Properties();
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("line_thickness", lt);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                    editBox.execute(properties);
-                    MainActivity.addCommendUndo(editBox);
+                    if (sCount <= 0) {
+                        EditBox editBox = new EditBox();
+                        Properties properties = new Properties();
+                        properties.put("box", MainActivity.boxEdited);
+                        properties.put("line_thickness", lt);
+                        properties.put("boxes", MainActivity.toEditBoxes);
+                        editBox.execute(properties);
+                        MainActivity.addCommendUndo(editBox);
+                    }
+                    sCount--;
                 }
 
                 @Override
@@ -283,7 +294,7 @@ public class EditBoxScreen extends Activity {
             adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             textAlign.setAdapter(adapter3);
-            if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
+            if (style == null || style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
                 textAlign.setSelection(0);
             } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
                 textAlign.setSelection(2);
@@ -301,13 +312,16 @@ public class EditBoxScreen extends Activity {
                     } else if (textAlign.getSelectedItem().toString().equals("Left")) {
                         align = Styles.ALIGN_LEFT;
                     }
-                    EditBox editBox = new EditBox();
-                    Properties properties = new Properties();
-                    properties.put("align", align);
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                    editBox.execute(properties);
-                    MainActivity.addCommendUndo(editBox);
+                    if (sCount <= 0) {
+                        EditBox editBox = new EditBox();
+                        Properties properties = new Properties();
+                        properties.put("align", align);
+                        properties.put("box", MainActivity.boxEdited);
+                        properties.put("boxes", MainActivity.toEditBoxes);
+                        editBox.execute(properties);
+                        MainActivity.addCommendUndo(editBox);
+                    }
+                    sCount--;
                 }
 
                 @Override
@@ -324,7 +338,7 @@ public class EditBoxScreen extends Activity {
             adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             textHeight.setAdapter(adapter4);
-            if (style.getProperty(Styles.FontSize).equals("8pt")) {
+            if (style == null || style.getProperty(Styles.FontSize).equals("8pt")) {
                 textHeight.setSelection(0);
             } else if (style.getProperty(Styles.FontSize).equals("9pt")) {
                 textHeight.setSelection(1);
@@ -358,13 +372,16 @@ public class EditBoxScreen extends Activity {
             textHeight.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                                      @Override
                                                      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                                         EditBox editBox = new EditBox();
-                                                         Properties properties = new Properties();
-                                                         properties.put("text_size", textHeight.getSelectedItem().toString() + "pt");
-                                                         properties.put("box", MainActivity.boxEdited);
-                                                         properties.put("boxes", MainActivity.toEditBoxes);
-                                                         editBox.execute(properties);
-                                                         MainActivity.addCommendUndo(editBox);
+                                                         if (sCount <= 0) {
+                                                             EditBox editBox = new EditBox();
+                                                             Properties properties = new Properties();
+                                                             properties.put("text_size", textHeight.getSelectedItem().toString() + "pt");
+                                                             properties.put("box", MainActivity.boxEdited);
+                                                             properties.put("boxes", MainActivity.toEditBoxes);
+                                                             editBox.execute(properties);
+                                                             MainActivity.addCommendUndo(editBox);
+                                                         }
+                                                         sCount--;
                                                      }
 
                                                      @Override
@@ -383,7 +400,7 @@ public class EditBoxScreen extends Activity {
             adapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             font.setAdapter(adapter5);
-            if (style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
+            if (style == null || style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
                 font.setSelection(0);
             } else if (style.getProperty(Styles.FontFamily).equals("Courier New")) {
                 font.setSelection(1);
@@ -404,11 +421,14 @@ public class EditBoxScreen extends Activity {
                     } else if (font.getSelectedItem().toString().equals("Times New Roman")) {
                         f = "Times New Roman";
                     }
-                    properties.put("font", f);
-                    properties.put("box", MainActivity.boxEdited);
-                    properties.put("boxes", MainActivity.toEditBoxes);
-                    editBox.execute(properties);
-                    MainActivity.addCommendUndo(editBox);
+                    if (sCount <= 0) {
+                        properties.put("font", f);
+                        properties.put("box", MainActivity.boxEdited);
+                        properties.put("boxes", MainActivity.toEditBoxes);
+                        editBox.execute(properties);
+                        MainActivity.addCommendUndo(editBox);
+                    }
+                    sCount--;
                 }
 
                 @Override
@@ -421,7 +441,7 @@ public class EditBoxScreen extends Activity {
             //todo akcja zmiany wartosci
             //todo dokonczycwartosci
             bold = (CheckBox) findViewById(R.id.checkBoxBold);
-            if (style.getProperty(Styles.FontStyle) != null && style.getProperty(Styles.FontStyle).equals(Styles.FONT_WEIGHT_BOLD)) {
+            if (style != null && style.getProperty(Styles.FontStyle) != null && style.getProperty(Styles.FontStyle).equals(Styles.FONT_WEIGHT_BOLD)) {
                 bold.setChecked(true);
             }
             //todo listenery
@@ -453,7 +473,7 @@ public class EditBoxScreen extends Activity {
                                             }
             );
             italic = (CheckBox) findViewById(R.id.checkBoxItalic);
-            if (style.getProperty(Styles.FontStyle) != null && style.getProperty(Styles.FontStyle).equals(Styles.FONT_STYLE_ITALIC)) {
+            if (style != null && style.getProperty(Styles.FontStyle) != null && style.getProperty(Styles.FontStyle).equals(Styles.FONT_STYLE_ITALIC)) {
                 italic.setChecked(true);
             }
             italic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -483,7 +503,7 @@ public class EditBoxScreen extends Activity {
                                               }
             );
             strikeOut = (CheckBox) findViewById(R.id.checkBoxStrikeOut);
-            if (style.getProperty(Styles.TextDecoration) != null &&  style.getProperty(Styles.TextDecoration).equals(Styles.TEXT_DECORATION_LINE_THROUGH)) {
+            if (style != null &&  style.getProperty(Styles.TextDecoration) != null && style.getProperty(Styles.TextDecoration).equals(Styles.TEXT_DECORATION_LINE_THROUGH)) {
                 strikeOut.setChecked(true);
             }
             strikeOut.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -515,6 +535,7 @@ public class EditBoxScreen extends Activity {
                                                  }
             );
         }
+
     }
 
     @Override

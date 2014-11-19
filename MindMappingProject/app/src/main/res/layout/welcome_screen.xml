@@ -92,7 +92,7 @@
                 android:src="@drawable/classic" />
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Create New Mind Map"
                 android:id="@+id/buttonCreateMindMap"
@@ -100,15 +100,6 @@
                 android:layout_below="@id/imageView"
                 />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Open From File"
-                android:id="@+id/buttonLoad"
-                android:layout_below="@id/imageView"
-                android:layout_alignParentRight="true" />
-
         </RelativeLayout>
     </ScrollView>
-
 </RelativeLayout>

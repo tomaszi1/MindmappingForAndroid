@@ -87,6 +87,10 @@ public class DbxBrowser {
         return true;
     }
 
+    public DbxFile getCurrentDir() {
+        return currentDir;
+    }
+
     /**
      * Each instance represents a file at Dropbox.
      */
@@ -154,7 +158,7 @@ public class DbxBrowser {
             return fullPath;
         }
 
-        private List<DbxFile> getContents() {
+        public List<DbxFile> getContents() {
             return contents;
         }
 

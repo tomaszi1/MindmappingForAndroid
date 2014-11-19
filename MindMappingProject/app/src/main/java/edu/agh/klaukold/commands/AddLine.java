@@ -1,6 +1,8 @@
 package edu.agh.klaukold.commands;
 
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 
 import org.xmind.core.ITopic;
 import org.xmind.core.style.IStyle;
@@ -24,29 +26,53 @@ public class AddLine implements Command {
 	public void execute(Properties properties) {
         after = properties;
         Box child = (Box) properties.get("child");
+        box = child;
         Box parent = null;
         if (properties.containsKey("parent")) {
             parent = (Box) properties.get("parent");
-            if (parent.topic.isRoot()) {
+            pParent = parent;
+            if (parent.topic.isRoot() || parent.topic.getParent() != null) {
               Line line = null;
               IStyle parentStyle = MainActivity.styleSheet.findStyle(parent.topic.getStyleId());
               if (child.drawableShape.getBounds().left <= MainActivity.root.drawableShape.getBounds().centerX()) {
-                  line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
-                    new Point(parent.getDrawableShape().getBounds().left,
-                            parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-                    new Point(child.getDrawableShape().getBounds().right,
-                            child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  if (parentStyle != null && parentStyle.getProperty(Styles.LineClass) != null) {
+                      line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                              new Point(parent.getDrawableShape().getBounds().left,
+                                      parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
+                              new Point(child.getDrawableShape().getBounds().right,
+                                      child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  } else {
+                      line = new Line(Styles.BRANCH_CONN_STRAIGHT, 2, new ColorDrawable(Color.GRAY),
+                              new Point(parent.getDrawableShape().getBounds().left,
+                                      parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
+                              new Point(child.getDrawableShape().getBounds().right,
+                                      child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  }
               } else {
-                  line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
-                          new Point(parent.getDrawableShape().getBounds().right,
-                                  parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-                          new Point(child.getDrawableShape().getBounds().left,
-                                  child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  if (parentStyle != null ) {
+                      line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                              new Point(parent.getDrawableShape().getBounds().right,
+                                      parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
+                              new Point(child.getDrawableShape().getBounds().left,
+                                      child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  } else {
+                      line = new Line(Styles.BRANCH_CONN_STRAIGHT, 2,  new ColorDrawable(Color.GRAY),
+                              new Point(parent.getDrawableShape().getBounds().right,
+                                      parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
+                              new Point(child.getDrawableShape().getBounds().left,
+                                      child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2), true);
+                  }
               }
-                parent.getChildren().add(child);
-                parent.getLines().put(child, line);
-                parent.topic.getChildren(ITopic.ATTACHED).add(child.topic);
-                child.parent = parent;
+                if (!child.topic.isRoot()) {
+                    if (child.parent != null) {
+                        child.parent.getChildren().remove(child);
+                        child.parent.getLines().remove(child);
+                    }
+                    parent.getChildren().add(child);
+                    parent.getLines().put(child, line);
+                    parent.topic.add(child.topic);
+                    child.parent = parent;
+                }
             } else {
                 Line line = null;
                 IStyle parentStyle = MainActivity.styleSheet.findStyle(child.topic.getStyleId());
@@ -57,19 +83,31 @@ public class AddLine implements Command {
                             new Point(parent.getDrawableShape().getBounds().right,
                                     parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2), true);
                 } else {
-                    line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0,parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                    if (parentStyle != null) {
+                    line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
                             new Point(child.getDrawableShape().getBounds().right,
                                     child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2),
                             new Point(parent.getDrawableShape().getBounds().left,
                                     parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2), true);
+                } else {
+                        line = new Line(Styles.BRANCH_CONN_STRAIGHT, 2, new ColorDrawable(Color.GRAY),
+                                new Point(child.getDrawableShape().getBounds().right,
+                                        child.getDrawableShape().getBounds().top + (child.getDrawableShape().getBounds().bottom - child.getDrawableShape().getBounds().top) / 2),
+                                new Point(parent.getDrawableShape().getBounds().left,
+                                        parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2), true);
+                    }
+                }
+                if (parent.parent != null) {
+                    parent.parent.getChildren().remove(child);
+                    parent.parent.getLines().remove(child);
                 }
                 child.getChildren().add(parent);
                 child.getLines().put(parent, line);
-                child.topic.getChildren(ITopic.ATTACHED).add(parent.topic);
+                child.topic.add(parent.topic);
                 parent.parent = child;
             }
         } else {
-           child.parent.topic.getChildren(ITopic.ATTACHED).remove(child.topic);
+           child.parent.topic.remove(child.topic);
 //           MainActivity.root.topic.getChildren(ITopic.DETACHED).add(child.topic);
            child.parent.getLines().remove(child);
            child.parent = null;
@@ -84,7 +122,7 @@ public class AddLine implements Command {
             box.parent.topic.getChildren(ITopic.ATTACHED).remove(box.topic);
         }
         box.parent = pParent;
-        pParent.topic.getChildren(ITopic.ATTACHED).add(box.topic);
+        pParent.topic.add(box.topic);
         pParent.getChildren().add(box);
         Line line;
         IStyle parentStyle = MainActivity.styleSheet.findStyle(pParent.topic.getStyleId());

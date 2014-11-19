@@ -8,6 +8,7 @@ import java.util.Properties;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
+import edu.agh.klaukold.utilities.Utils;
 
 /**
  * Created by Klaudia on 2014-10-30.
@@ -15,27 +16,34 @@ import edu.agh.klaukold.interfaces.Command;
 public class AddRelationship implements Command {
     LinkedList<Box> boxes;
     IRelationship relation;
+    String s;
+    Properties prop;
 
     @Override
     public void execute(Properties properties) {
+        prop = (Properties) properties.clone();
         boxes = (LinkedList<Box>)((LinkedList<Box>) properties.get("boxes")).clone();
-        relation = MainActivity.workbook.createRelationship();
-        relation.setEnd1Id(boxes.getFirst().topic.getId());
-        relation.setEnd2Id(boxes.getLast().topic.getId());
-        relation.setTitleText("Relationship Description");
-        MainActivity.sheet1.addRelationship(relation);
-        boxes.getFirst().related = boxes.getLast();
+            relation = MainActivity.workbook.createRelationship();
+            relation.setEnd1Id(boxes.getFirst().topic.getId());
+            relation.setEnd2Id(boxes.getLast().topic.getId());
+            s = (String) properties.get("text");
+            relation.setTitleText(s);
+            MainActivity.sheet1.addRelationship(relation);
+            boxes.getFirst().relationships.put(boxes.getLast(), s);
+            boxes.getFirst().relationship = relation;
     }
 
     @Override
     public void undo() {
-        MainActivity.sheet1.removeRelationship(relation);
-        boxes.getFirst().related = null;
+
+            MainActivity.sheet1.removeRelationship(relation);
+            boxes.getFirst().relationships.remove(boxes.getLast());
+
+
     }
 
     @Override
     public void redo() {
-        MainActivity.sheet1.addRelationship(relation);
-        boxes.getFirst().related = boxes.getLast();
+       execute(prop);
     }
 }

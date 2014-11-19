@@ -18,6 +18,8 @@
 
 package edu.agh.klaukold.utilities;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -37,6 +39,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.MotionEvent;
 
+import org.xmind.core.IRelationship;
 import org.xmind.core.ITopic;
 import org.xmind.core.style.IStyle;
 import org.xmind.core.style.IStyleSheet;
@@ -48,6 +51,29 @@ public class Utils {
 	static String base;
 
 
+    public static  IRelationship findRelationship(Box box1, Box box2) {
+       for (int i =0; i<MainActivity.sheet1.getRelationships().size(); i++) {
+            IRelationship rel = MainActivity.sheet1.getRelationships().iterator().next();
+            if ((rel.getEnd1Id().equals(box1.topic.getId()) && rel.getEnd2Id().equals(box2.topic.getId())) || (rel.getEnd2Id().equals(box1.topic.getId()) && rel.getEnd1Id().equals(box2.topic.getId()))){
+                return rel;
+            }
+        }
+        return null;
+    }
+
+    public static  void findRelationships(HashMap<String, Box> boxes) {
+        //while (MainActivity.sheet1.getRelationships().iterator().hasNext()) {
+        for (int i  = 0; i<MainActivity.sheet1.getRelationships().size(); i++) {
+            IRelationship rel = MainActivity.sheet1.getRelationships().iterator().next();
+            for (String t : boxes.keySet()) {
+                if (rel.getEnd1Id().equals(t)) {
+                    boxes.get(t).relationships.put(boxes.get(rel.getEnd2Id()), rel.getTitleText());
+                    boxes.get(t).relationship = rel;
+                }
+            }
+        }
+    }
+
     public static void fireUnSelect(Box box) {
         box.isSelected = (false);
         for (Box b : box.getChildren()) {
@@ -57,30 +83,17 @@ public class Utils {
     }
 
     public static
-    void fireAddSubtopic(Box p) {
-        for (ITopic t : p.topic.getChildren(ITopic.ATTACHED)) {
-
+    void fireAddSubtopic(Box p, HashMap<String, Box> boxes) {
+        for (ITopic t : p.topic.getAllChildren()) {
             Box b = new Box();
             b.setWidth(70);
             b.setHeight(50);
             b.topic = t;
-            IStyle s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
-            s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
-            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
-            // s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            s.setProperty(Styles.FontSize, "13pt");
-            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            s.setProperty(Styles.FontFamily, "Times New Roman");
-            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            s.setProperty(Styles.LineWidth, "1pt");
-            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            s.setProperty(Styles.FontFamily, "Times New Roman");
-            MainActivity.workbook.getStyleSheet().addStyle(s, IStyleSheet.NORMAL_STYLES);
             b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
-            b.topic.setStyleId(s.getId());
             b.parent = p;
             p.addChild(b);
+            boxes.put(t.getId(), b);
+            fireAddSubtopic(b, boxes);
         }
     }
 	
@@ -170,7 +183,7 @@ public class Utils {
 		while(!q.isEmpty()) {
 			Box box = q.remove();
 			
-			if(!box.topic.isFolded()) {
+			if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
 				Rect rec = box.getDrawableShape().getBounds();
 				if(rec.contains(x, y)) {
 					q.clear();
@@ -230,7 +243,7 @@ public class Utils {
         while(!q.isEmpty()) {
             Box box = q.remove();
 
-            if(!box.topic.isFolded()) {
+            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
 //                Rect rec = box.getDrawableShape().getBounds();
 //                if(rec.contains(x, y)) {
 //                    q.clear();
