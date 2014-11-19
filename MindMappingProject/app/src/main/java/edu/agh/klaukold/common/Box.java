@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
@@ -25,7 +26,19 @@ import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.gui.MainActivity;
 
 
-public class Box implements  Cloneable, Serializable {
+public class Box implements  Cloneable, Serializable, Comparable<Box> {
+    @Override
+    public int compareTo(Box another) {
+        int res = 1;
+        if (topic.getStyleId() == another.topic.getStyleId()) {
+            res = 0;
+        }
+        if (!topic.getTitleText().equals(another.topic.getTitleText())) {
+            res = 1;
+        }
+        return res;
+    }
+
     public void updateBox(Box b) {
         this.height = b.height;
         this.width = b.width;
@@ -35,14 +48,14 @@ public class Box implements  Cloneable, Serializable {
         this.lines = b.lines;
         this.newNote = b.newNote;
         this.addBox = b.addBox;
-       // this.newMarker = b.newMarker;
         this.collapseAction = b.collapseAction;
         this.expandAction = b.expandAction;
         this.position = b.position;
         this.drawableShape = b.drawableShape;
     }
 
-
+    public Box related;
+    public Path relationPath;
 	public LinkedList<Box> getChildren() {
 		return children;
 	}
@@ -78,20 +91,18 @@ public class Box implements  Cloneable, Serializable {
 
     protected  int height = 110;
     protected  int width = 150;
-    public  Point point = new Point();
+    public  Point point;
 	protected LinkedList<Box> children = new LinkedList<Box>();;
 	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
     public Drawable newNote;
     public Drawable addBox;
-    public Boolean isNote = false;
-    public String note;
-    //public Drawable newMarker;
     public Drawable collapseAction;
     public Drawable expandAction;
     public Position position;
     public Drawable addNote;
     public ITopic topic;
     public Box parent;
+    public int level = 0;
 
     public void clear() {
         children.clear();
@@ -114,11 +125,16 @@ public class Box implements  Cloneable, Serializable {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId());
         int[] colors = {Color.WHITE, Integer.parseInt(style.getProperty(Styles.FillColor))};
         String s = style.getProperty(Styles.ShapeClass);
-        if (s.equals(Styles.TOPIC_SHAPE_RECT)) {
+//        if (s.equals(Styles.TOPIC_SHAPE_RECT)) {
+//            ((GradientDrawable) drawableShape).setColors(colors);
+//            drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
+//
+//        }
+        if (s == null) {
             ((GradientDrawable) drawableShape).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
-
-        } else if (s.equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
+        }
+        else if (s.equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
             ((GradientDrawable) drawableShape).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
 
@@ -143,6 +159,9 @@ public class Box implements  Cloneable, Serializable {
             int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
             ((GradientDrawable) drawableShape).setColors(colors1);
+        } else {
+            ((GradientDrawable) drawableShape).setColors(colors);
+            drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
         }
         return  drawableShape;
     }
@@ -171,7 +190,7 @@ public class Box implements  Cloneable, Serializable {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void setActiveColor() {
         int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
-        if ( !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
+        if (MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass) == null ||   !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
             ((GradientDrawable)drawableShape).setColors(colors);
         } else {
             ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);

@@ -18,7 +18,7 @@
         <item>Simple</item>
         <item>Business</item>
         <item>Academese</item>
-        <item>Comic</item>
+        <!--<item>Comic</item>-->
     </string-array>
     <string name="dialog_content">Wpisz zawartość</string>
     <string name="ok_button">OK</string>
@@ -69,8 +69,8 @@
     <string-array name="lines_array">
         <item>@string/curve</item>
         <item>@string/straight</item>
-        <item>@string/elbow</item>
-        <item>@string/rounded_elbow</item>
+        <!--<item>@string/elbow</item>-->
+        <!--<item>@string/rounded_elbow</item>-->
     </string-array>
     <string-array name="thin_array">
         <item>@string/thinnest</item>

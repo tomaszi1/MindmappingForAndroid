@@ -27,11 +27,13 @@ public class RemoveBox implements Command {
         boxes = (HashMap<Box, Line>) properties.get("boxes");
         for (Box box : boxes.keySet()) {
             if (!box.topic.isRoot()) {
-              box.topic.getParent().getAllChildren().remove(box);
+              box.topic.getParent().getAllChildren().remove(box.topic);
+              box.parent.getChildren().remove(box);
             }
             //todo usuniecie linii
-          //  box.getParent().getLines().remove(box);
+            box.parent.getLines().remove(box);
         }
+
 	}
 
     @Override
@@ -44,6 +46,7 @@ public class RemoveBox implements Command {
                 b.topic.getParent().add(b.topic);
             }
             IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getParent().getStyleId());
+
             //todo wyszstko napisac od nowa
 //            Line line = new Line(b.getParent().getLineStyle(), Integer.parseInt(s.getProperty(Styles.LineWidth)), new ColorDrawable(b.getParent().getLineColor()), new Point(), new Point(), true);
 //            if (b.position == Position.LFET) {
@@ -60,6 +63,6 @@ public class RemoveBox implements Command {
 
     @Override
     public void redo() {
-        execute(before);
+        execute(after);
     }
 }

@@ -24,6 +24,7 @@ public class Line implements Serializable, Cloneable {
 	private boolean isVisible;
     public Position position;
     public Box box;
+    public int off = 0;
 
     public Drawable deleteLine;
 
@@ -40,7 +41,9 @@ public class Line implements Serializable, Cloneable {
     public void preparePath() {
         path.reset();
         path.moveTo(start.x, start.y);
-        if (shape.equals(Styles.BRANCH_CONN_STRAIGHT)) {
+        if (shape == null) {
+          path.lineTo(end.x, end.y);
+        } else if (shape.equals(Styles.BRANCH_CONN_STRAIGHT)) {
             path.lineTo(end.x, end.y);
         } else if (shape.equals(Styles.BRANCH_CONN_CURVE)) {
 //            int startAngle = (int) (180 / Math.PI * Math.atan2(start.y - end.y, end.x - start.x));
@@ -51,9 +54,9 @@ public class Line implements Serializable, Cloneable {
 //            if (end.x < 0) {
 //                if (LineDirection.UP_RIGHT) {
             if (position == Position.RIGHT) {
-                path.cubicTo(start.x, start.y, start.x + (start.x - start.y), start.y + 20, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (start.x - start.y) + off, start.y + off, end.x, end.y);
             } else {
-                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x - (start.x - start.y) + off, start.y + off, end.x, end.y);
             }
 
 //                    LineDirection.UP_RIGHT = false;
@@ -77,48 +80,8 @@ public class Line implements Serializable, Cloneable {
 //                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
 //            }
 //            path.rMoveTo(end.x + ); }
-       } else if ((shape.equals(Styles.BRANCH_CONN_ELBOW))) {
-            path.reset();
-            if (Root.up == Root.down) {
-                path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().centerX(), MainActivity.root.getDrawableShape().getBounds().top);
-                if (position == Position.LFET) {
-                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL);
-                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL);
-                    box.point.x = MainActivity.root.getDrawableShape().getBounds().left - 20 - box.getWidth();
-                    box.point = new Point();
-                    box.point.y = MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownL;
-                    path.lineTo(box.point.x, box.point.y);
-                    Root.HeightUpL += box.getHeight();
-                    Root.up += 1;
-                } else {
-                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownR);
-                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().right + 20,MainActivity.root.getDrawableShape().getBounds().top - Root.HeightDownR);
-                    box.point.x = MainActivity.root.getDrawableShape().getBounds().right + 20 + box.getWidth();
-                    box.point.y = MainActivity.root.getDrawableShape().getBounds().top + Root.HeightDownL;
-                    path.lineTo(box.point.x, box.point.y);
-                    Root.HeightDownR+= box.getHeight();
-                    Root.down  += 1;
-                }
-            } else  {
-                path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().centerX(), MainActivity.root.getDrawableShape().getBounds().top);
-                if (position == Position.LFET) {
-                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().left + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL);
-                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().left - 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL);
-                    box.point.x = MainActivity.root.getDrawableShape().getBounds().left - 20 - box.getWidth();
-                    box.point.y = MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL;
-                    path.lineTo(box.point.x, box.point.y);
-                    Root.HeightDownL += box.getHeight();
-                    Root.up += 1;
-                } else {
-                    path.lineTo(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownR);
-                    path.setLastPoint(MainActivity.root.getDrawableShape().getBounds().right + 20, MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownR);
-                    box.point.x = MainActivity.root.getDrawableShape().getBounds().right + 20 + box.getWidth();
-                    box.point.y = MainActivity.root.getDrawableShape().getBounds().bottom + Root.HeightDownL;
-                    path.lineTo(box.point.x, box.point.y);
-                    Root.HeightDownR += box.getHeight();
-                    Root.down  += 1;
-                }
-            }
+       }  else {
+            path.lineTo(end.x, end.y);
         }
 
 

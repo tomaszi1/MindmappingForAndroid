@@ -19,11 +19,21 @@
 package edu.agh.klaukold.gui;
 
 import edu.agh.R;
+import edu.agh.idziak.FileBrowserActivity;
+import edu.agh.idziak.dropbox.DbxBrowser;
+import edu.agh.idziak.dropbox.DropboxHandler;
+import edu.agh.idziak.dropbox.DropboxWorkbookManager;
+import edu.agh.idziak.dropbox.ResultListener;
+import edu.agh.idziak.local.LocalWorkbookManager;
+import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.utilities.Utils;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +43,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import org.xmind.core.ITopic;
+import org.xmind.core.IWorkbook;
+import org.xmind.core.internal.Workbook;
+import org.xmind.core.style.IStyle;
+import org.xmind.core.style.IStyleSheet;
+import org.xmind.ui.style.Styles;
+
+import java.io.File;
 
 public class WelcomeScreen extends Activity {
     private Spinner styles;
@@ -54,8 +74,13 @@ public class WelcomeScreen extends Activity {
     }
 
     private Button buttonCreateMindMap;
+    private Button buttonLoad;
     private ImageView imageStyle;
     public final static String STYLE = "WELCOME_SCREEN_STYLE";
+    public static final int REQUEST_FILE = 1;
+    private ProgressDialog progressDialog;
+    private DropboxHandler dropboxHandler;
+    private DropboxWorkbookManager dropboxWorkbookManager;
 
     @Override
     public void onResume() {
@@ -94,96 +119,86 @@ public class WelcomeScreen extends Activity {
         //dodanie lisener'a do spinnera i przycisku
         addListenerOnButtonCreateMindMap();
         addListenerSpinerStyles();
-//
-//		Button btn = (Button) findViewById(R.id.welcomeNewBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.newMapDialog(WelcomeScreen.this);
-//				Button btn = (Button) dialog.findViewById(R.id.saveFile);
-//				final EditText et = (EditText) dialog.findViewById(R.id.newMapEditText);
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//
-//				btn.setOnClickListener(new OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						if(!et.getText().toString().isEmpty()) {
-//							dialog.dismiss();
-//							intent.putExtra("filename", et.getText().toString());
-//							startActivity(intent);
-//						}
-//					}
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeReadBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.readMapDialog(WelcomeScreen.this);
-//				final ListView listview = (ListView) dialog.findViewById(R.id.listview);
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//
-//				//listview.setAdapter(new ArrayAdapter<String>(WelcomeScreen.this,
-//				//		android.R.layout.simple_list_item_1 , Utils.db.getMaps()));
-//
-//				listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//					@Override
-//					public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-//						final String item = (String) parent.getItemAtPosition(position);
-//						dialog.dismiss();
-//						intent.putExtra("filename", item);
-//						intent.putExtra("present", true);
-//						startActivity(intent);
-//					}
-//
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeDeleteBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Dialog dialog = DialogFactory.deleteMapDialog(WelcomeScreen.this);
-//				final ListView listview = (ListView) dialog.findViewById(R.id.listview);
-//
-//			//	listview.setAdapter(new ArrayAdapter<String>(WelcomeScreen.this,
-//				//		android.R.layout.simple_list_item_1 , Utils.db.getMaps()));
-//
-//				listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//					@Override
-//					public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-//						final String item = (String) parent.getItemAtPosition(position);
-//						dialog.dismiss();
-//						//Utils.db.deleteAll(item);
-//					}
-//				});
-//
-//				dialog.show();
-//			}
-//		});
-//
-//		btn = (Button) findViewById(R.id.welcomeImportBtn);
-//		btn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-//				intent.putExtra("import", true);
-//				startActivity(intent);
-//			}
-//		});
+
+        buttonLoad = (Button) findViewById(R.id.buttonLoad);
+        buttonLoad.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Intent intent1 = new Intent(WelcomeScreen.this, FileBrowserActivity.class);
+                startActivityForResult(intent1,  REQUEST_FILE);
+
+
+            }
+        });
+
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FILE) {
+            if (resultCode == RESULT_OK) {
+                progressDialog = ProgressDialog.show(this, "Pobieranie", "Chwila...", true, false);
+                File file = (File) data.getExtras().get(FileBrowserActivity.SELECTED_FILE);
+               // DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
+
+                LocalWorkbookManager.loadWorkbook(file, new ResultListener() {
+                    @Override
+                    public void taskDone(Object result) {
+                        progressDialog.dismiss();
+                        DrawView.LUheight = 0;
+                        DrawView.LDHehight = 0;
+                        DrawView.RUheight = 0;
+                        DrawView.RDHehight = 0;
+                        MainActivity.workbook = (Workbook) result;
+//                        for (ITopic t : MainActivity.root.topic.getChildren(ITopic.ATTACHED)) {
+//                            Box b = new Box();
+//                            b.topic = t;
+//                            IStyle s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+//                            s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+//                            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
+//                            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
+//                            //   s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+//                            s.setProperty(Styles.FontSize, "13pt");
+//                            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
+//                            s.setProperty(Styles.FontFamily, "Times New Roman");
+//                            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+//                            s.setProperty(Styles.LineWidth, "1pt");
+//                            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
+//                            s.setProperty(Styles.FontFamily, "Times New Roman");
+//                            MainActivity.styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
+//                            b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
+//                            b.topic.setStyleId(s.getId());
+//                            b.parent = MainActivity.root;
+//                            MainActivity.root.addChild(b);
+//                            Utils.fireAddSubtopic(b);
+//                        }
+                        Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
+                        String style = "ReadyMap";
+                        intent.putExtra(STYLE, style);
+                      //  intent.putExtra("workbook", ((Workbook) result));
+                        if (MainActivity.root != null) {
+                            MainActivity.root.getChildren().clear();
+                        }
+                        MainActivity.root = null;
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void taskFailed(Exception exception) {
+                        progressDialog.cancel();
+                    }
+                });
+            } else {
+                showToast("Anulowano");
+            }
+        }
+    }
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void addListenerSpinerStyles() {
@@ -191,6 +206,7 @@ public class WelcomeScreen extends Activity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
                 imageStyle = (ImageView) findViewById(R.id.imageView);
                 if (spinner.getSelectedItem().toString().equals("Default")) {
                     imageStyle.setImageResource(R.drawable.def);
@@ -221,6 +237,10 @@ public class WelcomeScreen extends Activity {
 
             @Override
             public void onClick(View arg0) {
+                DrawView.LUheight = 0;
+                DrawView.LDHehight = 0;
+                DrawView.RUheight = 0;
+                DrawView.RDHehight = 0;
                 Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                 Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
                 String style = (String) spinner.getSelectedItem();

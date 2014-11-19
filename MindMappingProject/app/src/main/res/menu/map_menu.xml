@@ -3,7 +3,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title="Settings"
         android:showAsAction="never" />
 
     <!-- Search, should appear as action button -->
@@ -22,6 +22,11 @@
         android:icon="@drawable/ic_action_discard"
         android:title="@string/trash"
         android:showAsAction="always" />
+    <item android:id="@+id/new_rel"
+    android:orderInCategory="100"
+    android:icon="@drawable/ic_action_split"
+    android:title="To add a Relationship click icon and then 2 boxes which you want to connect"
+    android:showAsAction="always" />
     <item android:id="@+id/action_undo"
         android:orderInCategory="100"
         android:icon="@drawable/undo_selected"

@@ -38,7 +38,7 @@ public class DialogFactory {
 	public static Dialog boxContentDialog(Context context) {
 		Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.dialog_content);
-		dialog.setTitle(context.getResources().getString(R.string.dialog_content));
+		dialog.setTitle("Content");
 		dialog.setCancelable(false);
 		return dialog;
 	}
