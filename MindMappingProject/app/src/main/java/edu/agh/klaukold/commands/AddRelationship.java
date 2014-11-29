@@ -29,8 +29,7 @@ public class AddRelationship implements Command {
             s = (String) properties.get("text");
             relation.setTitleText(s);
             MainActivity.sheet1.addRelationship(relation);
-            boxes.getFirst().relationships.put(boxes.getLast(), s);
-            boxes.getFirst().relationship = relation;
+            boxes.getFirst().relationships.put(boxes.getLast(), relation);
     }
 
     @Override

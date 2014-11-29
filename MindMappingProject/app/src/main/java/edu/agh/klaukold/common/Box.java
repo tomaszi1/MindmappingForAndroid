@@ -23,6 +23,7 @@ import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
 
 ;
+import edu.agh.R;
 import edu.agh.klaukold.enums.Position;
 import edu.agh.klaukold.gui.MainActivity;
 
@@ -55,7 +56,6 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         this.drawableShape = b.drawableShape;
     }
 
-    public Path relationPath;
 	public LinkedList<Box> getChildren() {
 		return children;
 	}
@@ -64,8 +64,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 	}
     public boolean isExpendable = false;
     public boolean isSelected = false;
-    public HashMap<Box, String> relationships = new HashMap<Box, String>();
-    public IRelationship relationship;
+    public HashMap<Box, IRelationship> relationships = new HashMap<Box, IRelationship>();
 
 
     public int getHeight() {
@@ -106,6 +105,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     public Box parent;
 
 
+
     public void clear() {
         children.clear();
     }
@@ -126,8 +126,34 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId());
         int c = Color.BLUE;
+        if (MainActivity.sheet1.getTheme() != null) {
+            if (MainActivity.sheet1.getTheme().getName().equals("%classic")) {
+                if (this.parent != null && topic.getParent().isRoot()) {
+                    c = MainActivity.res.getColor(R.color.lime_green);
+                } else {
+                    c = MainActivity.res.getColor(R.color.light_blue);
+                }
+            } else if (MainActivity.sheet1.getTheme().getName().equals("%simple")) {
+                c = Color.WHITE;
+            } else if (MainActivity.sheet1.getTheme().getName().equals("%business")) {
+                if (this.parent != null && topic.getParent().isRoot()) {
+                    c = MainActivity.res.getColor(R.color.copper);
+                } else {
+                    c = MainActivity.res.getColor(R.color.beige);
+                }
+             } else if (MainActivity.sheet1.getTheme().getName().equals("%academese")) {
+                c = MainActivity.res.getColor(R.color.dark_blue);
+            } else if (MainActivity.sheet1.getTheme().getName().equals("%comic")) {
+                if (this.parent != null && topic.getParent().isRoot()) {
+                    c = MainActivity.res.getColor(R.color.orange);
+                } else {
+                    c = MainActivity.res.getColor(R.color.light_blue);
+                }
+            }
+
+        }
         if (style!=null && style.getProperty(Styles.FillColor) != null) {
-            c = Integer.parseInt(style.getProperty(Styles.FillColor));
+            c = Color.parseColor(style.getProperty(Styles.FillColor));
         }
         int[] colors = {Color.WHITE, c};
         String s = null;
@@ -147,10 +173,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
             ((GradientDrawable) drawableShape).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
 
-        } else if (s.equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {//dwie pierwsze warosci - polozenie lewego, gornego roku, pozostale pary zgodnie z ruchem wskazowek zegara
-//                float[] arr = {10, 10, 10, 10, 10, 10, 10, 10};
-//                RoundRectShape roundRectShape = new RoundRectShape(arr, null,null);
-//                drawableShape = new ShapeDrawable(roundRectShape);
+        } else if (s.equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {//dwie pierwsze warosci - polozenie lewego, gornego roku, pozostale pary zgodnie z ruchem wskazowek zegara;
             ((GradientDrawable) drawableShape).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
 
@@ -160,7 +183,6 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 
         } else if (s.equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
             int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
-
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
              ((GradientDrawable)drawableShape).setColors(colors2);
 
@@ -201,7 +223,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         int[] colors = {Color.rgb(0,51,102), Color.rgb(0,51, 102)};
         if (topic.getStyleId() != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()) != null && (MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass) == null ||   !MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND))) {
             ((GradientDrawable)drawableShape).setColors(colors);
-        } else if (topic.getStyleId() != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)){
+        } else if (topic.getStyleId() != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()) != null && MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId()).getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)){
             ((GradientDrawable)((RotateDrawable)drawableShape).getDrawable()).setColors(colors);
         } else if (isSelected) {
             ((GradientDrawable)drawableShape).setColors(colors);

@@ -1,5 +1,6 @@
 package edu.agh.klaukold.commands;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,10 +36,6 @@ public class AddBox implements Command {
         box = (Box) properties.get("new_box");
         box.parent = parent;
         ITopic topic = MainActivity.workbook.createTopic();
-        IStyleSheet styleSheet = MainActivity.workbook.getStyleSheet();
-        // Tworzymy styl dla topica
-        IStyle topicStyle = styleSheet.createStyle(IStyle.TOPIC);
-        topic.setStyleId(topicStyle.getId());
         box.topic = topic;
        // box.topic.setFolded(true);
         parent.topic.add(box.topic);
@@ -46,122 +43,47 @@ public class AddBox implements Command {
         Resources res = (Resources) properties.get("res");
         parent.addChild(box);
         box.setHeight(100);
-        topicStyle.setProperty(Styles.FontFamily, "Times New Roman");
-        if (parent.topic.isRoot() && style.equals("Default")) {
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            int color = res.getColor(R.color.white);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
+        if (parent.topic.isRoot() && ( style.equals("Default") || (MainActivity.sheet1.getTheme() == null ) )) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (parent.topic.isRoot() && style.equals("Classic")) {
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            int color = res.getColor(R.color.light_blue);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
+        } else
+            if (parent.topic.isRoot() && ( style.equals("Classic") || (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) ) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-        } else if (parent.topic.isRoot() && style.equals("Simple")) {
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(Color.WHITE));
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_UNDERLINE);
-            box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.underline));
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (parent.topic.isRoot() && style.equals("Business")) {
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            int color = res.getColor(R.color.white);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
+        } else if (parent.topic.isRoot() && ( style.equals("Simple") || (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%simple") )))  {
+            box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
+        } else if (parent.topic.isRoot() && (style.equals("Business") || (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%business") )))   {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
-        } else if (parent.topic.isRoot() && style.equals("Academese")) {
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
-            int color = res.getColor(R.color.dark_gray);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
+        } else if (parent.topic.isRoot() && (style.equals("Academese")|| (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%academese") )))  {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
         } else {
             if (!parent.topic.isRoot()) {
                 box.setWidth(70);
                 box.setHeight(50);
             }
-            topicStyle.setProperty(Styles.FontSize, "13pt");
-            topicStyle.setProperty(Styles.TextColor, String.valueOf(Color.BLACK));
-            topicStyle.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            int color = res.getColor(R.color.white);
-            topicStyle.setProperty(Styles.FillColor, String.valueOf(color));
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
-            topicStyle.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            topicStyle.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            topicStyle.setProperty(Styles.LineWidth, "1pt");
         }
-       // box.position = position;
-//        box.prepareDrawableShape();
-        IStyle partentStyle = MainActivity.workbook.getStyleSheet().findStyle(parent.topic.getStyleId());
-//        if (position == Position.RIGHT) {
-//            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth).substring(0,partentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
-//                    new Point(parent.getDrawableShape().getBounds().right,
-//                            parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-//                    new Point(box.getDrawableShape().getBounds().left,
-//                            box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().bottom - box.getDrawableShape().getBounds().top) / 2), true);
-//        } else {
-//            line = new Line(partentStyle.getProperty(Styles.LineClass), Integer.parseInt(partentStyle.getProperty(Styles.LineWidth).substring(0,partentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(partentStyle.getProperty(Styles.LineColor))),
-//                    new Point(parent.getDrawableShape().getBounds().left,
-//                            parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-//                    new Point(box.getDrawableShape().getBounds().right,
-//                            box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().bottom - box.getDrawableShape().getBounds().top) / 2), true);
-//        }
-//        line.position = box.position;
-       // parent.getLines().put(box, line);
-//=======
-//            box.setLineStyle(LineStyle.STRAIGHT);
-//            box.setLineColor(Color.rgb(128, 128, 128));
-//            box.setLineThickness(LineThickness.THINNEST);
-//            box.position = position;
-//            box.prepareDrawableShape();
-//            if (position == Position.RIGHT) {
-//                line = new Line(parent.getLineStyle(), (int) parent.getLineThickness().getValue(), new ColorDrawable(parent.getLineColor()),
-//                        new Point(parent.getDrawableShape().getBounds().right,
-//                                parent.getDrawableShape().getBounds().top +  (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-//                        new Point(box.getDrawableShape().getBounds().left,
-//                                box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().bottom - box.getDrawableShape().getBounds().top) / 2), true);
-//            } else {
-//                line = new Line(parent.getLineStyle(), (int) parent.getLineThickness().getValue(), new ColorDrawable(parent.getLineColor()),
-//                        new Point(parent.getDrawableShape().getBounds().left,
-//                                parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
-//                        new Point(box.getDrawableShape().getBounds().right,
-//                                box.getDrawableShape().getBounds().top +    (box.getDrawableShape().getBounds().bottom - box.getDrawableShape().getBounds().top) / 2), true);
-//            }
-//            line.position = box.position;
-//            parent.getLines().put(box,line);
-//        }
-//        parent.setSelected(false);
-//>>>>>>> dfef7fd21da727269753511592462b2ad0d98f65
-//        parent.setExpanded(true);
         parent.isExpendable = true;
+        if (box.point != null) {
+            Line line1;
+            Point linePoint1;
+            Point linePoint2;
+            if (box.point.x < MainActivity.root.drawableShape.getBounds().centerX()) {
+                linePoint1 =  new Point(box.point.x + box.getWidth(), box.point.y/2);
+                linePoint2 =  new Point(MainActivity.root.getDrawableShape().getBounds().left, MainActivity.root.getDrawableShape().getBounds().centerY());
+            } else {
+                linePoint1 =  new Point(box.point.x, box.point.y/2);
+                linePoint2 =  new Point(MainActivity.root.getDrawableShape().getBounds().right, MainActivity.root.getDrawableShape().getBounds().centerY());
 
+            }
+            if (parent.topic.getStyleId() != null && MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass) != null) {
+                if (MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor) != null) {
+                    line1 = new Line(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass), 1, new ColorDrawable(Integer.parseInt(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor))), linePoint1, linePoint2, true);
+                } else {
+                    line1 = new Line(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass), 1, new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);
+                }
+            } else {
+                line1 = new Line(null, 1, new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);
+            }
+        }
 	}
 
     @Override

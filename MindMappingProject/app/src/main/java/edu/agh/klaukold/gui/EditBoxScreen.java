@@ -61,15 +61,21 @@ public class EditBoxScreen extends Activity {
     public static View LINECOLOR;
     public static Box box;
     public static IStyle style;
-    private int sCount  = 6;
+    private int sCount = 6;
 
     @Override
     public void onResume() {
         super.onResume();
-        if (MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId())  != null) {
-            ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
-            ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)));
-            ((GradientDrawable) LINECOLOR.getBackground()).setColor(Integer.parseInt(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
+        if (MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()) != null) {
+            if (MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor) != null) {
+                ((GradientDrawable) BOXCOLOR.getBackground()).setColor(Color.parseColor(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.FillColor)));
+            }
+            if ((MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)) != null) {
+                ((GradientDrawable) TEXTCOLOR.getBackground()).setColor(Color.parseColor(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.TextColor)));
+            }
+            if (MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor) != null) {
+                ((GradientDrawable) LINECOLOR.getBackground()).setColor(Color.parseColor(MainActivity.workbook.getStyleSheet().findStyle(MainActivity.boxEdited.topic.getStyleId()).getProperty(Styles.LineColor)));
+            }
         }
     }
 
@@ -82,9 +88,15 @@ public class EditBoxScreen extends Activity {
             Intent intent = getIntent();
             //box = (Box)intent.getSerializableExtra(EditBoxScreen.BOX);
             if (style != null) {
-                BoxColor = Integer.parseInt(style.getProperty(Styles.FillColor));
-                TextColor = Integer.parseInt(style.getProperty(Styles.TextColor));
-                LineColor = Integer.parseInt(style.getProperty(Styles.LineColor));
+                if (style.getProperty(Styles.FillColor) != null) {
+                    BoxColor = Color.parseColor(style.getProperty(Styles.FillColor));
+                }
+                if (style.getProperty(Styles.TextColor) != null) {
+                    TextColor = Color.parseColor(style.getProperty(Styles.TextColor));
+                }
+                if (style.getProperty(Styles.LineColor) != null) {
+                    LineColor = Color.parseColor(style.getProperty(Styles.LineColor));
+                }
             }
             BOXCOLOR = (View) findViewById(R.id.box_color);
             ((GradientDrawable) BOXCOLOR.getBackground()).setColor(BoxColor);
@@ -126,10 +138,10 @@ public class EditBoxScreen extends Activity {
             boxShape.setAdapter(adapter);
             if (style == null) {
                 boxShape.setSelection(2);
+            } else if (style.getProperty(Styles.ShapeClass) == null || style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
+                boxShape.setSelection(1);
             } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
                 boxShape.setSelection(2);
-            } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ROUNDEDRECT)) {
-                boxShape.setSelection(1);
             } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
                 boxShape.setSelection(0);
             } else if (style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
@@ -183,17 +195,17 @@ public class EditBoxScreen extends Activity {
             // Apply the adapter to the spinner
             lineShape.setAdapter(adapter1);
             //lineStyle = (LineStyle) intent.getSerializableExtra(LINE_SHAPE);
-            if (style  == null) {
+            if (style == null) {
                 //lineShape.setSelection(1);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
+            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_CURVE)) {
                 lineShape.setSelection(0);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
+            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
                 lineShape.setSelection(1);
 //        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
 //            lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
+            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
                 lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
+            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
                 lineShape.setSelection(3);
             }
 
@@ -242,7 +254,7 @@ public class EditBoxScreen extends Activity {
             adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             lineThickness.setAdapter(adapter2);
-            if (style == null ||  style.getProperty(Styles.LineWidth).equals("1pt")) {
+            if (style == null || style.getProperty(Styles.LineWidth) == null || style.getProperty(Styles.LineWidth).equals("1pt")) {
                 lineThickness.setSelection(0);
             } else if (style.getProperty(Styles.LineWidth).equals("2pt")) {
                 lineThickness.setSelection(1);
@@ -294,7 +306,7 @@ public class EditBoxScreen extends Activity {
             adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             textAlign.setAdapter(adapter3);
-            if (style == null || style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
+            if (style == null || style.getProperty(Styles.TextAlign) == null || style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_RIGHT)) {
                 textAlign.setSelection(0);
             } else if (style.getProperty(Styles.TextAlign).equals(Styles.ALIGN_CENTER)) {
                 textAlign.setSelection(2);
@@ -338,7 +350,7 @@ public class EditBoxScreen extends Activity {
             adapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             textHeight.setAdapter(adapter4);
-            if (style == null || style.getProperty(Styles.FontSize).equals("8pt")) {
+            if (style == null || style.getProperty(Styles.FontSize) == null || style.getProperty(Styles.FontSize).equals("8pt")) {
                 textHeight.setSelection(0);
             } else if (style.getProperty(Styles.FontSize).equals("9pt")) {
                 textHeight.setSelection(1);
@@ -400,7 +412,7 @@ public class EditBoxScreen extends Activity {
             adapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             // Apply the adapter to the spinner
             font.setAdapter(adapter5);
-            if (style == null || style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
+            if (style == null || style.getProperty(Styles.FontFamily) == null || style.getProperty(Styles.FontFamily).equals("Times New Roman")) {
                 font.setSelection(0);
             } else if (style.getProperty(Styles.FontFamily).equals("Courier New")) {
                 font.setSelection(1);
@@ -503,7 +515,7 @@ public class EditBoxScreen extends Activity {
                                               }
             );
             strikeOut = (CheckBox) findViewById(R.id.checkBoxStrikeOut);
-            if (style != null &&  style.getProperty(Styles.TextDecoration) != null && style.getProperty(Styles.TextDecoration).equals(Styles.TEXT_DECORATION_LINE_THROUGH)) {
+            if (style != null && style.getProperty(Styles.TextDecoration) != null && style.getProperty(Styles.TextDecoration).equals(Styles.TEXT_DECORATION_LINE_THROUGH)) {
                 strikeOut.setChecked(true);
             }
             strikeOut.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

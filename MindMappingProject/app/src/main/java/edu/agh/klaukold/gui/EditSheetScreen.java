@@ -24,6 +24,7 @@ import java.util.Properties;
 import edu.agh.R;
 import edu.agh.idziak.DropboxBrowserActivity;
 import edu.agh.idziak.FileBrowserActivity;
+import edu.agh.idziak.FileSaverActivity;
 import edu.agh.idziak.dropbox.DbxBrowser;
 import edu.agh.idziak.dropbox.DropboxHandler;
 import edu.agh.idziak.dropbox.DropboxWorkbookManager;
@@ -57,7 +58,7 @@ public class EditSheetScreen extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_screen);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         COLOR = intent.getIntExtra(MainActivity.BACKGROUNDCOLOR, 1);
         //  int inten = intent.getIntExtra(MainActivity.INTENSIVITY, 0);
 //        intensivity = (SeekBar) findViewById(R.id.seekBarIntensivity);
@@ -78,8 +79,38 @@ public class EditSheetScreen extends Activity {
             @Override
             public void onClick(View v) {
                 source = "file";
+                Intent intent1 = new Intent(EditSheetScreen.this, FileSaverActivity.class);
+                startActivityForResult(intent1, REQUEST_FILE);
+
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FILE) {
+            if (resultCode == RESULT_OK) {
+                File file = (File) data.getExtras().get(FileSaverActivity.FILE);
+                if (source.equals("file")) {
+                    LocalWorkbookManager.saveWorkbook(file, MainActivity.workbook, new ResultListener() {
+
+                        @Override
+                        public void taskDone(Object result) {
+                            showToast("File saved.");
+
+                            finish();
+                        }
+
+                        @Override
+                        public void taskFailed(Exception exception) {
+                            showToast("Failure.");
+                        }
+                    });
+                } else {
+                    //  DropboxWorkbookManager.bindWorkbookToDropboxFile(MainActivity.workbook, new DbxBrowser.DbxFile(file));
+                }
+            }
+        }
     }
 
     @Override
@@ -106,5 +137,6 @@ public class EditSheetScreen extends Activity {
     private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
+
 
 }
