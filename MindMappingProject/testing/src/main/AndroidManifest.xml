@@ -30,6 +30,14 @@
                 android:value="org.test.testing.TestActivity" />
         </activity>
         <activity
+            android:name="org.test.testing.FileSaverActivity"
+            android:label="Zapisz plik"
+            android:parentActivityName="org.test.testing.TestActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.test.testing.TestActivity" />
+        </activity>
+        <activity
             android:name="org.test.testing.DropboxBrowserActivity"
             android:label="@string/title_activity_dropbox_browser"
             android:parentActivityName="org.test.testing.TestActivity" >
@@ -37,6 +45,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.test.testing.TestActivity" />
         </activity>
+        <activity android:name=".DropboxSaverActivity"
+            android:label="Zapisz plik w Dropbox">
+            </activity>
 
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"

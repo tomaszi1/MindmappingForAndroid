@@ -33,4 +33,15 @@
         android:text="Powiąż z Dropboxem"
         android:onClick="linkToDropbox"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zapisz plik"
+        android:onClick="saveFileButtonClicked" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zapisz w Dropbox"
+        android:onClick="saveToDropboxButtonClicked"/>
 </LinearLayout>
