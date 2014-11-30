@@ -4,7 +4,6 @@ package edu.agh.idziak.dropbox;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,21 +19,12 @@ public class DbxBrowser {
         this.dbxHandler = dbxHandler;
     }
 
-    /**
-     * Fetches root folder from Dropbox. Should be called after creation of DbxBrowser.
-     */
     public void goToRootDir(final ResultListener<DbxFile, DropboxException> listener) {
         dbxHandler.fetchFileInfo(DROPBOX_ROOT, true, new FolderChanger(listener));
     }
 
     public boolean isInRootDir() {
-        if (currentDir == null)
-            return false;
         return currentDir.isRoot();
-    }
-
-    public DbxFile getCurrentDir() {
-        return currentDir;
     }
 
     /**
@@ -57,6 +47,13 @@ public class DbxBrowser {
     }
 
     /**
+     * Returns content of current directory.
+     */
+    public List<DbxFile> listFiles() {
+        return new ArrayList<DbxFile>(currentDir.getContents());
+    }
+
+    /**
      * Creates new dropbox file in current directory, but file is not uploaded. Create DropboxWorkbookManager with this file to upload.
      */
     public DbxFile createNewFile(String fileName) {
@@ -64,17 +61,16 @@ public class DbxBrowser {
     }
 
     /**
-     * Creates new directory inside current directory and updates its content.
-     *
-     * @param dirName        name of directory
+     * Creates new directory inside current directory.
+     * @param dirName name of directory
      * @param resultListener listener providing new directory instance
      * @return false if directory already exists (creation is cancelled), otherwise true
      */
     public boolean createNewDir(String dirName, final ResultListener<DbxFile, DropboxException> resultListener) {
         if (currentDir.contains(dirName))
             return false;
-        String path = appendNameToPath(currentDir.getPath(), dirName);
-        dbxHandler.createFolder(path, new ResultListener<DropboxAPI.Entry, DropboxException>() {
+        String path = appendNameToPath(currentDir.getPath(),dirName);
+        ResultListener<DropboxAPI.Entry, DropboxException> folderCreateListener = new ResultListener<DropboxAPI.Entry, DropboxException>() {
             @Override
             public void taskDone(DropboxAPI.Entry result) {
                 DbxFile newFolder = new DbxFile(result);
@@ -86,15 +82,19 @@ public class DbxBrowser {
             public void taskFailed(DropboxException exception) {
                 resultListener.taskFailed(exception);
             }
-        });
+        };
+        dbxHandler.createFolder(path, folderCreateListener);
         return true;
+    }
+
+    public DbxFile getCurrentDir() {
+        return currentDir;
     }
 
     /**
      * Each instance represents a file at Dropbox.
      */
-    public static class DbxFile implements Serializable {
-        private static final DropboxFilesFilter defaultFilter = new XMindFilesFilter();
+    public static class DbxFile {
         private final String fileName;
         private final String revision;
         private final String parentPath;
@@ -103,7 +103,6 @@ public class DbxBrowser {
         private final long size;
         private final String modified;
         private List<DbxFile> contents;
-
 
         DbxFile(DropboxAPI.Entry file) {
             fileName = file.fileName();
@@ -122,18 +121,21 @@ public class DbxBrowser {
 
         private DbxFile(String path, boolean isDir) {
             if (path.equals(DROPBOX_ROOT)) {
-                parentPath = "";
-                fileName = DROPBOX_ROOT;
+                this.parentPath = "";
+                this.fileName = DROPBOX_ROOT;
             } else {
-                String[] split = path.split("/");
-                fileName = split[split.length - 1];
-                parentPath = path.substring(0, path.lastIndexOf(fileName));
+                int slash = path.lastIndexOf("/");
+                this.fileName = path.substring(slash + 1);
+                if (slash == 0)
+                    this.parentPath = "/";
+                else
+                    this.parentPath = path.substring(0, slash);
             }
-            revision = "";
+            this.revision = "";
             this.isDir = isDir;
-            fullPath = path;
-            size = 0;
-            modified = "";
+            this.fullPath = path;
+            this.size = 0;
+            this.modified = "";
         }
 
         public boolean isDir() {
@@ -156,20 +158,8 @@ public class DbxBrowser {
             return fullPath;
         }
 
-        /**
-         * Returns directories and files with .xmind extension.
-         */
         public List<DbxFile> getContents() {
-            return defaultFilter.filter(contents);
-        }
-
-        /**
-         * Returns all files if null is passed. Otherwise filters files with given filter.
-         */
-        public List<DbxFile> getContents(DropboxFilesFilter filter) {
-            if(filter==null)
-                return new ArrayList<DbxFile>(contents);
-            return filter.filter(new ArrayList<DbxFile>(contents));
+            return contents;
         }
 
         public boolean isRoot() {
@@ -192,7 +182,7 @@ public class DbxBrowser {
         }
     }
 
-    private static String appendNameToPath(String path, String name) {
+    private String appendNameToPath(String path, String name){
         return path.endsWith("/") ? path + name : path + "/" + name;
     }
 
@@ -213,20 +203,5 @@ public class DbxBrowser {
         public void taskFailed(DropboxException exception) {
             listener.taskFailed(exception);
         }
-    }
-
-    public static class XMindFilesFilter implements DropboxFilesFilter{
-        public List<DbxFile> filter(List<DbxFile> files){
-            ArrayList<DbxFile> filtered = new ArrayList<DbxFile>();
-            for(DbxFile file : files){
-                if(file.isDir() || file.getName().endsWith(".xmind"))
-                    filtered.add(file);
-            }
-            return filtered;
-        }
-    }
-
-    public interface DropboxFilesFilter{
-        public List<DbxFile> filter(List<DbxFile> files);
     }
 }

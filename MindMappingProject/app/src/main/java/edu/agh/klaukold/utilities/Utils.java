@@ -18,6 +18,8 @@
 
 package edu.agh.klaukold.utilities;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -33,10 +35,12 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.MotionEvent;
 
+import org.xmind.core.IRelationship;
 import org.xmind.core.ITopic;
 import org.xmind.core.style.IStyle;
 import org.xmind.core.style.IStyleSheet;
@@ -48,6 +52,70 @@ public class Utils {
 	static String base;
 
 
+    public static  IRelationship findRelationship(Box box1, Box box2) {
+        Iterator<IRelationship> iterator = MainActivity.sheet1.getRelationships().iterator();
+        while(iterator.hasNext()) {
+            IRelationship rel = iterator.next();
+            if ((rel.getEnd1Id().equals(box1.topic.getId()) && rel.getEnd2Id().equals(box2.topic.getId())) || (rel.getEnd2Id().equals(box1.topic.getId()) && rel.getEnd1Id().equals(box2.topic.getId()))){
+                return rel;
+            }
+        }
+        return null;
+    }
+
+    public static  void findRelationships(HashMap<String, Box> boxes) {
+        Iterator<IRelationship> iterator = MainActivity.sheet1.getRelationships().iterator();
+        while(iterator.hasNext()) {
+            IRelationship rel = iterator.next();
+            for (String t : boxes.keySet()) {
+                if (rel.getEnd1Id().equals(t)) {
+                    boxes.get(t).relationships.put(boxes.get(rel.getEnd2Id()), rel);
+                }
+            }
+        }
+    }
+
+    public static Pair<Box, IRelationship> whichRelationship(DrawView draw, MotionEvent event, int id) {
+        float[] mClickCoords = getCoordsInView(draw, event, id);
+
+        int x = (int) mClickCoords[0];
+        int y = (int) mClickCoords[1];
+
+        Box c = MainActivity.root;
+        Rect bounds = new Rect();
+//        //c.re.computeBounds(bounds, true);
+//        r = new Region();
+//        r.setPath(p, new Region((int) bounds.left, (int) bounds.top, (int) bounds.right, (int) bounds.bottom));
+//        if(c.getDrawableShape().getBounds().contains(x, y)) {
+//            return c;
+//        }
+
+        //BFS do przejścia drzewa
+
+        Queue<Box> q= new LinkedList<Box>();
+
+        for(Box b: c.getChildren()) {
+            q.add(b);
+        }
+
+        while(!q.isEmpty()) {
+            Box box = q.remove();
+
+            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
+                Rect rec = box.getDrawableShape().getBounds();
+                if(rec.contains(x, y)) {
+                    q.clear();
+                   // return box;
+                }
+
+                for(Box b: box.getChildren()) {
+                    q.add(b);
+                }
+            }
+        }
+        return null;
+    }
+
     public static void fireUnSelect(Box box) {
         box.isSelected = (false);
         for (Box b : box.getChildren()) {
@@ -56,31 +124,18 @@ public class Utils {
         }
     }
 
-    public static
-    void fireAddSubtopic(Box p) {
-        for (ITopic t : p.topic.getChildren(ITopic.ATTACHED)) {
-
+    public static void fireAddSubtopic(Box p, HashMap<String, Box> boxes) {
+        for (ITopic t : p.topic.getAllChildren()) {
             Box b = new Box();
             b.setWidth(70);
             b.setHeight(50);
             b.topic = t;
-            IStyle s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
-            s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
-            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
-            // s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-            s.setProperty(Styles.FontSize, "13pt");
-            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-            s.setProperty(Styles.FontFamily, "Times New Roman");
-            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-            s.setProperty(Styles.LineWidth, "1pt");
-            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-            s.setProperty(Styles.FontFamily, "Times New Roman");
-            MainActivity.workbook.getStyleSheet().addStyle(s, IStyleSheet.NORMAL_STYLES);
             b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
-            b.topic.setStyleId(s.getId());
             b.parent = p;
             p.addChild(b);
+            p.topic.add(b.topic, 0, ITopic.ATTACHED);
+            boxes.put(t.getId(), b);
+            fireAddSubtopic(b, boxes);
         }
     }
 	
@@ -93,51 +148,7 @@ public class Utils {
         }
     }
 	
-	public static boolean isBaseSet() {
-		return base != null;
-	}
 
-
-    public static Box whichLine(DrawView draw, MotionEvent event, int id) {
-        float[] mClickCoords = getCoordsInView(draw, event, id);
-        int x = (int) mClickCoords[0];
-        int y = (int) mClickCoords[1];
-
-        Box c = MainActivity.root;
-        Queue<Box> q= new LinkedList<Box>();
-        for(Box b: c.getChildren()) {
-            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-                return b;
-            }
-            q.add(b);
-        }
-
-//        for(Box b: c.getRightChildren()) {
-//            if (c.getLines().get(b) != null && c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-//                return b;
-//            }
-//            q.add(b);
-//        }
-
-//        for(Box b: c.getDetached()) {
-//            if (c.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-//                return b;
-//            }
-//            q.add(b);
-//        }
-
-        while(!q.isEmpty()) {
-            Box box = q.remove();
-                for(Box b: box.getChildren()) {
-                    if (box.getLines().get(b).deleteLine.getBounds().contains(x, y)) {
-                        return b;
-                    }
-                    q.add(b);
-                }
-            }
-        return null;
-    }
-	
 	//Który bloczek został kliknięty palcem o indeksie id
 	public static Box whichBox(DrawView draw, MotionEvent event, int id) {
 		float[] mClickCoords = getCoordsInView(draw, event, id);
@@ -159,18 +170,11 @@ public class Utils {
 		for(Box b: c.getChildren()) {
 			q.add(b);
 		}
-		
-//		for(Box b: c.getRightChildren()) {
-//			q.add(b);
-//		}
-//
-//		for(Box b: c.getDetached()) {
-//			q.add(b);
-//		}
+
 		while(!q.isEmpty()) {
 			Box box = q.remove();
 			
-			if(!box.topic.isFolded()) {
+			if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
 				Rect rec = box.getDrawableShape().getBounds();
 				if(rec.contains(x, y)) {
 					q.clear();
@@ -184,6 +188,39 @@ public class Utils {
 		}
 		return null;
 	}
+    public static Pair<Box, Actions> IsBoxAction(DrawView draw, MotionEvent event, int id) {
+        float[] mClickCoords = getCoordsInView(draw, event, id);
+
+        int x = (int) mClickCoords[0];
+        int y = (int) mClickCoords[1];
+
+        Box c = MainActivity.root;
+
+        if (c.addBox != null && c.addBox.getBounds().contains(x, y)) {
+            Pair p = new Pair(c, Actions.ADD_BOX);
+            return p;
+        }
+        Queue<Box> q= new LinkedList<Box>();
+
+        for(Box b: c.getChildren()) {
+            q.add(b);
+        }
+        while(!q.isEmpty()) {
+            Box box = q.remove();
+
+            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
+        if(box.addBox.getBounds().contains(x, y)) {
+            Pair p = new Pair(box, Actions.ADD_BOX);
+            q.clear();
+            return p;
+        }
+                for(Box b: box.getChildren()) {
+                    q.add(b);
+                }
+            }
+        }
+        return null;
+    }
 
     public static Pair<Box, Actions> whichBoxAction(DrawView draw, MotionEvent event) {
         return whichBoxAction(draw, event, 0);
@@ -204,10 +241,7 @@ public class Utils {
      if (c.newNote != null && c.newNote.getBounds().contains(x, y)) {
             Pair p = new Pair(c, Actions.NEW_NOTE);
             return p;
-        } else if(c.addBox.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.ADD_BOX);
-            return p;
-        }  else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
+        } else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
            Pair p = new Pair(c, Actions.ADD_NOTE);
          return  p;
         }
@@ -230,7 +264,7 @@ public class Utils {
         while(!q.isEmpty()) {
             Box box = q.remove();
 
-            if(!box.topic.isFolded()) {
+            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
 //                Rect rec = box.getDrawableShape().getBounds();
 //                if(rec.contains(x, y)) {
 //                    q.clear();
@@ -246,11 +280,7 @@ public class Utils {
                     Pair p = new Pair(box, Actions.NEW_NOTE);
                     q.clear();
                     return p;
-                } else if(box.addBox.getBounds().contains(x, y)) {
-                    Pair p = new Pair(box, Actions.ADD_BOX);
-                    q.clear();
-                    return p;
-                } else if(box.collapseAction != null && box.collapseAction.getBounds().contains(x, y)) {
+                }  else if(box.collapseAction != null && box.collapseAction.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.COLLAPSE);
                     box.collapseAction = null;
                     q.clear();

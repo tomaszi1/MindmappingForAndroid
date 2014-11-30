@@ -41,45 +41,22 @@ public class Line implements Serializable, Cloneable {
     public void preparePath() {
         path.reset();
         path.moveTo(start.x, start.y);
-        if (shape == null) {
-          path.lineTo(end.x, end.y);
-        } else if (shape.equals(Styles.BRANCH_CONN_STRAIGHT)) {
-            path.lineTo(end.x, end.y);
-        } else if (shape.equals(Styles.BRANCH_CONN_CURVE)) {
-//            int startAngle = (int) (180 / Math.PI * Math.atan2(start.y - end.y, end.x - start.x));
-//            float radius = 20;
-//            final RectF oval = new RectF();
-//            oval.set(start.x, start.y, end.x, end.y);
-//            path.arcTo(oval, 0, 360, true);
-//            if (end.x < 0) {
-//                if (LineDirection.UP_RIGHT) {
-            if (position == Position.RIGHT) {
+        if (shape == null && MainActivity.sheet1.getTheme() != null && (MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%simple") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) {
+            if (box.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
                 path.cubicTo(start.x, start.y, start.x + (start.x - start.y) + off, start.y + off, end.x, end.y);
             } else {
                 path.cubicTo(start.x, start.y, start.x - (start.x - start.y) + off, start.y + off, end.x, end.y);
             }
-
-//                    LineDirection.UP_RIGHT = false;
-//                } else {
-//                    path.cubicTo(start.x, start.y, (start.x - end.x) / 2, 1, end.x, end.y);
-//                    LineDirection.UP_RIGHT = true;
-//                }
-//            } else {
-//                if (LineDirection.UP_LEFT) {
-//                    path.cubicTo(start.x, start.y, (start.x - end.x) / 2, 1, end.x, end.y);
-//                    LineDirection.UP_LEFT = false;
-//                } else {
-//                    path.cubicTo(start.x, start.y, (start.x - end.x) / 2, 1, end.x, end.y);
-//                    LineDirection.UP_LEFT = true;
-//                }
-//            }
-//        } else if (shape == LineStyle.ARROWED_CURVE) {
-//            if (position == Position.RIGHT) {
-//                path.cubicTo(start.x, start.y, start.x + (start.x - start.y), start.y + 20, end.x, end.y);
-//            } else {
-//                path.cubicTo(start.x, start.y, start.x - (start.x - start.y), start.y + 20, end.x, end.y);
-//            }
-//            path.rMoveTo(end.x + ); }
+        } else  if (shape == null) {
+          path.lineTo(end.x, end.y);
+        } else if (shape.equals(Styles.BRANCH_CONN_STRAIGHT)) {
+            path.lineTo(end.x, end.y);
+        } else if (shape.equals(Styles.BRANCH_CONN_CURVE)) {
+            if (box.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
+                path.cubicTo(start.x, start.y, start.x + (start.x - start.y) + off, start.y + off, end.x, end.y);
+            } else {
+                path.cubicTo(start.x, start.y, start.x - (start.x - start.y) + off, start.y + off, end.x, end.y);
+            }
        }  else {
             path.lineTo(end.x, end.y);
         }

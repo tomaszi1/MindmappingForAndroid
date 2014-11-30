@@ -320,9 +320,9 @@ public class ColorPalette extends Activity {
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
 
-                        properties.put("text_color", String.valueOf(Color.rgb(r, g, b)));
-                        properties.put("box", MainActivity.boxEdited);
-                        properties.put("boxes", MainActivity.toEditBoxes);
+                    properties.put("text_color", String.valueOf(Color.rgb(r, g, b)));
+                    properties.put("box", MainActivity.boxEdited);
+                    properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE2)) {

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import edu.agh.App;
 import edu.agh.R;
 import edu.agh.idziak.dropbox.DbxBrowser;
-import edu.agh.idziak.dropbox.DbxBrowser.DbxFile;
 import edu.agh.idziak.dropbox.DropboxHandler;
 import edu.agh.idziak.dropbox.ResultListener;
 
@@ -51,12 +50,12 @@ public class DropboxBrowserActivity extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                DbxFile file = (DbxFile)adapterView.getItemAtPosition(i);
+                DbxBrowser.DbxFile file = (DbxBrowser.DbxFile)adapterView.getItemAtPosition(i);
                 if(file.isDir()){
                     progressDialog.show();
                     browser.changeDir(file,listFolderListener);
                 }else{
-                    Intent result = new Intent().putExtra(SELECTED_FILE, file);
+                    Intent result = new Intent().putExtra(SELECTED_FILE, (android.os.Parcelable) file);
                     setResult(RESULT_OK, result);
                     finish();
                 }
@@ -67,9 +66,9 @@ public class DropboxBrowserActivity extends Activity {
         browser.goToRootDir(listFolderListener);
     }
 
-    private ResultListener<DbxFile,DropboxException> listFolderListener = new ResultListener<DbxFile, DropboxException>() {
+    private ResultListener<DbxBrowser.DbxFile,DropboxException> listFolderListener = new ResultListener<DbxBrowser.DbxFile, DropboxException>() {
         @Override
-        public void taskDone(DbxFile result) {
+        public void taskDone(DbxBrowser.DbxFile result) {
             fileArrayAdapter.listCurrentFolder();
             progressDialog.dismiss();
         }
@@ -84,9 +83,9 @@ public class DropboxBrowserActivity extends Activity {
     public void newFolder(View view) {
         progressDialog.setTitle("Tworzenie folderu");
         progressDialog.show();
-        browser.createNewDir("Nowy folder", new ResultListener<DbxFile, DropboxException>() {
+        browser.createNewDir("Nowy folder", new ResultListener<DbxBrowser.DbxFile, DropboxException>() {
             @Override
-            public void taskDone(DbxFile result) {
+            public void taskDone(DbxBrowser.DbxFile result) {
                 fileArrayAdapter.listCurrentFolder();
                 progressDialog.dismiss();
             }
@@ -100,14 +99,14 @@ public class DropboxBrowserActivity extends Activity {
         });
     }
 
-    private class FileArrayAdapter extends ArrayAdapter<DbxFile> {
+    private class FileArrayAdapter extends ArrayAdapter<DbxBrowser.DbxFile> {
         public FileArrayAdapter(Context context) {
-            super(context, android.R.layout.simple_list_item_1, new ArrayList<DbxFile>());
+            super(context, android.R.layout.simple_list_item_1, new ArrayList<DbxBrowser.DbxFile>());
         }
 
         public void listCurrentFolder() {
             clear();
-            DbxFile parent = browser.getParentDir();
+            DbxBrowser.DbxFile parent = browser.getParentDir();
             if(parent!=null)
                 add(parent);
             addAll(browser.getCurrentDir().getContents());
@@ -116,7 +115,7 @@ public class DropboxBrowserActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            DbxFile file = getItem(position);
+            DbxBrowser.DbxFile file = getItem(position);
             View view = LayoutInflater.from(this.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
             TextView textView = (TextView) view.findViewById(android.R.id.text1);
             textView.setText(file.getName());

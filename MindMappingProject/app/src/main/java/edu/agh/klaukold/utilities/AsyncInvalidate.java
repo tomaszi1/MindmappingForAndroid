@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 public class AsyncInvalidate extends AsyncTask<Void, Void, Void> {
 	private Callback call;
 	private Context context;
+    public String message = "Loading";
 	
 	ProgressDialog dialog;
 	
@@ -34,7 +35,7 @@ public class AsyncInvalidate extends AsyncTask<Void, Void, Void> {
 	
 	@Override
     protected void onPreExecute() {
-       dialog = ProgressDialog.show(context, "Loading", "Please wait...", true);
+       dialog = ProgressDialog.show(context, message, "Please wait...", true);
     }
 	
 	public void setCallback(Callback call) {
@@ -49,10 +50,10 @@ public class AsyncInvalidate extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void result) {
-		if(Utils.lay != null) {
-			Utils.lay.revalidate();
-			Utils.lay.postInvalidate();
-		}
+//		if(Utils.lay != null) {
+//			Utils.lay.invalidate();
+//			//Utils.lay.postInvalidate();
+//		}
 		
 		dialog.dismiss();
     }

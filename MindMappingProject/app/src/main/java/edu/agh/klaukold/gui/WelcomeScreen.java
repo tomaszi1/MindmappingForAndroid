@@ -18,7 +18,17 @@
 
 package edu.agh.klaukold.gui;
 
+import edu.agh.App;
 import edu.agh.R;
+
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.exception.DropboxException;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import edu.agh.idziak.DropboxBrowserActivity;
 import edu.agh.idziak.FileBrowserActivity;
 import edu.agh.idziak.dropbox.DbxBrowser;
 import edu.agh.idziak.dropbox.DropboxHandler;
@@ -26,36 +36,49 @@ import edu.agh.idziak.dropbox.DropboxWorkbookManager;
 import edu.agh.idziak.dropbox.ResultListener;
 import edu.agh.idziak.local.LocalWorkbookManager;
 import edu.agh.klaukold.common.Box;
+import edu.agh.klaukold.utilities.AsyncInvalidate;
+import edu.agh.klaukold.utilities.Callback;
 import edu.agh.klaukold.utilities.Utils;
 
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import org.xmind.core.ITopic;
-import org.xmind.core.IWorkbook;
+
+import com.dropbox.client2.exception.DropboxException;
+
+
 import org.xmind.core.internal.Workbook;
-import org.xmind.core.style.IStyle;
-import org.xmind.core.style.IStyleSheet;
-import org.xmind.ui.style.Styles;
+
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.WeakHashMap;
 
 public class WelcomeScreen extends Activity {
     private Spinner styles;
+    private DropboxWorkbookManager dropboxWorkbookManager;
 
     public Spinner getStyles() {
         return styles;
@@ -73,40 +96,32 @@ public class WelcomeScreen extends Activity {
         this.buttonCreateMindMap = buttonCreateMindMap;
     }
 
+    private Menu menu;
     private Button buttonCreateMindMap;
-    private Button buttonLoad;
     private ImageView imageStyle;
     public final static String STYLE = "WELCOME_SCREEN_STYLE";
     public static final int REQUEST_FILE = 1;
     private ProgressDialog progressDialog;
     private DropboxHandler dropboxHandler;
-    private DropboxWorkbookManager dropboxWorkbookManager;
+    private String source = null;
+    public static Workbook workbook;
 
     @Override
     public void onResume() {
         super.onResume();
-//		
-//		if(!Utils.isBaseSet()) {
-//			Properties props = new Properties();
-//			try {
-//				InputStream inputStream = getResources().getAssets().open("base.properties");
-//				props.load(inputStream);
-//				Utils.setBaseDir(props.getProperty("srcDirectory"));
-//				//DrawView.setActiveColor(props.getProperty("activeColor"));
-//				//DrawView.setCollapsedColor(props.getProperty("collapsedColor"));
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		
+        dropboxHandler.onResume();
+        DrawingThread.LUheight = 0;
+        DrawingThread.LDHehight = 0;
+        DrawingThread.RUheight = 0;
+        DrawingThread.RDHehight = 0;
 //		//Utils.initDB(this);
         Utils.context = this;
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("text", "logging");
         setContentView(R.layout.welcome_screen);
         Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -119,84 +134,105 @@ public class WelcomeScreen extends Activity {
         //dodanie lisener'a do spinnera i przycisku
         addListenerOnButtonCreateMindMap();
         addListenerSpinerStyles();
+        dropboxHandler = ((App) getApplicationContext()).getDbxHandler();
 
-        buttonLoad = (Button) findViewById(R.id.buttonLoad);
-        buttonLoad.setOnClickListener(new OnClickListener() {
+    }
 
-            @Override
-            public void onClick(View arg0) {
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.welcome_s, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.local_disc:
                 Intent intent1 = new Intent(WelcomeScreen.this, FileBrowserActivity.class);
-                startActivityForResult(intent1,  REQUEST_FILE);
+                startActivityForResult(intent1, REQUEST_FILE);
+                source = "file";
+                return false;
+            case R.id.dropbox:
+                Intent browserIntent = new Intent(this, DropboxBrowserActivity.class);
+                startActivityForResult(browserIntent, REQUEST_FILE);
+                source = "dropbox";
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
-
-            }
-        });
-
-
-
-
+    public void browseFiles(View view) {
+        Intent browserIntent = new Intent(this, DropboxBrowserActivity.class);
+        startActivityForResult(browserIntent, REQUEST_FILE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_FILE) {
             if (resultCode == RESULT_OK) {
-                progressDialog = ProgressDialog.show(this, "Pobieranie", "Chwila...", true, false);
-                File file = (File) data.getExtras().get(FileBrowserActivity.SELECTED_FILE);
-               // DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
+                if (source.equals("file")) {
+                    progressDialog = ProgressDialog.show(this, "Loading", "Please wait...", true, false);
+                    File file = (File) data.getExtras().get(FileBrowserActivity.SELECTED_FILE);
+                    // DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
 
-                LocalWorkbookManager.loadWorkbook(file, new ResultListener() {
-                    @Override
-                    public void taskDone(Object result) {
-                        progressDialog.dismiss();
-                        DrawView.LUheight = 0;
-                        DrawView.LDHehight = 0;
-                        DrawView.RUheight = 0;
-                        DrawView.RDHehight = 0;
-                        MainActivity.workbook = (Workbook) result;
-//                        for (ITopic t : MainActivity.root.topic.getChildren(ITopic.ATTACHED)) {
-//                            Box b = new Box();
-//                            b.topic = t;
-//                            IStyle s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
-//                            s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
-//                            s.setProperty(Styles.TextColor, String.valueOf(MainActivity.res.getColor(R.color.black))); // trzeba podać kolor w formacie "0xffffff"
-//                            s.setProperty(Styles.FillColor, String.valueOf(MainActivity.res.getColor(R.color.white)));
-//                            //   s.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
-//                            s.setProperty(Styles.FontSize, "13pt");
-//                            s.setProperty(Styles.TextAlign, Styles.ALIGN_CENTER);
-//                            s.setProperty(Styles.FontFamily, "Times New Roman");
-//                            //  s.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
-//                            s.setProperty(Styles.LineWidth, "1pt");
-//                            s.setProperty(Styles.LineColor, String.valueOf(Color.rgb(128, 128, 128)));
-//                            s.setProperty(Styles.FontFamily, "Times New Roman");
-//                            MainActivity.styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
-//                            b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
-//                            b.topic.setStyleId(s.getId());
-//                            b.parent = MainActivity.root;
-//                            MainActivity.root.addChild(b);
-//                            Utils.fireAddSubtopic(b);
-//                        }
-                        Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
-                        String style = "ReadyMap";
-                        intent.putExtra(STYLE, style);
-                      //  intent.putExtra("workbook", ((Workbook) result));
-                        if (MainActivity.root != null) {
-                            MainActivity.root.getChildren().clear();
+                    LocalWorkbookManager.loadWorkbook(file, new ResultListener() {
+                        @Override
+                        public void taskDone(Object result) {
+                            progressDialog.dismiss();
+                            DrawView.LUheight = 0;
+                            DrawView.LDHehight = 0;
+                            DrawView.RUheight = 0;
+                            DrawView.RDHehight = 0;
+                            MainActivity.root = null;
+                            MainActivity.workbook = null;
+                            final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
+                            String style = "ReadyMap";
+                            intent.putExtra(STYLE, style);
+                            workbook = (Workbook) result;
+                            startActivity(intent);
+
                         }
-                        MainActivity.root = null;
-                        startActivity(intent);
-                    }
 
-                    @Override
-                    public void taskFailed(Exception exception) {
-                        progressDialog.cancel();
+                        @Override
+                        public void taskFailed(Exception exception) {
+                            showToast("Incorrect file type.");
+                            progressDialog.cancel();
+                        }
+                    });
+                } else if (source.equals("dropbox")) {
+                    if (resultCode == RESULT_OK) {
+                        progressDialog = ProgressDialog.show(this, "Loading", "Please wait...", true, false);
+                        DbxBrowser.DbxFile file = (DbxBrowser.DbxFile) data.getExtras().get(DropboxBrowserActivity.SELECTED_FILE);
+                        DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
+                    } else {
+                        showToast("Anulowano");
                     }
-                });
+                }
             } else {
                 showToast("Anulowano");
             }
         }
     }
+
+    private ResultListener<DropboxWorkbookManager, Exception> loadFileListener = new ResultListener<DropboxWorkbookManager, Exception>() {
+        @Override
+        public void taskDone(DropboxWorkbookManager result) {
+            dropboxWorkbookManager = result;
+            progressDialog.dismiss();
+            showToast("Skoroszyt wczytany");
+        }
+
+        @Override
+        public void taskFailed(Exception exception) {
+            showToast("Nieudane pobranie");
+            Log.e("XXXXX", exception.getMessage());
+        }
+    };
+
     private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
@@ -241,14 +277,14 @@ public class WelcomeScreen extends Activity {
                 DrawView.LDHehight = 0;
                 DrawView.RUheight = 0;
                 DrawView.RDHehight = 0;
+                MainActivity.style = null;
                 Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                 Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);
                 String style = (String) spinner.getSelectedItem();
                 intent.putExtra(STYLE, style);
-                if (MainActivity.root != null) {
-                    MainActivity.root.clear();
-                }
+                MainActivity.workbook = null;
                 MainActivity.root = null;
+                workbook = null;
                 startActivity(intent);
             }
         });
@@ -257,5 +293,56 @@ public class WelcomeScreen extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public void saveWorkbook(View view) {
+        if (dropboxWorkbookManager == null) {
+            showToast("Brak skoroszytu");
+            return;
+        }
+        progressDialog.setTitle("Zapisywanie");
+        progressDialog.show();
+        dropboxWorkbookManager.uploadWithOverwrite(new ResultListener<Void, Exception>() {
+            @Override
+            public void taskDone(Void nothing) {
+                progressDialog.dismiss();
+                showToast("Skoroszyt zapisany");
+            }
+
+            @Override
+            public void taskFailed(Exception exception) {
+                showToast("Nieudane zapisanie pliku");
+                Log.e("XXXXX", exception.getMessage());
+            }
+        });
+    }
+
+    public void checkNewVersion(View view) {
+        if (dropboxWorkbookManager == null) {
+            showToast("Brak  skoroszytu");
+            return;
+        }
+        progressDialog.setTitle("Sprawdzanie");
+        progressDialog.show();
+        dropboxWorkbookManager.checkForNewVersion(new ResultListener<Boolean, DropboxException>() {
+            @Override
+            public void taskDone(Boolean result) {
+                progressDialog.dismiss();
+                if (result)
+                    showToast("Jest dostępna nowa wersja pliku w chmurze");
+                else
+                    showToast("Aktualna wersja jest aktualna");
+            }
+
+            @Override
+            public void taskFailed(DropboxException exception) {
+                showToast("Nieudane sprawdzenie wersji");
+            }
+        });
+    }
+
+
+    public void linkToDropbox(View view) {
+        dropboxHandler.linkAccount(this);
     }
 }
