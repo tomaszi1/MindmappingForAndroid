@@ -4,6 +4,7 @@ package edu.agh.idziak.dropbox;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class DbxBrowser {
     /**
      * Each instance represents a file at Dropbox.
      */
-    public static class DbxFile {
+    public static class DbxFile implements Serializable {
         private final String fileName;
         private final String revision;
         private final String parentPath;

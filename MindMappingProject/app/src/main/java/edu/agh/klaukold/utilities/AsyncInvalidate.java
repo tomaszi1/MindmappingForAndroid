@@ -50,10 +50,10 @@ public class AsyncInvalidate extends AsyncTask<Void, Void, Void> {
 	
 	@Override
 	protected void onPostExecute(Void result) {
-//		if(Utils.lay != null) {
-//			Utils.lay.invalidate();
-//			//Utils.lay.postInvalidate();
-//		}
+		if(Utils.lay != null) {
+			Utils.lay.invalidate();
+			//Utils.lay.postInvalidate();
+		}
 		
 		dialog.dismiss();
     }

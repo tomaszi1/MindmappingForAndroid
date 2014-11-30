@@ -34,8 +34,10 @@ import edu.agh.klaukold.gui.MainActivity;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -69,7 +71,7 @@ public class Utils {
             IRelationship rel = iterator.next();
             for (String t : boxes.keySet()) {
                 if (rel.getEnd1Id().equals(t)) {
-                    boxes.get(t).relationships.put(boxes.get(rel.getEnd2Id()), rel);
+                    boxes.get(t).relationships.put( rel, boxes.get(rel.getEnd2Id()));
                 }
             }
         }
@@ -81,36 +83,11 @@ public class Utils {
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
 
-        Box c = MainActivity.root;
-        Rect bounds = new Rect();
-//        //c.re.computeBounds(bounds, true);
-//        r = new Region();
-//        r.setPath(p, new Region((int) bounds.left, (int) bounds.top, (int) bounds.right, (int) bounds.bottom));
-//        if(c.getDrawableShape().getBounds().contains(x, y)) {
-//            return c;
-//        }
-
-        //BFS do przejścia drzewa
-
-        Queue<Box> q= new LinkedList<Box>();
-
-        for(Box b: c.getChildren()) {
-            q.add(b);
-        }
-
-        while(!q.isEmpty()) {
-            Box box = q.remove();
-
-            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
-                Rect rec = box.getDrawableShape().getBounds();
-                if(rec.contains(x, y)) {
-                    q.clear();
-                   // return box;
-                }
-
-                for(Box b: box.getChildren()) {
-                    q.add(b);
-                }
+        for (Path p : MainActivity.allRelationship.keySet()){
+            RectF rectF = new RectF();
+            p.computeBounds(rectF, true);
+            if (rectF.contains(x,y)) {
+                return new Pair<Box, IRelationship>(MainActivity.allRelationship.get(p).second, MainActivity.allRelationship.get(p).first);
             }
         }
         return null;

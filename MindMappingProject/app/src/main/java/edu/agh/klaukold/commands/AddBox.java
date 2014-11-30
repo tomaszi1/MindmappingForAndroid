@@ -83,6 +83,7 @@ public class AddBox implements Command {
             } else {
                 line1 = new Line(null, 1, new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);
             }
+            parent.getLines().put(box, line1);
         }
 	}
 

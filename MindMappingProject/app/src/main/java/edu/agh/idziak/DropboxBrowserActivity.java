@@ -55,7 +55,7 @@ public class DropboxBrowserActivity extends Activity {
                     progressDialog.show();
                     browser.changeDir(file,listFolderListener);
                 }else{
-                    Intent result = new Intent().putExtra(SELECTED_FILE, (android.os.Parcelable) file);
+                    Intent result = new Intent().putExtra(SELECTED_FILE, (java.io.Serializable) file);
                     setResult(RESULT_OK, result);
                     finish();
                 }

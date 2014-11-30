@@ -24,15 +24,21 @@ public class RemoveRelationship implements Command {
         prop = (Properties) properties.clone();
         boxes = (LinkedList<Box>)((LinkedList<Box>) properties.get("boxes")).clone();
       //  IRelationship rel = Utils.findRelationship(boxes.getFirst(), boxes.getLast());
-        MainActivity.sheet1.removeRelationship(boxes.getFirst().relationships.get(boxes.getLast()));
-        boxes.getFirst().relationships.remove(boxes.getLast());
-        s = boxes.getFirst().relationships.get(boxes.getLast()).getTitleText();
+        for (IRelationship rel : boxes.getFirst().relationships.keySet()) {
+            if (boxes.getFirst().relationships.get(rel) == boxes.getLast()) {
+                relation = rel;
+                break;
+            }
+        }
+        MainActivity.sheet1.removeRelationship(relation);
+        boxes.getFirst().relationships.remove(relation);
+        s = relation.getTitleText();
     }
 
     @Override
     public void undo() {
         MainActivity.sheet1.addRelationship(relation);
-        boxes.getFirst().relationships.put(boxes.getLast(), relation);
+        boxes.getFirst().relationships.put( relation, boxes.getLast());
     }
 
     @Override

@@ -33,6 +33,7 @@ import edu.agh.klaukold.commands.AddLine;
 import edu.agh.klaukold.commands.AddNote;
 import edu.agh.klaukold.commands.AddRelationship;
 import edu.agh.klaukold.commands.EditBox;
+import edu.agh.klaukold.commands.EditRelationship;
 import edu.agh.klaukold.commands.EditSheet;
 import edu.agh.klaukold.commands.RemoveBox;
 import edu.agh.klaukold.commands.RemoveLine;
@@ -57,8 +58,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
@@ -75,8 +78,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
@@ -84,6 +85,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.xmind.core.INotes;
@@ -115,6 +117,7 @@ public class MainActivity extends Activity {
     public LinkedList<Command> commandsRedo = new LinkedList<Command>();
     private static Menu menu;
     private ProgressDialog progressDialog;
+    public static HashMap<Path, Pair<IRelationship, Box>> allRelationship = new HashMap<Path, Pair<IRelationship, Box>>();
 
 
     public static int id = 1;
@@ -135,6 +138,7 @@ public class MainActivity extends Activity {
     public static IStyleSheet styleSheet;
     public static Resources res;
     public static IStyle style1;
+    public static Boolean leftRelationship = true;
 
     public void checkStyle(Box box) {
 
@@ -202,7 +206,6 @@ public class MainActivity extends Activity {
                     root.topic.setFolded(false);
 
                     boxes.put(root.topic.getId(), root);
-
                     for (ITopic t : root.topic.getAllChildren()) {
                         Box b = new Box();
                         b.topic = t;
@@ -513,7 +516,7 @@ public class MainActivity extends Activity {
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.isSelected = true;
-                lay.invalidate(box.drawableShape.getBounds());
+                lay.invalidate();
 
                 MainActivity.boxEdited = box;
                 if (MainActivity.boxEdited != null && !MainActivity.toEditBoxes.contains(box)) {
@@ -546,7 +549,7 @@ public class MainActivity extends Activity {
                     MainActivity.toEditBoxes.get(i).isSelected = false;
                     // lay.invalidate();
                     //lay.invalidate(MainActivity.toEditBoxes.get(i).drawableShape.getBounds().left, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().top, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().right, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().bottom);
-                    lay.invalidate(MainActivity.toEditBoxes.get(i).drawableShape.getBounds());
+                    lay.invalidate();
                 }
                 menu.getItem(2).setVisible(false);
                 menu.getItem(3).setVisible(false);
@@ -554,22 +557,6 @@ public class MainActivity extends Activity {
                 //  lay.invalidate();
             }
             if (pair != null) {
-//dodawanie bloczka
-//                if (pair.second == Actions.ADD_BOX) {
-//                    boxEdited = pair.first;
-//                    Box box1 = new Box();
-//                    AddBox addBox = new AddBox();
-//                    Properties properties = new Properties();
-//                    properties.put("box", MainActivity.boxEdited);
-//                    properties.put("new_box", box1);
-//                    properties.put("root", root);
-//                    properties.put("res", res);
-//                    properties.put("style", style);
-//                    addBox.execute(properties);
-//                    MainActivity.addCommendUndo(addBox);
-//                    editContent(box1);
-//                  // lay.invalidateDrawable(box1.drawableShape);
-//                } else
                 if (pair.second == Actions.ADD_NOTE) {
                     final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
                     final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
@@ -644,7 +631,6 @@ public class MainActivity extends Activity {
                         }
                     });
 
-//                    et.setText(pair.first.topic.getNotes().getContent(INotes.PLAIN).getFormat());
                     int k = Utils.countLines(et.getText().toString());
                     int ile = Math.min(MAX_LINES - 1, k);
 
@@ -800,7 +786,129 @@ public class MainActivity extends Activity {
 
         @Override
         public void onLongPress(MotionEvent e) {
+            final Pair<Box, IRelationship> pair = Utils.whichRelationship(lay, e,0);
+            if (pair != null) {
+                final Properties properties = new Properties();
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(R.layout.dialog_edit_rel);
+                dialog.setTitle("Content");
+                final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                final EditText et = (EditText) dialog.findViewById(R.id.editText);
+                et.requestFocus();
+                final Button btn2 = (Button) dialog.findViewById(R.id.button2);
+                btn2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                final ImageButton imgbtn = (ImageButton) dialog.findViewById(R.id.imageButton);
+                if (pair.first.drawableShape.getBounds().left < pair.first.relationships.get(pair.second).drawableShape.getBounds().left) {
+                    imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_forward));
+                } else {
+                    imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_back));
+                    leftRelationship = false;
+                }
+                imgbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                      if (leftRelationship) {
+                          imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_back));
+                          leftRelationship = false;
+                      } else {
+                          imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_forward));
+                          leftRelationship = true;
+                      }
+                      if (properties.containsKey("next_start")) {
+                         properties.remove("new_start");
+                      } else {
+                          properties.put("new_start", pair.first.relationships.get(pair.second));
+                      }
+                    }
+                });
+                et.requestFocus();
+
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(et.getWindowToken(), 0);
+
+                        String text = (et.getText().toString());
+                        EditRelationship editRelationship = new EditRelationship();
+                        properties.put("box", pair.first);
+                        properties.put("text", text);
+                        properties.put("relation", pair.second);
+                        editRelationship.execute(properties);
+                        addCommendUndo(editRelationship);
+                        lay.invalidate();
+                        dialog.dismiss();
+                    }
+                });
+
+                final int MAX_LINES = 3;
+
+                //ogranicza do 3 linii widok w zawartości bloczka
+                et.addTextChangedListener(new TextWatcher() {
+                    private int lines;
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        lines = Utils.countLines(s.toString());
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        int counter = Utils.countLines(s.toString());
+
+                        int diff = lines - counter;
+                        if (diff > 0) {
+                            //w gore
+                            if (counter < MAX_LINES - 1 && et.getLayoutParams().height > 75) {
+                                LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin - 30,
+                                        buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                btn.setLayoutParams(buttonLayoutParams);
+                                btn2.setLayoutParams(buttonLayoutParams);
+                                et.getLayoutParams().height -= 30;
+                            }
+                        } else if (diff < 0) {
+                            //w dol
+                            if (counter < MAX_LINES && et.getLayoutParams().height < 135) {
+                                LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                                buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin, buttonLayoutParams.topMargin + 30,
+                                        buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                                btn.setLayoutParams(buttonLayoutParams);
+                                btn2.setLayoutParams(buttonLayoutParams);
+                                et.getLayoutParams().height += 30;
+                            }
+                        }
+                    }
+                });
+
+                et.setText(pair.second.getTitleText());
+                int k = Utils.countLines(et.getText().toString());
+                int ile = Math.min(MAX_LINES - 1, k);
+
+                et.getLayoutParams().height = 75 + ile * 30;
+                LinearLayout.LayoutParams buttonLayoutParams = (LinearLayout.LayoutParams) btn.getLayoutParams();
+                buttonLayoutParams.setMargins(buttonLayoutParams.leftMargin,
+                        buttonLayoutParams.topMargin + 30 * ((k < 2) ? 0 : (k == 2) ? ile - 1 : ile),
+                        buttonLayoutParams.rightMargin, buttonLayoutParams.bottomMargin);
+                btn.setLayoutParams(buttonLayoutParams);
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+
+                dialog.show();
+
+            }
         }
 
         public void updateChildrenConnections(Box box) {
@@ -1090,21 +1198,19 @@ public class MainActivity extends Activity {
                         }
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor((Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor))));
-                    } else if (commandsUndo.getFirst() instanceof AddBox || commandsUndo.getFirst() instanceof RemoveLine) {
-//                        Callback call = new Callback() {
-//                            @Override
-//                            public void execute() {
-//                            }
-//                        };
-//                        try {
-//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                            async.setCallback(call);
-//                            async.execute();
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
-                        //lay.revalidate();
-                        //lay.invalidate();
+                    } else  {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     commandsRedo.add(commandsUndo.getFirst());
                     commandsUndo.removeFirst();
@@ -1115,38 +1221,38 @@ public class MainActivity extends Activity {
                     commandsUndo.getLast().undo();
                     if (commandsUndo.getLast() instanceof EditBox) {
 
-                        // Callback call = new Callback() {
-                        //@Override
-                        // public void execute() {
+                        Callback call = new Callback() {
+                        @Override
+                        public void execute() {
                         lay.updateBoxWithText(((EditBox) commandsUndo.getLast()).box);
                         for (Box b : ((EditBox) commandsUndo.getLast()).edited) {
                             lay.updateBoxWithText(b);
                         }
-                        //     }
-                        // };
-//                        try {
-//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                            async.setCallback(call);
-//                            async.execute();
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
-                        // lay.invalidate();
+                             }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
                     } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine) {
-//                        Callback call = new Callback() {
-//                            @Override
-//                            public void execute() {
-//                            }
-//                        };
-//                        try {
-//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                            async.setCallback(call);
-//                            async.execute();
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     commandsRedo.add(commandsUndo.getLast());
                     menu.getItem(6).setVisible(true);
@@ -1195,19 +1301,19 @@ public class MainActivity extends Activity {
 
                     } else if (commandsRedo.getFirst() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
-                    } else if (commandsRedo.getFirst() instanceof AddBox || commandsRedo.getFirst() instanceof RemoveLine) {
-//                        Callback call = new Callback() {
-//                            @Override
-//                            public void execute() {
-//                            }
-//                        };
-//                        try {
-//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                            async.setCallback(call);
-//                            async.execute();
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
+                    } else {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
 
                     }
                     commandsUndo.add(commandsRedo.getFirst());
@@ -1235,19 +1341,19 @@ public class MainActivity extends Activity {
                         }
                     } else if (commandsRedo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
-                    } else if (commandsRedo.getLast() instanceof AddBox || commandsRedo.getLast() instanceof RemoveLine) {
-//                        Callback call = new Callback() {
-//                            @Override
-//                            public void execute() {
-//                            }
-//                        };
-//                        try {
-//                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                            async.setCallback(call);
-//                            async.execute();
-//                        } catch (Exception e1) {
-//                            e1.printStackTrace();
-//                        }
+                    } else {
+                        Callback call = new Callback() {
+                            @Override
+                            public void execute() {
+                            }
+                        };
+                        try {
+                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
+                            async.setCallback(call);
+                            async.execute();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                     }
                     commandsUndo.add(commandsRedo.getLast());
                     menu.getItem(5).setVisible(true);
@@ -1258,7 +1364,6 @@ public class MainActivity extends Activity {
                 RemoveBox removeBox = new RemoveBox();
                 Properties properties = new Properties();
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
-                //todo usuwanie boxow i linii
                 boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.parent.getLines().get(MainActivity.boxEdited));
                 for (Box b : MainActivity.toEditBoxes) {
                     boxes.put(b, b.parent.getLines().get(b));
@@ -1267,13 +1372,12 @@ public class MainActivity extends Activity {
                         removeBox.execute(properties);
                         MainActivity.addCommendUndo(removeBox);
                     }
-                    return true;
-
-
                     //  return true;
                 }
+                lay.invalidate();
+                return true;
             case R.id.new_rel:
-                if (!MainActivity.toEditBoxes.getFirst().relationships.containsKey(MainActivity.toEditBoxes.getLast())) {
+                if (!MainActivity.toEditBoxes.getFirst().relationships.containsValue(MainActivity.toEditBoxes.getLast())) {
                     final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
                     final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
                     final EditText et = (EditText) dialog.findViewById(R.id.editText);
@@ -1300,12 +1404,7 @@ public class MainActivity extends Activity {
                             p.put("text", text);
                             addRel.execute(p);
                             MainActivity.addCommendUndo(addRel);
-                            lay.drawRelationship(MainActivity.toEditBoxes.getFirst(), MainActivity.toEditBoxes.getLast());
-                            //                           lay.invalidate();
-//                            lay.invalidate(Math.min(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().left, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().left)
-//                                    ,Math.min(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().top, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().top)
-//                            ,Math.max(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().right, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().right)
-//                                    ,Math.max(MainActivity.toEditBoxes.getFirst().drawableShape.getBounds().bottom, MainActivity.toEditBoxes.getLast().drawableShape.getBounds().bottom));
+                            lay.drawRelationship(MainActivity.toEditBoxes.getFirst(), addRel.relation);
                             dialog.dismiss();
 
                         }
@@ -1377,7 +1476,7 @@ public class MainActivity extends Activity {
                     p.put("boxes", MainActivity.toEditBoxes);
                     remRel.execute(p);
                     MainActivity.addCommendUndo(remRel);
-                    // lay.invalidate();
+                     lay.invalidate();
                 }
 
             default:

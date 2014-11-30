@@ -64,8 +64,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 	}
     public boolean isExpendable = false;
     public boolean isSelected = false;
-    public HashMap<Box, IRelationship> relationships = new HashMap<Box, IRelationship>();
-
+    public HashMap<IRelationship, Box> relationships = new HashMap<IRelationship, Box>();
 
     public int getHeight() {
         return height;
@@ -128,7 +127,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         int c = Color.BLUE;
         if (MainActivity.sheet1.getTheme() != null) {
             if (MainActivity.sheet1.getTheme().getName().equals("%classic")) {
-                if (this.parent != null && topic.getParent().isRoot()) {
+                if (topic.isRoot()) {
                     c = MainActivity.res.getColor(R.color.lime_green);
                 } else {
                     c = MainActivity.res.getColor(R.color.light_blue);
@@ -136,7 +135,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
             } else if (MainActivity.sheet1.getTheme().getName().equals("%simple")) {
                 c = Color.WHITE;
             } else if (MainActivity.sheet1.getTheme().getName().equals("%business")) {
-                if (this.parent != null && topic.getParent().isRoot()) {
+                if (topic.isRoot()) {
                     c = MainActivity.res.getColor(R.color.copper);
                 } else {
                     c = MainActivity.res.getColor(R.color.beige);
@@ -144,7 +143,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
              } else if (MainActivity.sheet1.getTheme().getName().equals("%academese")) {
                 c = MainActivity.res.getColor(R.color.dark_blue);
             } else if (MainActivity.sheet1.getTheme().getName().equals("%comic")) {
-                if (this.parent != null && topic.getParent().isRoot()) {
+                if (topic.isRoot()) {
                     c = MainActivity.res.getColor(R.color.orange);
                 } else {
                     c = MainActivity.res.getColor(R.color.light_blue);

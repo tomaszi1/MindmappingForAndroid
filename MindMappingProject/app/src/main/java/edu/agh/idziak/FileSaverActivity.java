@@ -60,8 +60,8 @@ public class FileSaverActivity extends Activity {
     private void showDialog(final File file) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
-        builder.setTitle("Nadpisać plik?");
-        builder.setPositiveButton("Tak", new DialogInterface.OnClickListener() {
+        builder.setTitle("Do you want to overwrite file?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent result = new Intent().putExtra(FILE, file);
@@ -71,7 +71,7 @@ public class FileSaverActivity extends Activity {
             }
         });
 
-        builder.setNegativeButton("Nie", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();

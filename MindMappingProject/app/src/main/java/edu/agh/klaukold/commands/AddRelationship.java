@@ -15,7 +15,7 @@ import edu.agh.klaukold.utilities.Utils;
  */
 public class AddRelationship implements Command {
     LinkedList<Box> boxes;
-    IRelationship relation;
+    public IRelationship relation;
     String s;
     Properties prop;
 
@@ -29,14 +29,15 @@ public class AddRelationship implements Command {
             s = (String) properties.get("text");
             relation.setTitleText(s);
             MainActivity.sheet1.addRelationship(relation);
-            boxes.getFirst().relationships.put(boxes.getLast(), relation);
+            boxes.getFirst().relationships.put( relation, boxes.getLast());
+
     }
 
     @Override
     public void undo() {
 
             MainActivity.sheet1.removeRelationship(relation);
-            boxes.getFirst().relationships.remove(boxes.getLast());
+            boxes.getFirst().relationships.remove(relation);
 
 
     }

@@ -157,9 +157,11 @@ public class WelcomeScreen extends Activity {
                 source = "file";
                 return false;
             case R.id.dropbox:
+                dropboxHandler.linkAccount(this);
                 Intent browserIntent = new Intent(this, DropboxBrowserActivity.class);
                 startActivityForResult(browserIntent, REQUEST_FILE);
                 source = "dropbox";
+                return  false;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -204,16 +206,12 @@ public class WelcomeScreen extends Activity {
                         }
                     });
                 } else if (source.equals("dropbox")) {
-                    if (resultCode == RESULT_OK) {
                         progressDialog = ProgressDialog.show(this, "Loading", "Please wait...", true, false);
                         DbxBrowser.DbxFile file = (DbxBrowser.DbxFile) data.getExtras().get(DropboxBrowserActivity.SELECTED_FILE);
                         DropboxWorkbookManager.downloadWorkbook(file, loadFileListener, dropboxHandler);
-                    } else {
-                        showToast("Anulowano");
-                    }
                 }
             } else {
-                showToast("Anulowano");
+                showToast("Cancel");
             }
         }
     }
@@ -223,12 +221,24 @@ public class WelcomeScreen extends Activity {
         public void taskDone(DropboxWorkbookManager result) {
             dropboxWorkbookManager = result;
             progressDialog.dismiss();
-            showToast("Skoroszyt wczytany");
+            showToast("File loaded.");
+            DrawView.LUheight = 0;
+            DrawView.LDHehight = 0;
+            DrawView.RUheight = 0;
+            DrawView.RDHehight = 0;
+            MainActivity.root = null;
+            MainActivity.workbook = null;
+            final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
+            String style = "ReadyMap";
+            intent.putExtra(STYLE, style);
+            workbook = (Workbook) dropboxWorkbookManager.getWorkbook();
+            startActivity(intent);
+
         }
 
         @Override
         public void taskFailed(Exception exception) {
-            showToast("Nieudane pobranie");
+            showToast("Loading Fail");
             Log.e("XXXXX", exception.getMessage());
         }
     };

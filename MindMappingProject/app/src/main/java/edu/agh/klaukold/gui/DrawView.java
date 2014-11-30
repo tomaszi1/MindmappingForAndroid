@@ -22,12 +22,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.AbsListView;
 
 import org.xmind.core.INotes;
 import org.xmind.core.IPlainNotesContent;
+import org.xmind.core.IRelationship;
 import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
 
@@ -231,14 +233,18 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
     public void drawBox(Box box) {
         if (box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
             IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
+            int color  = MainActivity.res.getColor(R.color.gray);
+            if (style != null && style.getProperty(Styles.LineColor) != null) {
+                color = Color.parseColor(style.getProperty(Styles.LineColor));
+            }
+            int width = 1;
+            if (style != null &&  style.getProperty(Styles.LineWidth) != null) {
+                width = Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth)));
+            }
             if (style != null && style.getProperty(Styles.ShapeClass) == Styles.TOPIC_SHAPE_DIAMOND) {
-                if (style.getProperty(Styles.LineWidth) != null && style.getProperty(Styles.LineColor) != null) {
-                    ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
-                } else {
-                    ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke(1, MainActivity.res.getColor(R.color.light_gray));
-                }
-            } else if (style != null && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER && style.getProperty(Styles.LineWidth) != null && style.getProperty(Styles.LineColor) != null) {
-                ((GradientDrawable) box.getDrawableShape()).setStroke(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))), Integer.parseInt(style.getProperty(Styles.LineColor)));
+                    ((GradientDrawable) ((RotateDrawable) box.getDrawableShape()).getDrawable()).setStroke(width, color);
+            } else if (style == null || (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER)) {
+                ((GradientDrawable) box.getDrawableShape()).setStroke(width, color);
             }
 
             if (box.point == null || (box.topic.getParent() != null && !box.topic.getParent().isRoot())) {
@@ -321,8 +327,8 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                     showLines(MainActivity.root);
                 }
                 if (box.relationships.size() > 0) {
-                    for (Box b : box.relationships.keySet()) {
-                        drawRelationship(box, b);
+                    for (IRelationship r : box.relationships.keySet()) {
+                        drawRelationship(box, r);
                     }
                 }
             }
@@ -904,9 +910,10 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    public void drawRelationship(Box box1, Box box2) {
+    public void drawRelationship(Box box1, IRelationship rel) {
         Path path = new Path();
         PathEffect effect = null;
+        Box box2 = box1.relationships.get(rel);
         if (box1.drawableShape.getBounds().left > box2.drawableShape.getBounds().left) {
             path.moveTo(box2.getDrawableShape().getBounds().right, box2.getDrawableShape().getBounds().centerY());
             path.lineTo(box1.getDrawableShape().getBounds().left, box1.getDrawableShape().getBounds().centerY());
@@ -929,29 +936,23 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(1);
         paint.setStyle(Paint.Style.STROKE);
-        // Stamp a concave arrow along the line
-//        PathEffect effect = new PathDashPathEffect(
-//                makeConvexArrow(24.0f, 14.0f),    // "stamp"
-//                36.0f,                            // advance, or distance between two stamps
-//                0.0f,                             // phase, or offset before the first stamp
-//                PathDashPathEffect.Style.ROTATE); // how to transform each stamp
-
-// Apply the effect and draw the path
         paint.setPathEffect(effect);
         canvas.drawPath(path, paint);
         Paint paint1 = new Paint();
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(13);
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawTextOnPath(box1.relationships.get(box2).getTitleText(), path, 20, 20, paint1);
+        canvas.drawTextOnPath(rel.getTitleText(), path, 20, 20, paint1);
+        if (MainActivity.allRelationship.containsKey(path)) {
+            MainActivity.allRelationship.remove(path);
+        }
+        MainActivity.allRelationship.put(path, new Pair(rel, box1));
     }
 
     private Path makeConvexArrow(float length, float height) {
         Path p = new Path();
-        p.moveTo(0.0f, -height / 4.0f);
-        // p.lineTo(length - height / 8.0f, -height / 4.0f);
+        p.moveTo(0.0f, -height / 4.0f);;
         p.lineTo(length, 0.0f);
-        //p.lineTo(length - height / 8.0f, height / 4.0f);
         p.lineTo(0.0f, height / 4.0f);
         p.lineTo(0.0f + height / 8.0f, 0.0f);
         p.close();
@@ -961,9 +962,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
     private Path makeConvexArrow2(float length, float height) {
         Path p = new Path();
         p.moveTo(0.0f, -height / 4.0f);
-        // p.lineTo(length - height / 8.0f, -height / 4.0f);
         p.lineTo(-length, 0.0f);
-        //p.lineTo(length - height / 8.0f, height / 4.0f);
         p.lineTo(0.0f, height / 4.0f);
         p.lineTo(0.0f + height / 8.0f, 0.0f);
         p.close();
