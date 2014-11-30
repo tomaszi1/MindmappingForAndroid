@@ -84,7 +84,7 @@ public class DbxBrowser {
 
             @Override
             public void taskFailed(DropboxException exception) {
-                taskFailed(exception);
+                resultListener.taskFailed(exception);
             }
         });
         return true;
