@@ -67,18 +67,26 @@ public class AddBox implements Command {
             Point linePoint1;
             Point linePoint2;
             if (box.point.x < MainActivity.root.drawableShape.getBounds().centerX()) {
-                linePoint1 =  new Point(box.point.x + box.getWidth(), box.point.y/2);
-                linePoint2 =  new Point(MainActivity.root.getDrawableShape().getBounds().left, MainActivity.root.getDrawableShape().getBounds().centerY());
+                linePoint2 =  new Point(box.point.x + box.getWidth(), box.point.y + box.getHeight()/2);
+                linePoint1 =  new Point(MainActivity.root.getDrawableShape().getBounds().left, MainActivity.root.getDrawableShape().getBounds().centerY());
             } else {
-                linePoint1 =  new Point(box.point.x, box.point.y/2);
-                linePoint2 =  new Point(MainActivity.root.getDrawableShape().getBounds().right, MainActivity.root.getDrawableShape().getBounds().centerY());
+                linePoint2 =  new Point(box.point.x, box.point.y + box.getHeight()/2);
+                linePoint1 =  new Point(MainActivity.root.getDrawableShape().getBounds().right, MainActivity.root.getDrawableShape().getBounds().centerY());
 
             }
-            if (parent.topic.getStyleId() != null && MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass) != null) {
-                if (MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor) != null) {
-                    line1 = new Line(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass), 1, new ColorDrawable(Integer.parseInt(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor))), linePoint1, linePoint2, true);
+
+            if (parent.topic.getStyleId() != null ) {
+                String lineClass =  MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass);
+                String width = MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineWidth);
+                if (width == null) {
+                    width = "1";
                 } else {
-                    line1 = new Line(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineClass), 1, new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);
+                    width = width.replace("pt", "");
+                }
+                if (MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor) != null) {
+                    line1 = new Line(lineClass, Integer.parseInt(width), new ColorDrawable(Integer.parseInt(MainActivity.styleSheet.findStyle(parent.topic.getStyleId()).getProperty(Styles.LineColor))), linePoint1, linePoint2, true);
+                } else {
+                    line1 = new Line(lineClass, Integer.parseInt(width), new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);
                 }
             } else {
                 line1 = new Line(null, 1, new ColorDrawable(Color.GRAY), linePoint1, linePoint2, true);

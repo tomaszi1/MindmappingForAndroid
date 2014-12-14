@@ -64,15 +64,15 @@ public class DropboxSaverActivity extends Activity {
             }
         });
 
-        progressDialog = ProgressDialog.show(this, "Wczytywanie", "Chwila...", true, false);
+        progressDialog = ProgressDialog.show(this, "Loading", "Wait...", true, false);
         browser.goToRootDir(listFolderListener);
     }
 
     private void showDialog(final DbxBrowser.DbxFile file) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
-        builder.setTitle("Nadpisać plik?");
-        builder.setPositiveButton("Tak", new DialogInterface.OnClickListener() {
+        builder.setTitle("Do you want to overwrite file?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent result = new Intent().putExtra(FILE_TO_SAVE, file);
@@ -82,7 +82,7 @@ public class DropboxSaverActivity extends Activity {
             }
         });
 
-        builder.setNegativeButton("Nie", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
@@ -94,7 +94,7 @@ public class DropboxSaverActivity extends Activity {
     public void saveFileButtonClicked(View view) {
         String fileName = fileNameEditText.getText().toString();
         if (fileName == null || fileName.isEmpty()) {
-            Toast.makeText(DropboxSaverActivity.this, "Nazwa pliku nie może być pusta", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DropboxSaverActivity.this, "File name cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!fileName.endsWith(".xmind"))
@@ -115,7 +115,7 @@ public class DropboxSaverActivity extends Activity {
         @Override
         public void taskFailed(DropboxException exception) {
             progressDialog.dismiss();
-            Toast.makeText(DropboxSaverActivity.this, "Nieudane pobranie folderu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DropboxSaverActivity.this, "Loading directory failed", Toast.LENGTH_SHORT).show();
         }
     };
 

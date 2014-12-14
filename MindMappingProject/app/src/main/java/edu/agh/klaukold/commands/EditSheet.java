@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 
 import org.xmind.core.ISheet;
+import org.xmind.core.style.IStyle;
 import org.xmind.ui.style.Styles;
 
 import java.util.Properties;
@@ -24,15 +25,22 @@ public class EditSheet implements Command  {
 //            e.printStackTrace();
 //        }
         if (properties.containsKey("color")) {
-            properties1.put("color", sheet.getTheme().getProperty(Styles.FillColor));
+            if (MainActivity.styleSheet.findStyle(sheet.getStyleId()) != null && MainActivity.styleSheet.findStyle(sheet.getStyleId()).getProperty(Styles.FillColor) != null) {
+                properties1.put("color", MainActivity.styleSheet.findStyle(sheet.getStyleId()).getProperty(Styles.FillColor));
+            } else {
+                properties1.put("color", Color.WHITE);
+            }
+
             ColorDrawable c = (ColorDrawable)properties.get("color");
-            sheet.getTheme().setProperty(Styles.FillColor, String.valueOf(c.getColor()));
-        } else if (properties.containsKey("wallpaper")) {
-
-        } else if (properties.containsKey("multiple_branch")) {
-
+            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(c.getColor())), 16) + Integer.toString(Integer.valueOf(Color.green(c.getColor())), 16) + Integer.toString(Integer.valueOf(Color.blue(c.getColor())), 16);
+            if (sheet.getStyleId() != null && MainActivity.styleSheet.findStyle(sheet.getStyleId()) != null) {
+                MainActivity.styleSheet.findStyle(sheet.getStyleId()).setProperty(Styles.FillColor,colorHex);
+            } else {
+                IStyle style = MainActivity.styleSheet.createStyle(IStyle.MAP);
+                style.setProperty(Styles.FillColor, colorHex);
+                sheet.setStyleId(style.getId());
+            }
         }
-        // TODO Auto-generated method stub
 		
 	}
 

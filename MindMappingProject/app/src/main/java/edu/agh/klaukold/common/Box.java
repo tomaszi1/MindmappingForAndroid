@@ -15,6 +15,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 
 import android.os.Build;
+import android.util.Log;
 
 
 import org.xmind.core.IRelationship;
@@ -152,6 +153,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 
         }
         if (style!=null && style.getProperty(Styles.FillColor) != null) {
+            Log.w("color", style.getProperty(Styles.FillColor));
             c = Color.parseColor(style.getProperty(Styles.FillColor));
         }
         int[] colors = {Color.WHITE, c};

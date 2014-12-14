@@ -281,7 +281,7 @@ public class MainActivity extends Activity {
                             boxes.put(t.getId(), b);
                         }
                         Utils.findRelationships(boxes);
-                    } else if (sheet1.getTheme().getName().equals("%business")) {
+                    } else if (sheet1.getTheme().getName().equals("%bussiness")) {
                         root.setPoint(new edu.agh.klaukold.common.Point(width, height));
                         //style1 = workbook.getStyleSheet().findStyle(rootTopic.getStyleId());
                         final HashMap<String, Box> boxes = new HashMap<String, Box>();
@@ -424,7 +424,7 @@ public class MainActivity extends Activity {
                                     if (pair.second == Actions.ADD_BOX) {
                                         boxEdited = pair.first;
                                         Box box1 = new Box();
-                                        box1.setPoint(new edu.agh.klaukold.common.Point((int) tab[0] - box1.getWidth()/2, (int) tab[1] - box1.getHeight()/2));
+                                        box1.setPoint(new edu.agh.klaukold.common.Point((int) tab[0] -(box1.getWidth()/2), (int) tab[1] - (box1.getHeight()/2)));
                                         AddBox addBox = new AddBox();
                                         Properties properties = new Properties();
                                         properties.put("box", MainActivity.boxEdited);
@@ -500,8 +500,8 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        if (lay != null && sheet1 != null && sheet1.getTheme() != null && sheet1.getTheme().getProperty(Styles.FillColor) != null) {
-            lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
+        if (lay != null && sheet1 != null && sheet1.getStyleId()!= null && styleSheet.findStyle(sheet1.getStyleId()) != null && styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor) != null) {
+            lay.setBackgroundColor(Color.parseColor(styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor)));
         }
     }
 
@@ -1164,8 +1164,8 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(MainActivity.this, EditSheetScreen.class);
-                if (sheet1.getTheme() != null) {
-                    intent.putExtra(BACKGROUNDCOLOR, Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
+                if (sheet1.getStyleId() != null && styleSheet.findStyle(sheet1.getStyleId()) != null  && styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor) != null)  {
+                    intent.putExtra(BACKGROUNDCOLOR, Integer.parseInt(styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor)));
                 } else {
                     intent.putExtra(BACKGROUNDCOLOR, Color.WHITE);
                 }
@@ -1284,7 +1284,7 @@ public class MainActivity extends Activity {
                 addLine.execute(properties1);
                 MainActivity.addCommendUndo(addLine);
 //                lay.revalidate();
-                //     lay.invalidate();
+                lay.invalidate();
                 return true;
             case R.id.action_redo:
                 if (commandsRedo.size() == 1) {
@@ -1374,6 +1374,7 @@ public class MainActivity extends Activity {
                     }
                     //  return true;
                 }
+                MainActivity.toEditBoxes.clear();
                 lay.invalidate();
                 return true;
             case R.id.new_rel:

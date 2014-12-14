@@ -21,8 +21,10 @@ import org.xmind.core.internal.Workbook;
 import java.io.File;
 import java.util.Properties;
 
+import edu.agh.App;
 import edu.agh.R;
 import edu.agh.idziak.DropboxBrowserActivity;
+import edu.agh.idziak.DropboxSaverActivity;
 import edu.agh.idziak.FileBrowserActivity;
 import edu.agh.idziak.FileSaverActivity;
 import edu.agh.idziak.dropbox.DbxBrowser;
@@ -84,6 +86,18 @@ public class EditSheetScreen extends Activity {
 
             }
         });
+        ImageButton b2 = (ImageButton) findViewById(R.id.imageButton3);
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                source = "dropbox";
+                dropboxHandler.linkAccount(EditSheetScreen.this);
+                Intent intent1 = new Intent(EditSheetScreen.this, DropboxSaverActivity.class);
+                startActivityForResult(intent1, REQUEST_FILE);
+            }
+        });
+        dropboxHandler = ((App) getApplicationContext()).getDbxHandler();
+        progressDialog = new ProgressDialog(EditSheetScreen.this);
     }
 
     @Override
@@ -107,7 +121,9 @@ public class EditSheetScreen extends Activity {
                         }
                     });
                 } else {
-                    //  DropboxWorkbookManager.bindWorkbookToDropboxFile(MainActivity.workbook, new DbxBrowser.DbxFile(file));
+                    DbxBrowser.DbxFile file1 = (DbxBrowser.DbxFile) data.getExtras().get(DropboxSaverActivity.FILE_TO_SAVE);
+                    dropboxWorkbookManager =  DropboxWorkbookManager.bindWorkbookToDropboxFile(MainActivity.workbook, file1, dropboxHandler);
+                    saveWorkbook();
                 }
             }
         }
@@ -136,6 +152,28 @@ public class EditSheetScreen extends Activity {
 
     private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public void saveWorkbook() {
+        if (dropboxWorkbookManager == null) {
+            showToast("Brak skoroszytu");
+            return;
+        }
+        progressDialog.setTitle("Zapisywanie");
+        progressDialog.show();
+        dropboxWorkbookManager.uploadWithOverwrite(new ResultListener<Void, Exception>() {
+            @Override
+            public void taskDone(Void nothing) {
+                progressDialog.dismiss();
+                showToast("Skoroszyt zapisany");
+            }
+
+            @Override
+            public void taskFailed(Exception exception) {
+                showToast("Nieudane zapisanie pliku");
+                Log.e("XXXXX", exception.getMessage());
+            }
+        });
     }
 
 

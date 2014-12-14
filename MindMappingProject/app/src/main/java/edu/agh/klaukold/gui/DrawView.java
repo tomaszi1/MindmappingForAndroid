@@ -348,7 +348,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             Typeface font = Typeface.DEFAULT;
             if (style != null && style.getProperty(Styles.TextColor) != null) {
                 if (style.getProperty(Styles.TextColor) != null) {
-                    paint.setColor(Integer.parseInt(style.getProperty(Styles.TextColor)));
+                    paint.setColor(Color.parseColor(style.getProperty(Styles.TextColor)));
                 } else {
                     paint.setColor(Color.BLACK);
                 }
@@ -553,19 +553,19 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             box.prepareDrawableShape();
             box.parent.getLines().get(box).setEnd(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
         }
-        for (Box b : box.getLines().keySet()) {
-            if (b.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
-                box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
-            } else {
-                if (box.topic.isRoot()) {
-                    box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
-                    if (right_old < box.drawableShape.getBounds().right) {
-                        b.setPoint(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
-                        box.getLines().get(b).setEnd(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
-                    }
-                }
-            }
-        }
+//        for (Box b : box.getLines().keySet()) {
+//            if (b.drawableShape.getBounds().left >= box.drawableShape.getBounds().left) {
+//                box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
+//            } else {
+//                if (box.topic.isRoot()) {
+//                    box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
+//                    if (right_old < box.drawableShape.getBounds().right) {
+//                        b.setPoint(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
+//                        box.getLines().get(b).setEnd(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
+//                    }
+//                }
+//            }
+//        }
         box.drawableShape.draw(canvas);
         drawText(box);
 
@@ -581,9 +581,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                 paint.setColor(x.getColor().getColor());
                 paint.setStrokeWidth(x.getThickness() + 1);
                 paint.setStyle(Paint.Style.STROKE);
-                if ((x.shape == Styles.BRANCH_CONN_ELBOW || x.shape == Styles.BRANCH_CONN_ROUNDEDELBOW)) {
-                    x.box = box;
-                }
                 x.box = box;
                 x.preparePath();
                 x.box = null;
@@ -678,7 +675,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             if (width == null) {
                 width = "1";
             } else {
-                width.substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2);
+               width =  width.substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2);
             }
             color = parentStyle.getProperty(Styles.LineColor);
             if (color == null) {

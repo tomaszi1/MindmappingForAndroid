@@ -62,7 +62,7 @@ public class DropboxBrowserActivity extends Activity {
             }
         });
 
-        progressDialog = ProgressDialog.show(this, "Wczytywanie", "Chwila...", true, false);
+        progressDialog = ProgressDialog.show(this, "Loading", "Wait..", true, false);
         browser.goToRootDir(listFolderListener);
     }
 
@@ -76,14 +76,14 @@ public class DropboxBrowserActivity extends Activity {
         @Override
         public void taskFailed(DropboxException exception) {
             progressDialog.dismiss();
-            Toast.makeText(DropboxBrowserActivity.this, "Nieudane pobranie folderu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DropboxBrowserActivity.this, "Attempt to create directory failed", Toast.LENGTH_SHORT).show();
         }
     };
 
     public void newFolder(View view) {
-        progressDialog.setTitle("Tworzenie folderu");
+        progressDialog.setTitle("Creating directory");
         progressDialog.show();
-        browser.createNewDir("Nowy folder", new ResultListener<DbxBrowser.DbxFile, DropboxException>() {
+        browser.createNewDir("New directory", new ResultListener<DbxBrowser.DbxFile, DropboxException>() {
             @Override
             public void taskDone(DbxBrowser.DbxFile result) {
                 fileArrayAdapter.listCurrentFolder();
@@ -93,8 +93,8 @@ public class DropboxBrowserActivity extends Activity {
             @Override
             public void taskFailed(DropboxException exception) {
                 progressDialog.dismiss();
-                Toast.makeText(DropboxBrowserActivity.this, "Nieudane utworzenie folderu", Toast.LENGTH_SHORT).show();
-                Log.i(getClass().getSimpleName(), "Błąd tworzenia folderu", exception);
+                Toast.makeText(DropboxBrowserActivity.this, "Attempt to create directory failed", Toast.LENGTH_SHORT).show();
+                Log.i(getClass().getSimpleName(), "Error", exception);
             }
         });
     }

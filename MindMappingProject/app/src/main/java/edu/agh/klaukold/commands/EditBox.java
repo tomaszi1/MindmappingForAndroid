@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import org.xmind.core.internal.Style;
 import org.xmind.core.style.IStyle;
@@ -106,10 +107,11 @@ public class EditBox implements Command{
                 properties1.put("text_color", Color.BLACK);
             }
             String color = (String)properties.get("text_color");
-            style.setProperty(Styles.TextColor, String.valueOf(color));
+            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+            style.setProperty(Styles.TextColor, String.valueOf(colorHex));
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
-                s.setProperty(Styles.TextColor, String.valueOf(color));
+                s.setProperty(Styles.TextColor, String.valueOf(colorHex));
             }
         }
         else if (properties.containsKey("box_color")) {
@@ -119,10 +121,14 @@ public class EditBox implements Command{
                 properties1.put("box_color", MainActivity.res.getColor(R.color.light_blue));
             }
             String color = (String)properties.get("box_color");
-            style.setProperty(Styles.FillColor,  Integer.toString(Integer.parseInt(color), 16) );
+            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+                    //.replace("-", "#");
+            Log.w("", colorHex);
+            Log.w("colorint", color);
+            style.setProperty(Styles.FillColor,  colorHex);
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
-                s.setProperty(Styles.FillColor, String.valueOf(color));
+                s.setProperty(Styles.FillColor, String.valueOf(colorHex));
             }
         } else if (properties.containsKey("box_text")) {
             properties1.put("box_text", box.topic.getTitleText());
@@ -135,6 +141,9 @@ public class EditBox implements Command{
             box.prepareDrawableShape();
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                if (s == null) {
+                    s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
+                }
                 s.setProperty(Styles.ShapeClass, shape);
                 MainActivity.changeShape(b);
                 b.prepareDrawableShape();
@@ -146,13 +155,14 @@ public class EditBox implements Command{
                 properties1.put("line_color", new ColorDrawable(Color.GRAY));
             }
             String color = (String)properties.get("line_color");
-            style.setProperty(Styles.LineColor, color);
+            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+            style.setProperty(Styles.LineColor, colorHex);
             for (Box b : box.getLines().keySet()) {
                 box.getLines().get(b).setColor(new ColorDrawable(Integer.parseInt(color)));
             }
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
-                s.setProperty(Styles.LineColor, color);
+                s.setProperty(Styles.LineColor, colorHex);
                 for (Box b1 : b.getLines().keySet()) {
                   b.getLines().get(b1).setColor(new ColorDrawable(Integer.parseInt(color)));
                 }

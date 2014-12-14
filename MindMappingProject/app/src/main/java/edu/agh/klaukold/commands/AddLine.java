@@ -50,7 +50,17 @@ public class AddLine implements Command {
                   }
               } else {
                   if (parentStyle != null ) {
-                      line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(parentStyle.getProperty(Styles.LineWidth).substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2)), new ColorDrawable(Integer.parseInt(parentStyle.getProperty(Styles.LineColor))),
+                      String width = parentStyle.getProperty(Styles.LineWidth);
+                      if (width == null) {
+                          width = "1";
+                      } else {
+                          width = width.substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2);
+                      }
+                      String color = parentStyle.getProperty(Styles.LineColor);
+                      if (color == null) {
+                          color = "#" + Integer.toString(Integer.valueOf(Color.red(Color.GRAY)), 16) + Integer.toString(Integer.valueOf(Color.green(Color.GRAY)), 16) + Integer.toString(Integer.valueOf(Color.blue(Color.GRAY)), 16);
+                      }
+                      line = new Line(parentStyle.getProperty(Styles.LineClass), Integer.parseInt(width), new ColorDrawable(Color.parseColor(color)),
                               new Point(parent.getDrawableShape().getBounds().right,
                                       parent.getDrawableShape().getBounds().top + (parent.getDrawableShape().getBounds().bottom - parent.getDrawableShape().getBounds().top) / 2),
                               new Point(child.getDrawableShape().getBounds().left,

@@ -46,7 +46,6 @@ public class ColorPalette extends Activity {
             @Override
             public void onClick(View v) {
                 if (type.equals(EditBoxScreen.ACTIVITY_TYPE)) {
-                    //todo kolor boxa
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
@@ -55,7 +54,6 @@ public class ColorPalette extends Activity {
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE1)) {
-                    //todo kolor czcionki
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("text_color", String.valueOf(colors.get(v)));
@@ -64,7 +62,6 @@ public class ColorPalette extends Activity {
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
                 } else if (type.equals(EditBoxScreen.ACTIVITY_TYPE2)) {
-                    //todo kolor lini
                     EditBox editBox = new EditBox();
                     Properties properties = new Properties();
                     properties.put("box", MainActivity.boxEdited);
@@ -72,7 +69,6 @@ public class ColorPalette extends Activity {
                     properties.put("boxes", MainActivity.toEditBoxes);
                     editBox.execute(properties);
                     MainActivity.addCommendUndo(editBox);
-                    //todo kolor lini
                 } else if (type.equals(EditSheetScreen.ACTIVITY_TYPE)) {
                     EditSheet editSheet = new EditSheet();
                     Properties properties = new Properties();
