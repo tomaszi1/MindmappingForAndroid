@@ -55,17 +55,17 @@ public class EditBox implements Command{
             if (style.getProperty(Styles.FontSize) != null) {
                 properties1.put("text_size", style.getProperty(Styles.FontSize));
             } else {
-                properties1.put("text_size", Typeface.DEFAULT);
+                properties1.put("text_size", "8dt");
             }
             style.setProperty(Styles.FontSize, (String)properties.getProperty("text_size"));
         } else if (properties.containsKey("bold")) {
             properties1.put("bold", (String)properties.get("bold"));
             if (((String)properties.get("bold")).equals("true")) {
                 style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
-                properties1.put("text_size", false);
+                properties1.put("bold", "false");
             } else  {
                 style.setProperty(Styles.FontStyle, "");
-                properties1.put("text_size", true);
+                properties1.put("bold", "true");
             }
         }
         else if (properties.containsKey("italic")) {
@@ -104,10 +104,12 @@ public class EditBox implements Command{
             if (style.getProperty(Styles.TextColor) != null) {
                 properties1.put("text_color", style.getProperty(Styles.TextColor));
             } else {
-                properties1.put("text_color", Color.BLACK);
+                properties1.put("text_color", "#000000");
             }
             String color = (String)properties.get("text_color");
-            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+            String colorHex = "#" + (!Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) : "00")
+                    + (!Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) : "00" )
+                    + (!Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16) : "00" );
             style.setProperty(Styles.TextColor, String.valueOf(colorHex));
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
@@ -118,12 +120,14 @@ public class EditBox implements Command{
             if (style.getProperty(Styles.FillColor) != null) {
                 properties1.put("box_color", style.getProperty(Styles.FillColor));
             } else {
-                properties1.put("box_color", MainActivity.res.getColor(R.color.light_blue));
+                properties1.put("box_color", "#CCE5FF");
             }
-            String color = (String)properties.get("box_color");
-            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+            String color = ((String)properties.get("box_color"));
+            String colorHex = "#" + (!Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) : "00")
+                    + (!Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) : "00" )
+                    + (!Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16) : "00" );
                     //.replace("-", "#");
-            Log.w("", colorHex);
+            Log.w("colorHex", colorHex);
             Log.w("colorint", color);
             style.setProperty(Styles.FillColor,  colorHex);
             for (Box b : edited) {
@@ -132,13 +136,18 @@ public class EditBox implements Command{
             }
         } else if (properties.containsKey("box_text")) {
             properties1.put("box_text", box.topic.getTitleText());
-            box.topic.setTitleText(properties.getProperty("box_text"));
+            box.topic.setTitleText(properties.get("box_text").toString());
         } else if (properties.containsKey("shape")) {
             properties1.put("shape", box.getDrawableShape());
+            if (style.getProperty(Styles.ShapeClass) != null) {
+                properties1.put("shape_name", style.getProperty(Styles.ShapeClass));
+            } else {
+                properties1.put("shape_name", Styles.TOPIC_SHAPE_ROUNDEDRECT);
+            }
             String shape = (String)properties.get("shape");
             style.setProperty(Styles.ShapeClass, shape);
             MainActivity.changeShape(box);
-            box.prepareDrawableShape();
+            box.prepareDrawableShape();style.setProperty(Styles.ShapeClass, shape);
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
                 if (s == null) {
@@ -150,12 +159,14 @@ public class EditBox implements Command{
             }
         } else if (properties.containsKey("line_color")) {
             if (style.getProperty(Styles.LineColor) != null) {
-                properties1.put("line_color", new ColorDrawable(Integer.parseInt(style.getProperty(Styles.LineColor))));
+                properties1.put("line_color", new ColorDrawable(Color.parseColor(style.getProperty(Styles.LineColor))));
             } else {
                 properties1.put("line_color", new ColorDrawable(Color.GRAY));
             }
             String color = (String)properties.get("line_color");
-            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) + Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16);
+            String colorHex =  "#" + (!Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.red(Integer.parseInt(color))), 16) : "00")
+                    + (!Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.green(Integer.parseInt(color))), 16) : "00" )
+                    + (!Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.blue(Integer.parseInt(color))), 16) : "00" );
             style.setProperty(Styles.LineColor, colorHex);
             for (Box b : box.getLines().keySet()) {
                 box.getLines().get(b).setColor(new ColorDrawable(Integer.parseInt(color)));
@@ -189,7 +200,7 @@ public class EditBox implements Command{
             if (style.getProperty(Styles.LineClass) != null) {
                 properties1.put("line_shape", style.getProperty(Styles.LineClass));
             } else {
-                properties1.put("line_shape", "");
+                properties1.put("line_shape", Styles.BRANCH_CONN_STRAIGHT);
             }
             String ls = (String) properties.get("line_shape");
             style.setProperty(Styles.LineClass, ls);
@@ -200,6 +211,7 @@ public class EditBox implements Command{
                     MainActivity.styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
                 }
                 s.setProperty(Styles.LineClass, ls);
+                box.getLines().get(b).shape =  (String) properties.get("line_shape");
             }
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
@@ -211,6 +223,7 @@ public class EditBox implements Command{
                         MainActivity.styleSheet.addStyle(s1, IStyleSheet.NORMAL_STYLES);
                     }
                     s1.setProperty(Styles.LineClass, ls);
+                    b.getLines().get(b1).shape = (String) properties.get("line_shape");
                 }
             }
         }
@@ -225,19 +238,22 @@ public class EditBox implements Command{
         } else if  (properties1.containsKey("shape")) {
             Drawable shape = (Drawable)properties1.get("shape");
             box.setDrawableShape(shape);
+            style.setProperty(Styles.ShapeClass, (String)properties1.getProperty("shape_name"));
             box.prepareDrawableShape();
         } else if (properties1.containsKey("line_color")) {
             int color = ((ColorDrawable) properties1.get("line_color")).getColor();
-           // box.setLineColor(color);
-            style.setProperty(Styles.LineColor, String.valueOf(color));
+             String colorHex =  "#" + (!Integer.toString(Integer.valueOf(Color.red(color)), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.red(color)), 16) : "00")
+                     + (!Integer.toString(Integer.valueOf(Color.green(color)), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.green(color)), 16) : "00" )
+                     + (!Integer.toString(Integer.valueOf(Color.blue(color)), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.blue(color)), 16) : "00" );
+            style.setProperty(Styles.LineColor, String.valueOf(colorHex));
         } else if (properties1.containsKey("line_thickness")) {
-            int lt = (Integer) properties1.get("line_thickness");
-            style.setProperty(Styles.LineWidth, String.valueOf(lt));
+            String lt = (String) properties1.get("line_thickness");
+            style.setProperty(Styles.LineWidth, lt);
         } else if (properties1.containsKey("text_size")) {
             style.setProperty(Styles.FontSize, (String) properties1.get("text_size"));
         }
          else if (properties1.containsKey("bold")) {
-             if (((String)properties1.get("bold")).equals("true")) {
+             if (  ((String)properties1.get("bold")).equals("true") ) {
                  style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
              } else  {
                  style.setProperty(Styles.FontStyle, "");
@@ -261,6 +277,32 @@ public class EditBox implements Command{
              style.setProperty(Styles.TextAlign, (String)properties1.get("align"));
          } else if (properties1.containsKey("box_text")) {
              box.topic.setTitleText(properties1.getProperty("box_text"));
+         } else if (properties1.containsKey("text_color")) {
+             style.setProperty(Styles.TextColor, (String)properties1.get("text_color"));
+         } else if (properties1.containsKey("line_shape")) {
+             style.setProperty(Styles.LineClass, (String)properties1.get("line_shape"));
+             for (Box b : box.getLines().keySet()) {
+                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                 if (s == null) {
+                     s = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+                     MainActivity.styleSheet.addStyle(s, IStyleSheet.NORMAL_STYLES);
+                 }
+                 s.setProperty(Styles.LineClass, (String)properties1.get("line_shape"));
+                 box.getLines().get(b).shape =  (String) properties1.get("line_shape");
+             }
+             for (Box b : edited) {
+                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                 s.setProperty(Styles.LineClass, (String) properties1.get("line_shape"));
+                 for (Box b1 : b.getLines().keySet()) {
+                     IStyle s1 = MainActivity.workbook.getStyleSheet().findStyle(b1.topic.getStyleId());
+                     if (s1 == null) {
+                         s1 = MainActivity.styleSheet.createStyle(IStyle.TOPIC);
+                         MainActivity.styleSheet.addStyle(s1, IStyleSheet.NORMAL_STYLES);
+                     }
+                     s1.setProperty(Styles.LineClass, (String) properties1.get("line_shape"));
+                     b.getLines().get(b1).shape = (String) properties1.get("line_shape");
+                 }
+             }
          }
         if (edited.size() != 0) {
             int i =0;

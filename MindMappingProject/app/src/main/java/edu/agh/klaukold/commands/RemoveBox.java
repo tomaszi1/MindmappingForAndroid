@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import edu.agh.R;
 import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
+import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.gui.MainActivity;
 import edu.agh.klaukold.interfaces.Command;
 
@@ -43,21 +45,34 @@ public class RemoveBox implements Command {
             b.prepareDrawableShape();
             if (!b.topic.isRoot())
             {
+                IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getParent().getStyleId());
+                int width = 1;
+                if (s != null && s.getProperty(Styles.LineWidth) != null) {
+                    width = Integer.parseInt(s.getProperty(Styles.LineWidth).substring(0, s.getProperty(Styles.LineWidth).length() - 2));
+                }
+                int color = MainActivity.res.getColor(R.color.light_gray);
+                if (s != null && s.getProperty(Styles.LineColor)!= null) {
+                    color = Integer.parseInt(s.getProperty(Styles.LineColor));
+                }
+                String shape = null;
+                if (s != null) {
+                    shape = s.getProperty(Styles.LineClass);
+                }
+                Point start = null;
+                Point end;
+                if (b.getDrawableShape().getBounds().left <= MainActivity.root.getDrawableShape().getBounds().left) {
+                    start = new Point(b.parent.getDrawableShape().getBounds().left, b.parent.getDrawableShape().getBounds().centerY());
+                    end = new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY());
+                } else {
+                    start = new Point(b.parent.getDrawableShape().getBounds().right, b.parent.getDrawableShape().getBounds().centerY());
+                    end = new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY());
+                }
+                Line line = new Line(shape, width, new ColorDrawable(color), start, end, true);
+                b.parent.getLines().put(b, line);
                 b.topic.getParent().add(b.topic);
+                b.parent.addChild(b);
             }
-            IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getParent().getStyleId());
 
-            //todo wyszstko napisac od nowa
-//            Line line = new Line(b.getParent().getLineStyle(), Integer.parseInt(s.getProperty(Styles.LineWidth)), new ColorDrawable(b.getParent().getLineColor()), new Point(), new Point(), true);
-//            if (b.position == Position.LFET) {
-//                line.setStart(new Point(b.getParent().getDrawableShape().getBounds().left, b.getParent().getDrawableShape().getBounds().centerY()));
-//                line.setEnd(new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()));
-//            } else {
-//                line.setStart(new Point( b.getParent().getDrawableShape().getBounds().right, b.getParent().getDrawableShape().getBounds().centerY()));
-//                line.setEnd(new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()));
-//            }
-//            b.getParent().getLines().put(b, line);
-//            b.getParent().isExpendable = true;
         }
     }
 

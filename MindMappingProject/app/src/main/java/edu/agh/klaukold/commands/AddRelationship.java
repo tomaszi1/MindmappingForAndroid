@@ -22,7 +22,9 @@ public class AddRelationship implements Command {
     @Override
     public void execute(Properties properties) {
         prop = (Properties) properties.clone();
-        boxes = (LinkedList<Box>)((LinkedList<Box>) properties.get("boxes")).clone();
+        if (boxes == null) {
+            boxes = (LinkedList<Box>) ((LinkedList<Box>) properties.get("boxes")).clone();
+        }
             relation = MainActivity.workbook.createRelationship();
             relation.setEnd1Id(boxes.getFirst().topic.getId());
             relation.setEnd2Id(boxes.getLast().topic.getId());

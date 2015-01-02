@@ -2,6 +2,7 @@ package edu.agh.klaukold.commands;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 
 import org.xmind.core.ISheet;
 import org.xmind.core.style.IStyle;
@@ -27,8 +28,9 @@ public class EditSheet implements Command  {
         if (properties.containsKey("color")) {
             if (MainActivity.styleSheet.findStyle(sheet.getStyleId()) != null && MainActivity.styleSheet.findStyle(sheet.getStyleId()).getProperty(Styles.FillColor) != null) {
                 properties1.put("color", MainActivity.styleSheet.findStyle(sheet.getStyleId()).getProperty(Styles.FillColor));
+                Log.w("", MainActivity.styleSheet.findStyle(sheet.getStyleId()).getProperty(Styles.FillColor));
             } else {
-                properties1.put("color", Color.WHITE);
+                properties1.put("color", "#FFFFFF");
             }
 
             ColorDrawable c = (ColorDrawable)properties.get("color");
@@ -49,7 +51,7 @@ public class EditSheet implements Command  {
       //  sheet = (Sheet)properties1.get("sheet");
         if (properties1.containsKey("color")) {
             String c = (String)properties1.get("color");
-            sheet.getTheme().setProperty(Styles.FillColor, String.valueOf(c));
+            MainActivity.styleSheet.findStyle(sheet.getStyleId()).setProperty(Styles.FillColor, String.valueOf(c));
         }
     }
 

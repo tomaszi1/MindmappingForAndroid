@@ -126,6 +126,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId());
         int c = Color.BLUE;
+        int c2 = Color.WHITE;
         if (MainActivity.sheet1.getTheme() != null) {
             if (MainActivity.sheet1.getTheme().getName().equals("%classic")) {
                 if (topic.isRoot()) {
@@ -142,7 +143,8 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
                     c = MainActivity.res.getColor(R.color.beige);
                 }
              } else if (MainActivity.sheet1.getTheme().getName().equals("%academese")) {
-                c = MainActivity.res.getColor(R.color.dark_blue);
+                c = MainActivity.res.getColor(R.color.dark_gray);
+                c2 = MainActivity.res.getColor(R.color.dark_gray);
             } else if (MainActivity.sheet1.getTheme().getName().equals("%comic")) {
                 if (topic.isRoot()) {
                     c = MainActivity.res.getColor(R.color.orange);
@@ -156,7 +158,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
             Log.w("color", style.getProperty(Styles.FillColor));
             c = Color.parseColor(style.getProperty(Styles.FillColor));
         }
-        int[] colors = {Color.WHITE, c};
+        int[] colors = {c2, c};
         String s = null;
         if (style != null) {
             s = style.getProperty(Styles.ShapeClass);
@@ -179,16 +181,34 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
 
         } else if (s.equals(Styles.TOPIC_SHAPE_DIAMOND)) {
-            ((GradientDrawable) ((RotateDrawable) drawableShape).getDrawable()).setColors(colors);
+            ((GradientDrawable) (((RotateDrawable) drawableShape).getDrawable())).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + width);
 
         } else if (s.equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
-            int[] colors2 = {Color.TRANSPARENT, Color.TRANSPARENT};
+            int c1;
+            int  c3;
+            if (style!=null && style.getProperty(Styles.FillColor) != null) {
+                c1 = Color.WHITE;
+                c3 = Color.parseColor(style.getProperty(Styles.FillColor));
+            } else {
+                c1 = Color.TRANSPARENT;
+                c3 = Color.TRANSPARENT;
+            }
+            int[] colors2 = {c1, c3};
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
              ((GradientDrawable)drawableShape).setColors(colors2);
 
         } else if (s.equals(Styles.TOPIC_SHAPE_NO_BORDER)) {
-            int[] colors1 = {Color.TRANSPARENT, Color.TRANSPARENT};
+            int c1;
+            int  c4;
+            if (style!=null && style.getProperty(Styles.FillColor) != null) {
+                c1 = Color.WHITE;
+                c4 = Color.parseColor(style.getProperty(Styles.FillColor));
+            } else {
+                c1 = Color.TRANSPARENT;
+                c4 = Color.TRANSPARENT;
+            }
+            int[] colors1 = {c1, c4};
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
             ((GradientDrawable) drawableShape).setColors(colors1);
         } else {

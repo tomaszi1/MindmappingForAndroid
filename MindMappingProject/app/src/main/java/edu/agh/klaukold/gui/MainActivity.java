@@ -94,6 +94,7 @@ import org.xmind.core.IRelationship;
 import org.xmind.core.ISheet;
 import org.xmind.core.ITopic;
 import org.xmind.core.IWorkbook;
+import org.xmind.core.internal.Style;
 import org.xmind.core.style.IStyle;
 import org.xmind.core.style.IStyleSheet;
 import org.xmind.core.util.Property;
@@ -324,7 +325,7 @@ public class MainActivity extends Activity {
                             root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
                         }
                         root.topic.setFolded(false);
-                        lay.setBackgroundColor(res.getColor(R.color.dark_blue));
+                        lay.setBackgroundColor(res.getColor(R.color.dark_gray));
 
                         boxes.put(root.topic.getId(), root);
 
@@ -353,6 +354,12 @@ public class MainActivity extends Activity {
                 root.topic = rootTopic;
                 root.topic.setFolded(false);
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+                IStyle style3 = styleSheet.createStyle(IStyle.TOPIC);
+                style3.setProperty(Styles.FillColor, "#CCE5FF");
+                style3.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style3.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+                styleSheet.addStyle(style3, IStyleSheet.NORMAL_STYLES);
+                rootTopic.setStyleId(style3.getId());
             } else if (style.equals("Classic")) {
                 rootTopic.setTitleText("Central Topic");
                 root.topic = rootTopic;
@@ -363,6 +370,13 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.light_yellow)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
+                IStyle style3 = styleSheet.createStyle(IStyle.TOPIC);
+                style3.setProperty(Styles.FillColor, "#9ACD32");
+                style3.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                style3.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                styleSheet.addStyle(style3, IStyleSheet.NORMAL_STYLES);
+                style2.setProperty(Style.TOPIC, style3.getId());
+                rootTopic.setStyleId(style3.getId());
             } else if (style.equals("Simple")) {
                 rootTopic.setTitleText("Central Topic");
                 root.topic = rootTopic;
@@ -373,6 +387,13 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
+                IStyle style3 = styleSheet.createStyle(IStyle.TOPIC);
+                style3.setProperty(Styles.FillColor, "#FFFFFF");
+                style3.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
+                style3.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                styleSheet.addStyle(style3, IStyleSheet.NORMAL_STYLES);
+                style2.setProperty(Style.TOPIC, style3.getId());
+                rootTopic.setStyleId(style3.getId());
             } else if (style.equals("Business")) {
                 rootTopic.setTitleText("Central Topic");
                 root.topic = rootTopic;
@@ -383,6 +404,13 @@ public class MainActivity extends Activity {
                 style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.white)));
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
+                IStyle style3 = styleSheet.createStyle(IStyle.TOPIC);
+                style3.setProperty(Styles.FillColor, "#B87333");
+                style3.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
+                style3.setProperty(Styles.LineClass, Styles.BRANCH_CONN_CURVE);
+                styleSheet.addStyle(style3, IStyleSheet.NORMAL_STYLES);
+                style2.setProperty(Style.TOPIC, style3.getId());
+                rootTopic.setStyleId(style3.getId());
             } else if (style.equals("Academese")) {
                 rootTopic.setTitleText("Central Topic");
                 root.topic = rootTopic;
@@ -390,9 +418,18 @@ public class MainActivity extends Activity {
                 root.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
                 IStyle style2 = styleSheet.createStyle(IStyle.THEME);
                 style2.setName("%academese");
-                style2.setProperty(Styles.FillColor, String.valueOf(res.getColor(R.color.dark_gray)));
+                style2.setProperty(Styles.FillColor, "#404040");
                 styleSheet.addStyle(style2, IStyleSheet.NORMAL_STYLES);
                 sheet1.setThemeId(style2.getId());
+                lay.setBackgroundColor(res.getColor(R.color.dark_gray));
+                IStyle style3 = styleSheet.createStyle(IStyle.TOPIC);
+                style3.setProperty(Styles.FillColor, "#404040");
+                style3.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_RECT);
+                style3.setProperty(Styles.LineClass, Styles.BRANCH_CONN_STRAIGHT);
+                style3.setProperty(Styles.LineColor, "#FFFFFF");
+                styleSheet.addStyle(style3, IStyleSheet.NORMAL_STYLES);
+                style2.setProperty(Style.TOPIC, style3.getId());
+                rootTopic.setStyleId(style3.getId());
             }
 
         }
@@ -434,7 +471,8 @@ public class MainActivity extends Activity {
                                         properties.put("style", style);
                                         addBox.execute(properties);
                                         MainActivity.addCommendUndo(addBox);
-                                        editContent(box1);
+                                        editContent(box1, addBox);
+
                                     }
                                 }
                             }
@@ -584,6 +622,7 @@ public class MainActivity extends Activity {
                             addNote.execute(properties);
                             addCommendUndo(addNote);
                             MainActivity.menu.getItem(5).setVisible(true);
+                            dialog.dismiss();
                         }
                     });
 
@@ -1023,7 +1062,7 @@ public class MainActivity extends Activity {
             }
 
             if (Utils.whichBox(lay, e) != null) {
-                editContent(Utils.whichBox(lay, e));
+                editContent(Utils.whichBox(lay, e), null);
                 return true;
             }
 
@@ -1032,7 +1071,7 @@ public class MainActivity extends Activity {
     }
 
 
-    private void editContent(final Box myClicked) {
+    private void editContent(final Box myClicked, final AddBox addBox) {
         final Dialog dialog = DialogFactory.boxContentDialog(MainActivity.this);
         final Button btn = (Button) dialog.findViewById(R.id.dialogButtonOK);
         final EditText et = (EditText) dialog.findViewById(R.id.editText);
@@ -1043,10 +1082,14 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 if (MainActivity.commandsUndo.size() > 1 && MainActivity.commandsUndo.getLast() instanceof AddBox) {
                     MainActivity.commandsUndo.getLast().undo();
+                    MainActivity.commandsUndo.removeLast();
+                    menu.getItem(5).setVisible(false);
                     //lay.invalidate();
                     //lay.revalidate();
                 } else if (MainActivity.commandsUndo.size() == 1 && MainActivity.commandsUndo.getFirst() instanceof AddBox) {
                     MainActivity.commandsUndo.getFirst().undo();
+                    MainActivity.commandsUndo.removeFirst();
+                    menu.getItem(5).setVisible(false);
                     DrawView.LUheight = 0;
                     DrawView.LDHehight = 0;
                     DrawView.RUheight = 0;
@@ -1073,6 +1116,9 @@ public class MainActivity extends Activity {
                 editBox.execute(properties);
                 //    addCommendUndo(editBox);
                 MainActivity.menu.getItem(5).setVisible(true);
+                if (addBox != null) {
+                    addBox.name = myClicked.topic.getTitleText();
+                }
                 //lay.updateBoxWithText(myClicked);
                 //myClicked.drawableShape.invalidateSelf();
                 // lay.invalidate(myClicked.getDrawableShape().getBounds().right, myClicked.getDrawableShape().getBounds().top, myClicked.getDrawableShape().getBounds().bottom, myClicked.getDrawableShape().getBounds().right + 30);
@@ -1189,15 +1235,9 @@ public class MainActivity extends Activity {
                                 }
                             }
                         };
-                        try {
-                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                            async.setCallback(call);
-                            async.execute();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
+                        lay.invalidate();
                     } else if (commandsUndo.getFirst() instanceof EditSheet) {
-                        lay.setBackgroundColor((Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor))));
+                        lay.setBackgroundColor((Color.parseColor(MainActivity.styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor))));
                     } else  {
                         Callback call = new Callback() {
                             @Override
@@ -1240,7 +1280,7 @@ public class MainActivity extends Activity {
                         lay.invalidate();
                     } else if (commandsUndo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
-                    } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine) {
+                    } else if (commandsUndo.getLast() instanceof AddBox || commandsUndo.getLast() instanceof RemoveLine || commandsUndo.getLast() instanceof RemoveBox) {
                         Callback call = new Callback() {
                             @Override
                             public void execute() {
@@ -1300,22 +1340,9 @@ public class MainActivity extends Activity {
 
 
                     } else if (commandsRedo.getFirst() instanceof EditSheet) {
-                        lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
-                    } else {
-                        Callback call = new Callback() {
-                            @Override
-                            public void execute() {
-                            }
-                        };
-                        try {
-                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                            async.setCallback(call);
-                            async.execute();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-
+                        lay.setBackgroundColor((Color.parseColor(MainActivity.styleSheet.findStyle(sheet1.getStyleId()).getProperty(Styles.FillColor))));
                     }
+                    lay.invalidate();
                     commandsUndo.add(commandsRedo.getFirst());
                     commandsRedo.removeFirst();
                     menu.getItem(5).setVisible(true);
@@ -1341,20 +1368,8 @@ public class MainActivity extends Activity {
                         }
                     } else if (commandsRedo.getLast() instanceof EditSheet) {
                         lay.setBackgroundColor(Integer.parseInt(sheet1.getTheme().getProperty(Styles.FillColor)));
-                    } else {
-                        Callback call = new Callback() {
-                            @Override
-                            public void execute() {
-                            }
-                        };
-                        try {
-                            AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-                            async.setCallback(call);
-                            async.execute();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
                     }
+                    lay.invalidate();
                     commandsUndo.add(commandsRedo.getLast());
                     menu.getItem(5).setVisible(true);
                     commandsRedo.removeLast();
@@ -1366,6 +1381,7 @@ public class MainActivity extends Activity {
                 HashMap<Box, Line> boxes = new HashMap<Box, Line>();
                 boxes.put(MainActivity.boxEdited, MainActivity.boxEdited.parent.getLines().get(MainActivity.boxEdited));
                 for (Box b : MainActivity.toEditBoxes) {
+                    b.isSelected = false;
                     boxes.put(b, b.parent.getLines().get(b));
                     if (boxes.size() > 0) {
                         properties.put("boxes", boxes);
@@ -1374,6 +1390,10 @@ public class MainActivity extends Activity {
                     }
                     //  return true;
                 }
+                menu.getItem(4).setVisible(false);
+                menu.getItem(1).setVisible(false);
+                menu.getItem(2).setVisible(false);
+                menu.getItem(3).setVisible(false);
                 MainActivity.toEditBoxes.clear();
                 lay.invalidate();
                 return true;

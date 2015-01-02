@@ -201,12 +201,6 @@ public class EditBoxScreen extends Activity {
                 lineShape.setSelection(0);
             } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_STRAIGHT)) {
                 lineShape.setSelection(1);
-//        } else if (lineStyle == LineStyle.ARROWED_CURVE) {
-//            lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ELBOW)) {
-                lineShape.setSelection(2);
-            } else if (style.getProperty(Styles.LineClass) != null && style.getProperty(Styles.LineClass).equals(Styles.BRANCH_CONN_ROUNDEDELBOW)) {
-                lineShape.setSelection(3);
             }
 
 

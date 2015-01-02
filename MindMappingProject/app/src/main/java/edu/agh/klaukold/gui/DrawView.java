@@ -186,49 +186,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-//    //wyrównanie do dzieci
-//    private void adjustToChildren(Box box) {
-//    	Box temp = box;
-//    	temp.updateMaxY();
-//    	temp.updateMinY();
-//
-//    	//dojście do najwyższego dziecka
-//    	while(!temp.getChildren().isEmpty()) {
-//    		temp = temp.getChildren().get(0);
-//    	}
-//
-//    	while(temp.parent != null) {
-//    		temp.updateMaxY();
-//    		temp.updateMinY();
-//	    	//sprawdzamy rodzenstwo i odsuwamy je, jeśli jeszcze nie zostało odsunięte
-//	    	List<Box> siblings = temp.parent.getChildren();
-//	    	if(temp.parent instanceof Core) {
-//	    		if(temp.position == Position.LEFT) {
-//	    			siblings = ((Core) temp.parent).left;
-//	    		} else {
-//	    			siblings = ((Core) temp.parent).right;
-//	    		}
-//	    	}
-//	    	//od 1 bo temp to pierwsze dziecko
-//
-//	    	for(int i = 1; i < siblings.size(); i++) {
-//    			siblings.get(i).updateMaxY();
-//    			siblings.get(i).updateMinY();
-//	    		int sibDiff = (int) (siblings.get(i-1).minY - siblings.get(i).maxY);
-//	    		if(sibDiff >= 0) {
-//	    			int diff = (int) (siblings.get(i).maxY - siblings.get(i-1).minY);
-//	    			Utils.moveChildY(siblings.get(i), -diff + 20);
-//	    			siblings.get(i).updateMaxY();
-//	    			siblings.get(i).updateMinY();
-//	    		}
-//	    	}
-//	    	temp = temp.parent;
-//    	}
-//
-//    	for(Box child: box.getChildren()) {
-//    		adjustToChildren(child);
-//    	}
-//    }
 
     public void drawBox(Box box) {
         if (box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
@@ -262,8 +219,9 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                 path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
                 path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
                 Paint paint1 = new Paint();
-                if (style.getProperty(Styles.FillColor) != null) {
-                    paint1.setColor(Integer.parseInt(style.getProperty(Styles.FillColor)));
+                if (style.getProperty(Styles.LineColor) != null) {
+                    //todo zamiana
+                    paint1.setColor(Color.parseColor(style.getProperty(Styles.LineColor)));
                 } else {
                     paint1.setColor(Color.GRAY);
                 }
@@ -290,11 +248,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
                     box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
             box.addBox.draw(this.canvas);
-            //todomarkery
-//                box.newMarker = context.getResources().getDrawable(R.drawable.ic_action_new_picture);
-//                box.newMarker.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newMarker).getBitmap().getHeight(),
-//                        box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.newNote).getBitmap().getWidth() + ((BitmapDrawable) box.newMarker).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-//                box.newMarker.draw(canvas);
             if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
                 if (!box.topic.isFolded()) {
                     box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
@@ -306,21 +259,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                     box.expandAction.draw(this.canvas);
                 }
             }
-//                Rect rect = new Rect();
-//                rect.set(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
-//                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
 
-
-//            for (int j = 0; j < parts.length; j++) {
-//                paint.setColor(Color.BLACK);
-//                String str = parts[j];
-//                float start = 0.5f * box.getDrawableShape().getBounds().height() / (parts.length);
-//                if (j == 0) {
-//                     canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
-//                } else {
-//                    canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
-//                }
-//            }
             if (!box.topic.isFolded()) {
                 showLines(box);
                 if (MainActivity.style.equals("ReadyMap")) {
@@ -346,7 +285,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             String[] parts = s.split("\n");
             float f = getLongest(parts);
             Typeface font = Typeface.DEFAULT;
-            if (style != null && style.getProperty(Styles.TextColor) != null) {
+            if (style != null) {
                 if (style.getProperty(Styles.TextColor) != null) {
                     paint.setColor(Color.parseColor(style.getProperty(Styles.TextColor)));
                 } else {
@@ -512,7 +451,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         float f = getLongest(parts);
         drawText(box);
         Rect rect = new Rect();
-        if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize) != null) {
+        if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()) != null && MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize) != null) {
             paint.setTextSize((float) Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))));
         }
         paint.getTextBounds(s, 0, s.length(), rect);

@@ -24,7 +24,7 @@ public class Line implements Serializable, Cloneable {
 	private boolean isVisible;
     public Position position;
     public Box box;
-    public int off = 0;
+    public int off = 30;
 
     public Drawable deleteLine;
 
@@ -43,9 +43,9 @@ public class Line implements Serializable, Cloneable {
         path.moveTo(start.x, start.y);
         if (shape == null && MainActivity.sheet1.getTheme() != null && (MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%simple") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) {
             if (box.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
-                path.cubicTo(start.x, start.y, start.x + (start.x - start.y) + off, start.y + off, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (end.x - start.x)/2, start.y + (start.y - end.y)/2 + off, end.x, end.y);
             } else {
-                path.cubicTo(start.x, start.y, start.x - (start.x - start.y) + off, start.y + off, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (end.x - start.x)/2, start.y + (start.y - end.y)/2 + off, end.x, end.y);
             }
         } else  if (shape == null) {
           path.lineTo(end.x, end.y);
@@ -53,9 +53,9 @@ public class Line implements Serializable, Cloneable {
             path.lineTo(end.x, end.y);
         } else if (shape.equals(Styles.BRANCH_CONN_CURVE)) {
             if (box.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
-                path.cubicTo(start.x, start.y, start.x + (start.x - start.y) + off, start.y + off, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (end.x - start.x)/2, start.y + (start.y - end.y)/2 + off, end.x, end.y);
             } else {
-                path.cubicTo(start.x, start.y, start.x - (start.x - start.y) + off, start.y + off, end.x, end.y);
+                path.cubicTo(start.x, start.y, start.x + (end.x - start.x)/2, start.y + (start.y - end.y)/2 + off, end.x, end.y);
             }
        }  else {
             path.lineTo(end.x, end.y);
