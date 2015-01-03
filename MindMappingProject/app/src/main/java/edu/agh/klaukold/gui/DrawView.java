@@ -7,6 +7,7 @@ import edu.agh.klaukold.common.Box;
 import edu.agh.klaukold.common.Line;
 import edu.agh.klaukold.common.Point;
 import edu.agh.klaukold.enums.Position;
+import edu.agh.klaukold.utilities.Utils;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -50,12 +51,13 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
     boolean UL = true;
     boolean UR = true;
     public SurfaceHolder holder;
-
+    boolean first = true;
 
     public DrawView(Context context) {
         super(context);
         this.context = context;
         init();
+
     }
 
     public DrawView(Context context, AttributeSet attrs) {
@@ -71,6 +73,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         // from the SurfaceView class, which is from an anonymous
         // class implementing SurfaceHolder interface.
         holder.addCallback(this);
+        canvas = new Canvas();
     }
 
     public Context context;
@@ -102,24 +105,18 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             right = count / 2 + 1;
         }
         drawBox(root);
-        if (LUheight == 0 && LDHehight == 0 && RUheight == 0 && RDHehight == 0) {
-            LUheight = root.getDrawableShape().getBounds().centerY();
-            LDHehight = root.getDrawableShape().getBounds().centerY();
-            RUheight = root.getDrawableShape().getBounds().centerY();
-            RDHehight = root.getDrawableShape().getBounds().centerY();
+        if (first) {
+            for (int i=0; i<10; i++) {
+                Utils.calculateAll();
+            }
+            first = false;
         }
         for (Box box : root.getChildren()) {
             fireDrawChildren(box, this.canvas);
         }
 
-//       if(root.isExpanded()) {
-//    	   showLines(root);
-//       } else {
-//    	   //hideLines(root);
-//       }
-//
 //       //jak jest włączony tryb przesuwania, to nic się nie zmienia, nie trzeba liczyć na nowo
-        if (MainActivity.mActionMode != null && MainActivity.mActionMode.getTitle().toString().equalsIgnoreCase("move")) {
+        if (MainActivity.mActionMode != null) {
             for (Box box : root.getChildren()) {
                 drawBox(box);
             }
@@ -203,63 +200,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             } else if (style == null || (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER)) {
                 ((GradientDrawable) box.getDrawableShape()).setStroke(width, color);
             }
-
-            if (box.point == null || (box.topic.getParent() != null && !box.topic.getParent().isRoot())) {
-                calculatePosition(box);
-            }
-            box.prepareDrawableShape();
-            //   }
-
-            if (box.isSelected) {
-                box.setActiveColor();
-            }
-            box.getDrawableShape().draw(this.canvas);
-            if (style != null && style.getProperty(Styles.ShapeClass) != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
-                Path path = new Path();
-                path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
-                path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
-                Paint paint1 = new Paint();
-                if (style.getProperty(Styles.LineColor) != null) {
-                    //todo zamiana
-                    paint1.setColor(Color.parseColor(style.getProperty(Styles.LineColor)));
-                } else {
-                    paint1.setColor(Color.GRAY);
-                }
-                if (style.getProperty(Styles.LineWidth) != null) {
-                    paint1.setStrokeWidth(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))));
-                }
-                paint1.setStyle(Paint.Style.STROKE);
-                this.canvas.drawPath(path, paint1);
-            }
-            drawText(box);
-            // todo sytuacja dla ciemnego tla
-            if (box.topic.getNotes().getContent(INotes.PLAIN) != null && !((IPlainNotesContent) box.topic.getNotes().getContent(INotes.PLAIN)).getTextContent().equals("")) {
-                box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
-                box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
-                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                box.newNote.draw(this.canvas);
-            } else {
-                box.addNote = context.getResources().getDrawable(R.drawable.ic_action_new_event);
-                box.addNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addNote).getBitmap().getHeight(),
-                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.addNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                box.addNote.draw(this.canvas);
-            }
-            box.addBox = context.getResources().getDrawable(R.drawable.ic_action_new);
-            box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
-                    box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-            box.addBox.draw(this.canvas);
-            if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
-                if (!box.topic.isFolded()) {
-                    box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
-                    box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                    box.collapseAction.draw(this.canvas);
-                } else {
-                    box.expandAction = context.getResources().getDrawable(R.drawable.ic_action_expand);
-                    box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.expandAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.expandAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
-                    box.expandAction.draw(this.canvas);
-                }
-            }
-
             if (!box.topic.isFolded()) {
                 showLines(box);
                 if (MainActivity.style.equals("ReadyMap")) {
@@ -271,10 +211,71 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
             }
+//            if (box.point == null || (box.topic.getParent() != null && !box.topic.getParent().isRoot())) {
+//                calculatePosition(box);
+//            }
+            box.prepareDrawableShape();
+            calculateBoxSize(box);
+            box.getDrawableShape().draw(canvas);
+            drawText(box);
+            if (style != null && style.getProperty(Styles.ShapeClass) != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
+                Path path = new Path();
+                path.moveTo(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().bottom);
+                path.lineTo(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().bottom);
+                Paint paint1 = new Paint();
+                if (style.getProperty(Styles.LineColor) != null) {
+                    paint1.setColor(Color.parseColor(style.getProperty(Styles.LineColor)));
+                } else {
+                    paint1.setColor(Color.GRAY);
+                }
+                if (style.getProperty(Styles.LineWidth) != null) {
+                    paint1.setStrokeWidth(Integer.parseInt(remove2LastChars(style.getProperty(Styles.LineWidth))));
+                }
+                paint1.setStyle(Paint.Style.STROKE);
+                this.canvas.drawPath(path, paint1);
+            }
+
+            if (box.topic.getNotes().getContent(INotes.PLAIN) != null && !((IPlainNotesContent) box.topic.getNotes().getContent(INotes.PLAIN)).getTextContent().equals("")) {
+                box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
+                box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
+                        box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.newNote.draw(this.canvas);
+            }
+            if (box.isSelected) {
+                showAction(box);
+            }
+
         }
     }
 
-    // ToDO wyswietlanie tekstu
+    public void showAction(Box box) {
+        if (box.topic.getNotes().getContent(INotes.PLAIN) != null && !((IPlainNotesContent) box.topic.getNotes().getContent(INotes.PLAIN)).getTextContent().equals("")) {
+            box.newNote = context.getResources().getDrawable(R.drawable.ic_action_view_as_list);
+            box.newNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.newNote).getBitmap().getHeight(),
+                    box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.newNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+            box.newNote.draw(this.canvas);
+        } else {
+            box.addNote = context.getResources().getDrawable(R.drawable.ic_action_new_event);
+            box.addNote.setBounds(box.getDrawableShape().getBounds().left, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addNote).getBitmap().getHeight(),
+                    box.getDrawableShape().getBounds().left + ((BitmapDrawable) box.addNote).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+            box.addNote.draw(canvas);
+        }
+        box.addBox = context.getResources().getDrawable(R.drawable.ic_action_new);
+        box.addBox.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.addBox).getBitmap().getHeight(),
+                box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+        box.addBox.draw(this.canvas);
+        if (!(box.topic.isRoot()) && box.topic.getAllChildren().size() > 0) {
+            if (!box.topic.isFolded()) {
+                box.collapseAction = context.getResources().getDrawable(R.drawable.ic_action_collapse);
+                box.collapseAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.collapseAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.collapseAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.collapseAction.draw(this.canvas);
+            } else {
+                box.expandAction = context.getResources().getDrawable(R.drawable.ic_action_expand);
+                box.expandAction.setBounds(box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + 5, box.getDrawableShape().getBounds().top - 5 - ((BitmapDrawable) box.expandAction).getBitmap().getHeight(), box.getDrawableShape().getBounds().left + 5 + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.addBox).getBitmap().getWidth() + ((BitmapDrawable) box.expandAction).getBitmap().getWidth(), box.getDrawableShape().getBounds().top - 5);
+                box.expandAction.draw(this.canvas);
+            }
+        }
+    }
     private void drawText(Box box) {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         paint = new Paint();
@@ -346,25 +347,10 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                     Rect rectText = new Rect();
                     paint.getTextBounds(box.topic.getTitleText(), 0, box.topic.getTitleText().length(), rectText);
                     if (paint.getTextAlign() == Paint.Align.CENTER) {
-//                        if (box.getShape() == BlockShape.DIAMOND) {
-//                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-//                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
-//                        } else if (box.getShape() == BlockShape.ELLIPSE) {
-//                            x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
-//                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / 2);
-//                        } else {
                         x = box.getDrawableShape().getBounds().left + rectText.width() / 2 + (box.getDrawableShape().getBounds().width() - rectText.width()) / 2;
                         //  }
                     } else if (paint.getTextAlign() == Paint.Align.RIGHT) {
-//                        if (box.getShape() == BlockShape.DIAMOND) {
-//                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
-//                            y = box.getDrawableShape().getBounds().top + (box.getWidth() / 2);
-//                        } else if (box.getShape() == BlockShape.ELLIPSE) {
-//                            x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
-//                            y = box.getDrawableShape().getBounds().top + (box.getHeight() / parts.length);
-//                        } else {
                         x = (box.getDrawableShape().getBounds().right - 10);
-//                        }
                     } else if (paint.getTextAlign() == Paint.Align.LEFT) {
                         x = (box.getDrawableShape().getBounds().left + 10);
                         y = box.getDrawableShape().getBounds().top + rectText.height();
@@ -375,7 +361,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                 } else {
                     if (paint.getTextAlign() == Paint.Align.CENTER) {
                         if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
-                            //TODO poprawic
                             x = box.getDrawableShape().getBounds().left + box.getWidth() / 2;
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         } else if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
@@ -401,7 +386,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                         }
                     } else if (paint.getTextAlign() == Paint.Align.RIGHT) {
                         if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
-                            //TODO poprawic
                             x = (box.getDrawableShape().getBounds().right - (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         } else if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
@@ -415,7 +399,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
 
                     } else if (paint.getTextAlign() == Paint.Align.LEFT) {
                         if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
-                            //TODO poprawic
                             x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         } else if (style != null && style.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_ELLIPSE)) {
@@ -437,27 +420,28 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    public void updateBox(Box box) {
-        if (this.canvas != null) {
-            drawBox(box);
-        }
-        // drawText(box, canvas);
-    }
-
-    public void updateBoxWithText(Box box) {
+    public void calculateBoxSize(Box box) {
         String s = box.topic.getTitleText();
         String[] parts = s.split("\n");
-
+        String font = null;
+        if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()) != null) {
+            font = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize);
+        }
+        if (font == null) {
+            font = "13dp";
+        }
         float f = getLongest(parts);
         drawText(box);
         Rect rect = new Rect();
         if (MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()) != null && MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize) != null) {
             paint.setTextSize((float) Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))));
+        } else {
+            paint.setTextSize(13);
         }
         paint.getTextBounds(s, 0, s.length(), rect);
         if (parts.length == 1) {
-            int w = (rect.right - rect.left) + (rect.right - rect.left) / 2;
-            if (w > 120) {
+            int w = Math.abs(rect.right - rect.left) + Math.abs(rect.right - rect.left) / 2;
+            if (w > box.getWidth()) {
                 box.setWidth(w);
             }
         } else {
@@ -469,9 +453,10 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
             if (width > box.getWidth()) {
-                box.setWidth(width + Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))));
+                box.setWidth(width + Integer.parseInt(remove2LastChars(font)));
             }
-            int h = (rect.bottom - rect.top) * parts.length + (Integer.parseInt(remove2LastChars(MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId()).getProperty(Styles.FontSize))) / 2 * parts.length);
+
+            int h = (rect.bottom - rect.top) * parts.length + (Integer.parseInt(remove2LastChars(font)) / 2 * parts.length);
             if (h > 100) {
                 box.setHeight(h);
             }
@@ -490,21 +475,18 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         } else if (!box.topic.isRoot() && (right_old != box.drawableShape.getBounds().right || botom_old != box.drawableShape.getBounds().bottom) && box.topic.getParent().isRoot()) {
             box.drawableShape.getBounds().left = box.drawableShape.getBounds().right - right_old;
             box.prepareDrawableShape();
-            box.parent.getLines().get(box).setEnd(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
+            if (box.parent.getLines().get(box) != null) {
+                box.parent.getLines().get(box).setEnd(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
+            }
         }
-//        for (Box b : box.getLines().keySet()) {
-//            if (b.drawableShape.getBounds().left >= box.drawableShape.getBounds().left) {
-//                box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
-//            } else {
-//                if (box.topic.isRoot()) {
-//                    box.getLines().get(b).setStart(new Point(box.getDrawableShape().getBounds().right, box.getDrawableShape().getBounds().centerY()));
-//                    if (right_old < box.drawableShape.getBounds().right) {
-//                        b.setPoint(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
-//                        box.getLines().get(b).setEnd(new Point(b.getDrawableShape().getBounds().left + box.drawableShape.getBounds().right - right_old, b.getDrawableShape().getBounds().centerY()));
-//                    }
-//                }
-//            }
-//        }
+        if (box.isSelected) {
+            box.setActiveColor();
+        }
+
+    }
+
+    public void updateBoxWithText(Box box) {
+        calculateBoxSize(box);
         box.drawableShape.draw(canvas);
         drawText(box);
 
@@ -629,8 +611,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             if (count % 8 == 0) {
                 off = count / 8 + 1;
             }
-
-
             if (left < right) {
                 if (!(right % 2 == 0) && RDHehight == RUheight) {
                     b.point = new Point(b.parent.getDrawableShape().getBounds().right + off * 50, b.parent.getDrawableShape().getBounds().centerY() - b.getHeight() / 2);

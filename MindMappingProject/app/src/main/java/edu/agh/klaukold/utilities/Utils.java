@@ -18,6 +18,8 @@
 
 package edu.agh.klaukold.utilities;
 
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,7 +40,9 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 
@@ -52,7 +56,111 @@ public class Utils {
 	public static DrawView lay;
 	public static Activity context;
 	static String base;
+    private static int i = 0;
 
+    public static void calculateAll() {
+        Queue<Box> q1 = new LinkedList<Box>();
+        Queue<Box> q2 = new LinkedList<Box>();
+
+        for (int i=0;  i< MainActivity.root.getChildren().size()/2; i++) {
+            q1.add(MainActivity.root.getChildren().get(i));
+        }
+
+        for (int i=MainActivity.root.getChildren().size()/2;  i< MainActivity.root.getChildren().size(); i++) {
+            q2.add(MainActivity.root.getChildren().get(i));
+        }
+
+        calculatePosition(q2, MainActivity.root, true);
+        calculatePosition(q1, MainActivity.root, false);
+        Log.w("counter", String.valueOf(i++));
+    }
+
+    public static void calculatePosition(Queue<Box> queue, Box parent, Boolean left) {
+        int sum = 0;
+        HashMap< Box, Integer> hights = new HashMap<Box, Integer>();
+        for (Box b : queue) {
+            int single = calculateHight(b);
+            hights.put(b, new Integer(single));
+            sum += single;
+        }
+        int fstart = parent.drawableShape.getBounds().centerY() - sum/2;
+        IStyle parentStyle = MainActivity.workbook.getStyleSheet().findStyle(parent.topic.getStyleId());
+        String shape = null;
+        if (!parent.topic.isRoot()) {
+            shape = Styles.BRANCH_CONN_STRAIGHT;
+        }
+        String width = null;
+        String color = null;
+        if (parentStyle != null) {
+            if (parent.topic.isRoot()) {
+                shape = parentStyle.getProperty(Styles.LineClass);
+            } else {
+                shape = Styles.BRANCH_CONN_STRAIGHT;
+            }
+            width = parentStyle.getProperty(Styles.LineWidth);
+            if (width == null) {
+                width = "1";
+            } else {
+                width =  width.substring(0, parentStyle.getProperty(Styles.LineWidth).length() - 2);
+            }
+            color = parentStyle.getProperty(Styles.LineColor);
+            if (color == null) {
+                color = "#A0A0A0";
+            }
+        } else {
+            width = "1";
+            color = "#A0A0A0";
+        }
+        if (left) {
+            for (Box b : hights.keySet()) {
+                fstart += hights.get(b).intValue()/2;
+                if (parent.topic.isRoot()) {
+                    b.point.x = parent.getDrawableShape().getBounds().left - (b.getWidth() + 200);
+                } else {
+                    b.point.x = parent.getDrawableShape().getBounds().left - (b.getWidth() + 50);
+                }
+                b.point.y = fstart;
+                Line l;
+                l = new Line(shape, Integer.parseInt(width), new ColorDrawable(Color.parseColor(color)),
+                        new Point(parent.getDrawableShape().getBounds().left, parent.getDrawableShape().getBounds().centerY()),
+                        new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()), true);
+                parent.getLines().put(b, l);
+                fstart += hights.get(b).intValue();
+                Queue<Box> q = b.getChildren();
+                calculatePosition(q, b, true);
+            }
+        } else {
+            for (Box b : hights.keySet()) {
+                fstart += hights.get(b).intValue()/2;
+                if (parent.topic.isRoot()) {
+                    b.point.x = parent.getDrawableShape().getBounds().right + 200;
+                } else {
+                    b.point.x = parent.getDrawableShape().getBounds().right + 50;
+                }
+                b.point.y = fstart;
+                Line l;
+                l = new Line(shape, Integer.parseInt(width), new ColorDrawable(Color.parseColor(color)),
+                        new Point(parent.getDrawableShape().getBounds().right, parent.getDrawableShape().getBounds().centerY()),
+                        new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()), true);
+                parent.getLines().put(b, l);
+                fstart += hights.get(b).intValue();
+                Queue<Box> q = b.getChildren();
+                calculatePosition(q, b, false);
+            }
+        }
+    }
+
+    public static int calculateHight(Box box) {
+        box.prepareDrawableShape();
+        lay.calculateBoxSize(box);
+        int hight = box.getHeight() + 50;
+        if (box.getChildren().size() > 1) {
+            for (Box b : box.getChildren()) {
+                hight += calculateHight(b);
+            }
+        }
+        return hight;
+    }
 
     public static  IRelationship findRelationship(Box box1, Box box2) {
         Iterator<IRelationship> iterator = MainActivity.sheet1.getRelationships().iterator();
@@ -109,6 +217,7 @@ public class Utils {
             b.topic = t;
             b.setDrawableShape((GradientDrawable) MainActivity.res.getDrawable(R.drawable.round_rect));
             b.parent = p;
+            b.point = new edu.agh.klaukold.common.Point();
             p.addChild(b);
             p.topic.add(b.topic, 0, ITopic.ATTACHED);
             boxes.put(t.getId(), b);
@@ -170,18 +279,7 @@ public class Utils {
 
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
-
-        Box c = MainActivity.root;
-
-        if (c.addBox != null && c.addBox.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.ADD_BOX);
-            return p;
-        }
-        Queue<Box> q= new LinkedList<Box>();
-
-        for(Box b: c.getChildren()) {
-            q.add(b);
-        }
+        Queue<Box> q = MainActivity.toEditBoxes;
         while(!q.isEmpty()) {
             Box box = q.remove();
 
@@ -208,51 +306,23 @@ public class Utils {
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
 
-        Box c = MainActivity.root;
-
-//
-//        if(c.newMarker.getBounds().contains(x, y)) {
-//            Pair p = new Pair(c, Actions.NEW_MARKER);
-//            return p;
-//        }
-     if (c.newNote != null && c.newNote.getBounds().contains(x, y)) {
-            Pair p = new Pair(c, Actions.NEW_NOTE);
-            return p;
-        } else if (c.addNote != null && c.addNote.getBounds().contains(x, y)) {
-           Pair p = new Pair(c, Actions.ADD_NOTE);
-         return  p;
-        }
 
         //BFS do przejścia drzewa
-
-        Queue<Box> q= new LinkedList<Box>();
-
-        for(Box b: c.getChildren()) {
-            q.add(b);
+        Queue<Box> q= MainActivity.toEditBoxes;
+        if (MainActivity.root.newNote != null && (MainActivity.root.newNote.getBounds().contains(x,y))) {
+            Pair p = new Pair(MainActivity.root, Actions.NEW_NOTE);
+            q.clear();
+            return p;
         }
 
-//        for(Box b: c.getRightChildren()) {
-//            q.add(b);
-//        }
-//
-//        for(Box b: c.getDetached()) {
-//            q.add(b);
-//        }
+        for (Box box : MainActivity.root.getChildren()) {
+            q.add(box);
+        }
+
         while(!q.isEmpty()) {
             Box box = q.remove();
 
             if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
-//                Rect rec = box.getDrawableShape().getBounds();
-//                if(rec.contains(x, y)) {
-//                    q.clear();
-//                    return box;
-//                }
-
-//                if(box.newMarker.getBounds().contains(x, y)) {
-//                    Pair p = new Pair(box, Actions.NEW_MARKER);
-//                    q.clear();
-//                    return p;
-//                } else
                 if (box.newNote != null && box.newNote.getBounds().contains(x, y)) {
                     Pair p = new Pair(box, Actions.NEW_NOTE);
                     q.clear();

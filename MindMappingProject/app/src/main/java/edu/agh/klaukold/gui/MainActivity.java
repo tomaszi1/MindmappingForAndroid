@@ -55,6 +55,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -117,7 +118,7 @@ public class MainActivity extends Activity {
     public static LinkedList<Command> commandsUndo = new LinkedList<Command>();
     public LinkedList<Command> commandsRedo = new LinkedList<Command>();
     private static Menu menu;
-    private ProgressDialog progressDialog;
+    public static ProgressDialog progressDialog;
     public static HashMap<Path, Pair<IRelationship, Box>> allRelationship = new HashMap<Path, Pair<IRelationship, Box>>();
 
 
@@ -151,6 +152,12 @@ public class MainActivity extends Activity {
                 box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
             } else if (boxStyle.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_RECT)) {
                 box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.rect));
+            } else if (boxStyle.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_DIAMOND)) {
+                box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.diammond));
+            } else if (boxStyle.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_NO_BORDER) || boxStyle.getProperty(Styles.ShapeClass).equals(Styles.TOPIC_SHAPE_UNDERLINE)) {
+                box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.no_border));
+            }  else {
+                box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
             }
         } else {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
@@ -211,6 +218,7 @@ public class MainActivity extends Activity {
                         Box b = new Box();
                         b.topic = t;
                         boxes.put(root.topic.getId(), root);
+                        b.point = new edu.agh.klaukold.common.Point();
                         if (b.topic.getStyleId() != null) {
                             checkStyle(b);
                         } else {
@@ -239,6 +247,7 @@ public class MainActivity extends Activity {
                         for (ITopic t : root.topic.getAllChildren()) {
                             Box b = new Box();
                             b.topic = t;
+                            b.point = new edu.agh.klaukold.common.Point();
                             boxes.put(root.topic.getId(), root);
                             if (b.topic.getStyleId() != null) {
                                 checkStyle(b);
@@ -268,6 +277,7 @@ public class MainActivity extends Activity {
                         for (ITopic t : root.topic.getAllChildren()) {
                             Box b = new Box();
                             b.topic = t;
+                            b.point = new edu.agh.klaukold.common.Point();
                             boxes.put(root.topic.getId(), root);
 
                             if (b.topic.getStyleId() != null) {
@@ -300,6 +310,7 @@ public class MainActivity extends Activity {
                         for (ITopic t : root.topic.getAllChildren()) {
                             Box b = new Box();
                             b.topic = t;
+                            b.point = new edu.agh.klaukold.common.Point();
                             boxes.put(root.topic.getId(), root);
                             if (b.topic.getStyleId() != null) {
                                 checkStyle(b);
@@ -332,6 +343,7 @@ public class MainActivity extends Activity {
                         for (ITopic t : root.topic.getAllChildren()) {
                             Box b = new Box();
                             b.topic = t;
+                            b.point = new edu.agh.klaukold.common.Point();
                             boxes.put(root.topic.getId(), root);
 
                             if (b.topic.getStyleId() != null) {
@@ -500,6 +512,7 @@ public class MainActivity extends Activity {
                     return response;
                 }
             });
+            lay.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
         Utils.context = this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -515,20 +528,6 @@ public class MainActivity extends Activity {
                 lay.setPivotY(mid.y);
                 lay.zoomx *= detector.getScaleFactor();
                 lay.zoomy *= detector.getScaleFactor();
-//                Callback call = new Callback() {
-//                    @Override
-//                    public void execute() {
-//                    }
-//                };
-//                try {
-//                    AsyncInvalidate async = new AsyncInvalidate(MainActivity.this);
-//                    async.setCallback(call);
-//                    async.execute();
-//                } catch (Exception e1) {
-//                    e1.printStackTrace();
-//                }
-                //    lay.revalidate();
-                //    lay.invalidate();
                 return true;
             }
         });
@@ -554,8 +553,8 @@ public class MainActivity extends Activity {
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.isSelected = true;
-                lay.invalidate();
 
+                lay.invalidate();
                 MainActivity.boxEdited = box;
                 if (MainActivity.boxEdited != null && !MainActivity.toEditBoxes.contains(box)) {
                     MainActivity.toEditBoxes.add(box);
@@ -953,9 +952,9 @@ public class MainActivity extends Activity {
         public void updateChildrenConnections(Box box) {
             for (Line line : box.getLines().values()) {
                 if (box.drawableShape.getBounds().left <= root.drawableShape.getBounds().centerX()) {
-                    line.setStart(new edu.agh.klaukold.common.Point(box.drawableShape.getBounds().left - 20, box.drawableShape.getBounds().centerY()));
+                    line.setStart(new edu.agh.klaukold.common.Point(box.drawableShape.getBounds().left, box.drawableShape.getBounds().centerY()));
                 } else {
-                    line.setStart(new edu.agh.klaukold.common.Point(box.drawableShape.getBounds().right + 20, box.drawableShape.getBounds().centerY()));
+                    line.setStart(new edu.agh.klaukold.common.Point(box.drawableShape.getBounds().right, box.drawableShape.getBounds().centerY()));
                 }
             }
             for (Box child : box.getChildren()) {
@@ -1540,5 +1539,11 @@ public class MainActivity extends Activity {
         super.onDestroy();
         lay.surfaceDestroyed(lay.getHolder());
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newCofig) {
+        super.onConfigurationChanged(newCofig);
+    };
+
 }
 

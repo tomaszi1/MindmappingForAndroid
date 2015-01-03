@@ -155,7 +155,6 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
 
         }
         if (style!=null && style.getProperty(Styles.FillColor) != null) {
-            Log.w("color", style.getProperty(Styles.FillColor));
             c = Color.parseColor(style.getProperty(Styles.FillColor));
         }
         int[] colors = {c2, c};
@@ -163,11 +162,6 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         if (style != null) {
             s = style.getProperty(Styles.ShapeClass);
         }
-//        if (s.equals(Styles.TOPIC_SHAPE_RECT)) {
-//            ((GradientDrawable) drawableShape).setColors(colors);
-//            drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
-//
-//        }
         if (s == null) {
             ((GradientDrawable) drawableShape).setColors(colors);
             drawableShape.setBounds(point.x, point.y, point.x + width, point.y + height);
