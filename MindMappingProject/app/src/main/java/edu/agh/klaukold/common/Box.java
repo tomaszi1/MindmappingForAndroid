@@ -136,7 +136,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
                 }
             } else if (MainActivity.sheet1.getTheme().getName().equals("%simple")) {
                 c = Color.WHITE;
-            } else if (MainActivity.sheet1.getTheme().getName().equals("%business")) {
+            } else if (MainActivity.sheet1.getTheme().getName().equals("%bussiness")) {
                 if (topic.isRoot()) {
                     c = MainActivity.res.getColor(R.color.copper);
                 } else {
