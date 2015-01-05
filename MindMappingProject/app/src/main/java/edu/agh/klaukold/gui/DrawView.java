@@ -97,7 +97,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             return;
         }
         drawBox(root);
-        if (first && root.getChildren().size() > 0) {
+        if (first && MainActivity.style.equals("ReadyMap")) {
             for (int i=0; i<10; i++) {
                 Utils.calculateAll();
             }
@@ -107,14 +107,6 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             fireDrawChildren(box, this.canvas);
         }
 
-////       //jak jest włączony tryb przesuwania, to nic się nie zmienia, nie trzeba liczyć na nowo
-//        if (MainActivity.mActionMode != null) {
-//            for (Box box : root.getChildren()) {
-//                drawBox(box);
-//            }
-//
-//            return;
-//        }
 
 
     }

@@ -485,7 +485,7 @@ public class MainActivity extends Activity {
                                         addBox.execute(properties);
                                         MainActivity.addCommendUndo(addBox);
                                         editContent(box1, addBox);
-
+                                        lay.updateBoxWithText(box1);
                                     }
                                 }
                             }
@@ -1118,7 +1118,7 @@ public class MainActivity extends Activity {
                 //myClicked.drawableShape.invalidateSelf();
                 // lay.invalidate(myClicked.getDrawableShape().getBounds().right, myClicked.getDrawableShape().getBounds().top, myClicked.getDrawableShape().getBounds().bottom, myClicked.getDrawableShape().getBounds().right + 30);
                 dialog.dismiss();
-                // lay.invalidate();
+                lay.invalidate();
                 // lay.revalidate();
             }
         });

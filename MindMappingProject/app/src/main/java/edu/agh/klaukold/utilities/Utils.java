@@ -283,7 +283,7 @@ public class Utils {
             Box box = q.remove();
 
             if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
-        if(box.addBox.getBounds().contains(x, y)) {
+        if(box.addBox != null && box.addBox.getBounds().contains(x, y)) {
             Pair p = new Pair(box, Actions.ADD_BOX);
             q.clear();
             return p;
