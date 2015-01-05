@@ -581,7 +581,9 @@ public class MainActivity extends Activity {
                 menu.getItem(1).setVisible(false);
                 menu.getItem(4).setVisible(false);
                 root.isSelected = false;
-                MainActivity.boxEdited.isSelected = false;
+                if (MainActivity.boxEdited != null) {
+                    MainActivity.boxEdited.isSelected = false;
+                }
                 for (int i = 0; i < MainActivity.toEditBoxes.size(); i++) {
                     MainActivity.toEditBoxes.get(i).isSelected = false;
                 }
