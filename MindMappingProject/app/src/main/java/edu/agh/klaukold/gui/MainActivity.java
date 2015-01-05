@@ -447,6 +447,7 @@ public class MainActivity extends Activity {
         }
         gestureDetector = new GestureDetector(this, gestList);
         Utils.lay = lay;
+        //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         if (lay != null) {
             lay.setOnTouchListener(new OnTouchListener() {
                 @Override
@@ -553,10 +554,8 @@ public class MainActivity extends Activity {
             Box box = Utils.whichBox(lay, event);
             if (box != null) {
                 box.isSelected = true;
-
-                lay.invalidate();
                 MainActivity.boxEdited = box;
-                if (MainActivity.boxEdited != null && !MainActivity.toEditBoxes.contains(box)) {
+                if (!MainActivity.toEditBoxes.contains(box)) {
                     MainActivity.toEditBoxes.add(box);
                 }
                 if (MainActivity.toEditBoxes.size() == 2) {
@@ -576,22 +575,20 @@ public class MainActivity extends Activity {
                 if (!box.topic.isRoot()) {
                     menu.getItem(3).setVisible(true);
                 }
+                lay.invalidate();
             } else if (box == null) {
 
                 menu.getItem(1).setVisible(false);
                 menu.getItem(4).setVisible(false);
                 root.isSelected = false;
-
+                MainActivity.boxEdited.isSelected = false;
                 for (int i = 0; i < MainActivity.toEditBoxes.size(); i++) {
                     MainActivity.toEditBoxes.get(i).isSelected = false;
-                    // lay.invalidate();
-                    //lay.invalidate(MainActivity.toEditBoxes.get(i).drawableShape.getBounds().left, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().top, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().right, MainActivity.toEditBoxes.get(i).drawableShape.getBounds().bottom);
-                    lay.invalidate();
                 }
                 menu.getItem(2).setVisible(false);
                 menu.getItem(3).setVisible(false);
                 MainActivity.toEditBoxes.clear();
-                //  lay.invalidate();
+                lay.invalidate();
             }
             if (pair != null) {
                 if (pair.second == Actions.ADD_NOTE) {
@@ -841,7 +838,7 @@ public class MainActivity extends Activity {
                     }
                 });
                 final ImageButton imgbtn = (ImageButton) dialog.findViewById(R.id.imageButton);
-                if (pair.first.drawableShape.getBounds().left < pair.first.relationships.get(pair.second).drawableShape.getBounds().left) {
+                if (pair.first.drawableShape != null && pair.first.drawableShape.getBounds().left < pair.first.relationships.get(pair.second).drawableShape.getBounds().left) {
                     imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_forward));
                 } else {
                     imgbtn.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.ic_action_back));
@@ -996,11 +993,8 @@ public class MainActivity extends Activity {
                         if (!clicked.topic.isRoot()) {
                             if (clicked.drawableShape.getBounds().left <= root.drawableShape.getBounds().centerX()) {
                                 clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                                clicked.getLines().get(box).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().left - 20, clicked.getDrawableShape().getBounds().centerY()));
                             } else {
                                 clicked.getLines().get(box).setStart(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right, clicked.getDrawableShape().getBounds().top + clicked.getHeight() / 2));
-                                clicked.getLines().get(box).setEnd(new edu.agh.klaukold.common.Point(clicked.getDrawableShape().getBounds().right + 20, clicked.getDrawableShape().getBounds().centerY()));
-
                             }
                             updateChildrenConnections(clicked);
                         } else {
@@ -1538,12 +1532,9 @@ public class MainActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         lay.surfaceDestroyed(lay.getHolder());
+        lay = null;
+        root = null;
     }
-
-    @Override
-    public void onConfigurationChanged(Configuration newCofig) {
-        super.onConfigurationChanged(newCofig);
-    };
 
 }
 

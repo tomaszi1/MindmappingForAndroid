@@ -72,7 +72,6 @@ public class Utils {
 
         calculatePosition(q2, MainActivity.root, true);
         calculatePosition(q1, MainActivity.root, false);
-        Log.w("counter", String.valueOf(i++));
     }
 
     public static void calculatePosition(Queue<Box> queue, Box parent, Boolean left) {
@@ -125,7 +124,7 @@ public class Utils {
                         new Point(parent.getDrawableShape().getBounds().left, parent.getDrawableShape().getBounds().centerY()),
                         new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()), true);
                 parent.getLines().put(b, l);
-                fstart += hights.get(b).intValue();
+                fstart += hights.get(b).intValue()/2;
                 Queue<Box> q = b.getChildren();
                 calculatePosition(q, b, true);
             }
@@ -143,7 +142,7 @@ public class Utils {
                         new Point(parent.getDrawableShape().getBounds().right, parent.getDrawableShape().getBounds().centerY()),
                         new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()), true);
                 parent.getLines().put(b, l);
-                fstart += hights.get(b).intValue();
+                fstart += hights.get(b).intValue()/2;
                 Queue<Box> q = b.getChildren();
                 calculatePosition(q, b, false);
             }
@@ -228,7 +227,7 @@ public class Utils {
 	public static void  fireSetVisible(Box box, Boolean visible) {
         box.topic.setFolded(visible);
         for (Box b : box.getLines().keySet()) {
-            b.topic.setFolded(!visible);
+            b.topic.setFolded(visible);
             box.getLines().get(b).setVisible(visible);
             fireSetVisible(b, visible);
         }
@@ -279,7 +278,7 @@ public class Utils {
 
         int x = (int) mClickCoords[0];
         int y = (int) mClickCoords[1];
-        Queue<Box> q = MainActivity.toEditBoxes;
+        Queue<Box> q = (Queue<Box>) MainActivity.toEditBoxes.clone();
         while(!q.isEmpty()) {
             Box box = q.remove();
 
@@ -308,7 +307,7 @@ public class Utils {
 
 
         //BFS do przejścia drzewa
-        Queue<Box> q= MainActivity.toEditBoxes;
+        Queue<Box> q= (Queue<Box>) MainActivity.toEditBoxes.clone();
         if (MainActivity.root.newNote != null && (MainActivity.root.newNote.getBounds().contains(x,y))) {
             Pair p = new Pair(MainActivity.root, Actions.NEW_NOTE);
             q.clear();

@@ -96,16 +96,8 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
         if (root == null) {
             return;
         }
-        count = root.getChildren().size();
-        if (count % 2 == 0) {
-            left = count / 2;
-            right = count / 2;
-        } else {
-            left = count / 2;
-            right = count / 2 + 1;
-        }
         drawBox(root);
-        if (first) {
+        if (first && root.getChildren().size() > 0) {
             for (int i=0; i<10; i++) {
                 Utils.calculateAll();
             }
@@ -115,14 +107,14 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             fireDrawChildren(box, this.canvas);
         }
 
-//       //jak jest włączony tryb przesuwania, to nic się nie zmienia, nie trzeba liczyć na nowo
-        if (MainActivity.mActionMode != null) {
-            for (Box box : root.getChildren()) {
-                drawBox(box);
-            }
-
-            return;
-        }
+////       //jak jest włączony tryb przesuwania, to nic się nie zmienia, nie trzeba liczyć na nowo
+//        if (MainActivity.mActionMode != null) {
+//            for (Box box : root.getChildren()) {
+//                drawBox(box);
+//            }
+//
+//            return;
+//        }
 
 
     }
@@ -200,7 +192,7 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
             } else if (style == null || (style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_UNDERLINE && style.getProperty(Styles.ShapeClass) != Styles.TOPIC_SHAPE_NO_BORDER)) {
                 ((GradientDrawable) box.getDrawableShape()).setStroke(width, color);
             }
-            if (!box.topic.isFolded()) {
+          if (!box.topic.isFolded()) {
                 showLines(box);
                 if (MainActivity.style.equals("ReadyMap")) {
                     showLines(MainActivity.root);
@@ -409,12 +401,8 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
                             x = (box.getDrawableShape().getBounds().left + (box.getWidth() - f) / 2);
                             y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height()) / (parts.length) * (j) + start + paint.getTextSize() / 2;
                         }
-                        //x = (box.getDrawableShape().getBounds().left + (box.getWidth()- f)/2);
-                        //y = box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2;
                     }
                     this.canvas.drawText(str, x, y, paint);
-                    //canvas.drawText(str, x, y * (j) + start + paint.getTextSize()/2, paint);
-                    //canvas.drawText(str, (box.getDrawableShape().getBounds().left + (box.getDrawableShape().getBounds().width() - f)/2), box.getDrawableShape().getBounds().top + (box.getDrawableShape().getBounds().height())/(parts.length) * (j) + start + paint.getTextSize()/2, paint);
                 }
             }
         }
@@ -495,7 +483,8 @@ public class DrawView extends SurfaceView implements SurfaceHolder.Callback {
     public void showLines(Box box) {
         for (Box b1 : box.getLines().keySet()) {
             Line x = box.getLines().get(b1);
-            if (x == null || !x.isVisible()) {
+           // if (x == null || !x.isVisible()) {
+            if (x == null) {
                 continue;
             } else {
                 Paint paint = new Paint();

@@ -39,7 +39,7 @@ public class EditRelationship implements Command {
     public void undo() {
         if (after.containsKey("new_start")) {
             box2.relationships.remove(rel);
-            box1.relationships.put(rel, box1);
+            box1.relationships.put(rel, box2);
         }
         rel.setStyleId(old_text);
     }
