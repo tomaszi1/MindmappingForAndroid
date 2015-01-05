@@ -76,7 +76,7 @@ public class DropboxBrowserActivity extends Activity {
         @Override
         public void taskFailed(DropboxException exception) {
             progressDialog.dismiss();
-            Toast.makeText(DropboxBrowserActivity.this, "Attempt to create directory failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DropboxBrowserActivity.this, "Cannot open directory. Check internet connection.", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -93,7 +93,7 @@ public class DropboxBrowserActivity extends Activity {
             @Override
             public void taskFailed(DropboxException exception) {
                 progressDialog.dismiss();
-                Toast.makeText(DropboxBrowserActivity.this, "Attempt to create directory failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DropboxBrowserActivity.this, "Cannot create new directory. Check internet connection.", Toast.LENGTH_SHORT).show();
                 Log.i(getClass().getSimpleName(), "Error", exception);
             }
         });
