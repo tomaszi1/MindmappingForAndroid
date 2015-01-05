@@ -485,7 +485,7 @@ public class MainActivity extends Activity {
                                         addBox.execute(properties);
                                         MainActivity.addCommendUndo(addBox);
                                         editContent(box1, addBox);
-
+                                        lay.updateBoxWithText(box1);
                                     }
                                 }
                             }
@@ -581,7 +581,9 @@ public class MainActivity extends Activity {
                 menu.getItem(1).setVisible(false);
                 menu.getItem(4).setVisible(false);
                 root.isSelected = false;
-                MainActivity.boxEdited.isSelected = false;
+                if (MainActivity.boxEdited != null) {
+                    MainActivity.boxEdited.isSelected = false;
+                }
                 for (int i = 0; i < MainActivity.toEditBoxes.size(); i++) {
                     MainActivity.toEditBoxes.get(i).isSelected = false;
                 }
@@ -976,7 +978,7 @@ public class MainActivity extends Activity {
                 //   lay.revalidate();
                 lay.invalidate();
                 return false;
-            } else if (click && clicked != null && (clicked.topic.isRoot() || clicked.topic.getParent().isRoot())) {
+            } else if (click && clicked != null) {
                 mIsScrolling = true;
                 int newx = (int) (e2.getX() - lay.transx);
                 int newy = (int) (e2.getY() - lay.transy);
@@ -1116,7 +1118,7 @@ public class MainActivity extends Activity {
                 //myClicked.drawableShape.invalidateSelf();
                 // lay.invalidate(myClicked.getDrawableShape().getBounds().right, myClicked.getDrawableShape().getBounds().top, myClicked.getDrawableShape().getBounds().bottom, myClicked.getDrawableShape().getBounds().right + 30);
                 dialog.dismiss();
-                // lay.invalidate();
+                lay.invalidate();
                 // lay.revalidate();
             }
         });

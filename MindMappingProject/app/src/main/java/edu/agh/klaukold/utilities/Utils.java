@@ -282,8 +282,8 @@ public class Utils {
         while(!q.isEmpty()) {
             Box box = q.remove();
 
-            if(box.topic.getParent() == null || !box.topic.getParent().isFolded()) {
-        if(box.addBox.getBounds().contains(x, y)) {
+            if(box.isSelected) {
+             if(box.addBox != null && box.addBox.getBounds().contains(x, y)) {
             Pair p = new Pair(box, Actions.ADD_BOX);
             q.clear();
             return p;

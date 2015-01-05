@@ -125,7 +125,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     public Drawable prepareDrawableShape()
     {
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(topic.getStyleId());
-        int c = Color.BLUE;
+        int c = MainActivity.res.getColor(R.color.light_blue);
         int c2 = Color.WHITE;
         if (MainActivity.sheet1.getTheme() != null) {
             if (MainActivity.sheet1.getTheme().getName().equals("%classic")) {
