@@ -157,10 +157,13 @@ public class WelcomeScreen extends Activity {
                 source = "file";
                 return false;
             case R.id.dropbox:
-                dropboxHandler.linkAccount(this);
-                Intent browserIntent = new Intent(this, DropboxBrowserActivity.class);
-                startActivityForResult(browserIntent, REQUEST_FILE);
-                source = "dropbox";
+                if(!dropboxHandler.isLinked()){
+                    dropboxHandler.linkAccount(this);
+                }else{
+                    Intent browserIntent = new Intent(this, DropboxBrowserActivity.class);
+                    startActivityForResult(browserIntent, REQUEST_FILE);
+                    source = "dropbox";
+                }
                 return  false;
             default:
                 return super.onContextItemSelected(item);
