@@ -41,7 +41,7 @@ public class Line implements Serializable, Cloneable {
     public void preparePath() {
         path.reset();
         path.moveTo(start.x, start.y);
-        if (shape == null && MainActivity.sheet1.getTheme() != null && (MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%simple") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) {
+        if (shape == null && MainActivity.sheet1.getTheme() != null && (MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%simple") || MainActivity.sheet1.getTheme().getName().equals("%bussiness") || MainActivity.sheet1.getTheme().getName().equals("%business") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) {
             if (box.drawableShape.getBounds().left >= MainActivity.root.drawableShape.getBounds().centerX()) {
                 path.cubicTo(start.x, start.y, (end.x + start.x)/2,  (start.y + end.y)/2 + 200, end.x, end.y);
             } else {
