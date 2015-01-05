@@ -978,7 +978,7 @@ public class MainActivity extends Activity {
                 //   lay.revalidate();
                 lay.invalidate();
                 return false;
-            } else if (click && clicked != null && (clicked.topic.isRoot() || clicked.topic.getParent().isRoot())) {
+            } else if (click && clicked != null) {
                 mIsScrolling = true;
                 int newx = (int) (e2.getX() - lay.transx);
                 int newy = (int) (e2.getY() - lay.transy);

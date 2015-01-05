@@ -80,10 +80,10 @@ public class AddBox implements Command {
             Point linePoint2;
             if (box.point.x < MainActivity.root.drawableShape.getBounds().centerX()) {
                 linePoint2 =  new Point(box.point.x + box.getWidth(), box.point.y + box.getHeight()/2);
-                linePoint1 =  new Point(MainActivity.root.getDrawableShape().getBounds().left, MainActivity.root.getDrawableShape().getBounds().centerY());
+                linePoint1 =  new Point(parent.getDrawableShape().getBounds().left, parent.getDrawableShape().getBounds().centerY());
             } else {
                 linePoint2 =  new Point(box.point.x, box.point.y + box.getHeight()/2);
-                linePoint1 =  new Point(MainActivity.root.getDrawableShape().getBounds().right, MainActivity.root.getDrawableShape().getBounds().centerY());
+                linePoint1 =  new Point(parent.getDrawableShape().getBounds().right, parent.getDrawableShape().getBounds().centerY());
 
             }
 
