@@ -1,11 +1,11 @@
 <edu.agh.klaukold.gui.DrawView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/myLay"
-    android:background="#FFFFFF"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
 </edu.agh.klaukold.gui.DrawView>
 <!--<LinearLayout-->

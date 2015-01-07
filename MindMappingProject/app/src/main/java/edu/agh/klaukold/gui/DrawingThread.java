@@ -33,20 +33,7 @@ import edu.agh.klaukold.enums.Position;
  */
 public class DrawingThread extends Thread {
     public SurfaceHolder holder;
-    private Paint paint = new Paint();
-    public List<Line> lines;
-    public float transx, transy, zoomx = 1, zoomy = 1;
-    private int[] position = new int[2];
     public Canvas canvas = new Canvas();
-    public int left = 0;
-    public int right = 0;
-    public static int LUheight = 0;
-    public static int LDHehight = 0;
-    public static int RUheight = 0;
-    public static int RDHehight = 0;
-    public static int count = 0;
-    boolean UL = true;
-    boolean UR = true;
     Context context;
     private int mCanvasWidth;
     private int mCanvasHeight;
@@ -73,18 +60,29 @@ public class DrawingThread extends Thread {
     @Override
     public void run() {
         // PAINT
-        try {
-            canvas = holder.lockCanvas();
-            synchronized (holder) {
-                lay.draw(canvas);
+        while (running) {
+            if(!holder.getSurface().isValid())
+                continue;
 
-            }
-        } finally {
-            if (canvas != null) {
-                holder.unlockCanvasAndPost(canvas);
+            canvas = null;
+            try {
+                canvas = holder.lockCanvas(null);
+               if (canvas  != null) {
+                    synchronized (holder) {
+                       if (lay.boxTomove == null) {
+                           lay.Mydraw(canvas);
+                       } else {
+                           lay.drawBox(lay.boxTomove);
+                       }
+                        lay.postInvalidate();
+                    }
+               }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
             }
         }
     }
-
 
 }

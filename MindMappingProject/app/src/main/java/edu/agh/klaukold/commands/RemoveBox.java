@@ -32,7 +32,6 @@ public class RemoveBox implements Command {
               box.topic.getParent().getAllChildren().remove(box.topic);
               box.parent.getChildren().remove(box);
             }
-            //todo usuniecie linii
             box.parent.getLines().remove(box);
         }
 

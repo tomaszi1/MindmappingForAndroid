@@ -28,9 +28,9 @@ public class AddLine implements Command {
         Box child = (Box) properties.get("child");
         box = child;
         Box parent = null;
+        pParent = child.parent;
         if (properties.containsKey("parent")) {
             parent = (Box) properties.get("parent");
-            pParent = child.parent;
             if (parent.topic.isRoot() || parent.topic.getParent() != null) {
               Line line = null;
               IStyle parentStyle = MainActivity.styleSheet.findStyle(parent.topic.getStyleId());

@@ -110,10 +110,6 @@ public class WelcomeScreen extends Activity {
     public void onResume() {
         super.onResume();
         dropboxHandler.onResume();
-        DrawingThread.LUheight = 0;
-        DrawingThread.LDHehight = 0;
-        DrawingThread.RUheight = 0;
-        DrawingThread.RDHehight = 0;
 //		//Utils.initDB(this);
         Utils.context = this;
 
@@ -188,10 +184,6 @@ public class WelcomeScreen extends Activity {
                         @Override
                         public void taskDone(Object result) {
                             progressDialog.dismiss();
-                            DrawView.LUheight = 0;
-                            DrawView.LDHehight = 0;
-                            DrawView.RUheight = 0;
-                            DrawView.RDHehight = 0;
                             MainActivity.root = null;
                             MainActivity.workbook = null;
                             final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
@@ -225,10 +217,6 @@ public class WelcomeScreen extends Activity {
             dropboxWorkbookManager = result;
             progressDialog.dismiss();
             showToast("File loaded.");
-            DrawView.LUheight = 0;
-            DrawView.LDHehight = 0;
-            DrawView.RUheight = 0;
-            DrawView.RDHehight = 0;
             MainActivity.root = null;
             MainActivity.workbook = null;
             final Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
@@ -286,10 +274,6 @@ public class WelcomeScreen extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                DrawView.LUheight = 0;
-                DrawView.LDHehight = 0;
-                DrawView.RUheight = 0;
-                DrawView.RDHehight = 0;
                 MainActivity.style = null;
                 Intent intent = new Intent(WelcomeScreen.this, MainActivity.class);
                 Spinner spinner = (Spinner) findViewById(R.id.spinnerStyles);

@@ -3,6 +3,9 @@ package edu.agh.klaukold.common;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.annotation.TargetApi;
 import android.content.res.Resources;
@@ -42,6 +45,7 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         return res;
     }
 
+    public boolean calculate = false;
     public void updateBox(Box b) {
         this.height = b.height;
         this.width = b.width;
@@ -57,15 +61,15 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
         this.drawableShape = b.drawableShape;
     }
 
-	public LinkedList<Box> getChildren() {
+	public List<Box> getChildren() {
 		return children;
 	}
-	public HashMap<Box, Line> getLines() {
+	public ConcurrentHashMap<Box, Line> getLines() {
 		return lines;
 	}
     public boolean isExpendable = false;
     public boolean isSelected = false;
-    public HashMap<IRelationship, Box> relationships = new HashMap<IRelationship, Box>();
+    public ConcurrentHashMap<IRelationship, Box> relationships = new ConcurrentHashMap<IRelationship, Box>();
 
     public int getHeight() {
         return height;
@@ -93,8 +97,8 @@ public class Box implements  Cloneable, Serializable, Comparable<Box> {
     protected  int height = 110;
     protected  int width = 150;
     public  Point point;
-	protected LinkedList<Box> children = new LinkedList<Box>();;
-	protected HashMap<Box, Line> lines = new HashMap<Box, Line>();
+	protected List<Box> children = new CopyOnWriteArrayList <Box>();
+	protected ConcurrentHashMap<Box, Line> lines = new ConcurrentHashMap<Box, Line>();
     public Drawable newNote;
     public Drawable addBox;
     public Drawable collapseAction;

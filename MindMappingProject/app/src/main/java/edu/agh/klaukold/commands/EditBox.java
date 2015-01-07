@@ -35,6 +35,7 @@ public class EditBox implements Command{
         properties1 = (Properties)properties.clone();
         after = (Properties)properties.clone();
         box = (Box) properties.get("box");
+        box.calculate = false;
         IStyle style = MainActivity.workbook.getStyleSheet().findStyle(box.topic.getStyleId());
         if (style == null) {
             style = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
@@ -44,6 +45,13 @@ public class EditBox implements Command{
         if (properties.containsKey("boxes")) {
             edited = (LinkedList<Box>) properties.get("boxes");
             for (Box b : edited) {
+                IStyle style1 = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
+                if (style1 == null) {
+                    style1 = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
+                    b.topic.setStyleId(style1.getId());
+                    MainActivity.styleSheet.addStyle(style1, IStyleSheet.NORMAL_STYLES);
+                    b.calculate = false;
+            }
                 try {
                     before.add(b.BoxClone());
                 } catch (CloneNotSupportedException e) {
@@ -58,32 +66,54 @@ public class EditBox implements Command{
                 properties1.put("text_size", "8dt");
             }
             style.setProperty(Styles.FontSize, (String)properties.getProperty("text_size"));
+            for (Box b : edited) {
+                MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontSize, (String) properties.getProperty("text_size"));
+            }
         } else if (properties.containsKey("bold")) {
             properties1.put("bold", (String)properties.get("bold"));
             if (((String)properties.get("bold")).equals("true")) {
                 style.setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
                 properties1.put("bold", "false");
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontStyle, Styles.FONT_WEIGHT_BOLD);
+                }
             } else  {
                 style.setProperty(Styles.FontStyle, "");
                 properties1.put("bold", "true");
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontStyle, "");
+                }
             }
+
         }
         else if (properties.containsKey("italic")) {
 
             if (((String)properties.get("italic")).equals("true")) {
                 style.setProperty(Styles.FontStyle, Styles.FONT_STYLE_ITALIC);
                 properties1.put("italic", "false");
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontStyle, Styles.FONT_STYLE_ITALIC);
+                }
             } else  {
                 style.setProperty(Styles.FontStyle, "");
                 properties1.put("italic", "true");
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontStyle, "");
+                }
             }
         }  else if (properties.containsKey("strikeout")) {
             if (((String)properties.get("strikeout")).equals("true")) {
                 style.setProperty(Styles.TextDecoration, Styles.TEXT_DECORATION_LINE_THROUGH);
                 properties1.put("strikeout", "false");
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.TextDecoration, Styles.TEXT_DECORATION_LINE_THROUGH);
+                }
             } else  {
                 style.setProperty(Styles.TextDecoration, "");
                 properties1.put("strikeout", true);
+                for (Box b : edited) {
+                    MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.TextDecoration, "");
+                }
             }
         } else if (properties.containsKey("align")) {
             if (style.getProperty(Styles.TextAlign) != null) {
@@ -91,7 +121,10 @@ public class EditBox implements Command{
             } else {
                 properties1.put("align", Styles.ALIGN_CENTER);
             }
-            style.setProperty(Styles.TextAlign, (String)properties.getProperty("align"));
+            style.setProperty(Styles.TextAlign, (String)properties.get("align"));
+            for (Box b : edited) {
+                MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.TextAlign, (String) properties.get("align"));
+            }
         } else if (properties.containsKey("font")) {
             if (style.getProperty(Styles.FontFamily) != null) {
                 properties1.put("font", style.getProperty(Styles.FontFamily));
@@ -99,6 +132,9 @@ public class EditBox implements Command{
                 properties1.put("font", "Times New Roman");
             }
             style.setProperty(Styles.FontFamily, (String)properties.get("font"));
+            for (Box b : edited) {
+                MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId()).setProperty(Styles.FontFamily, (String) properties.get("font"));
+            }
         }
         else if (properties.containsKey("text_color")) {
             if (style.getProperty(Styles.TextColor) != null) {
@@ -137,6 +173,9 @@ public class EditBox implements Command{
         } else if (properties.containsKey("box_text")) {
             properties1.put("box_text", box.topic.getTitleText());
             box.topic.setTitleText(properties.get("box_text").toString());
+            for (Box b : edited) {
+                b.topic.setTitleText(properties.get("box_text").toString());
+            }
         } else if (properties.containsKey("shape")) {
             properties1.put("shape", box.getDrawableShape());
             if (style.getProperty(Styles.ShapeClass) != null) {
@@ -150,9 +189,6 @@ public class EditBox implements Command{
             box.prepareDrawableShape();style.setProperty(Styles.ShapeClass, shape);
             for (Box b : edited) {
                 IStyle s = MainActivity.workbook.getStyleSheet().findStyle(b.topic.getStyleId());
-                if (s == null) {
-                    s = MainActivity.workbook.getStyleSheet().createStyle(IStyle.TOPIC);
-                }
                 s.setProperty(Styles.ShapeClass, shape);
                 MainActivity.changeShape(b);
                 b.prepareDrawableShape();

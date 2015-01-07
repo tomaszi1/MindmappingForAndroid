@@ -52,7 +52,7 @@ public class EditSheetScreen extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        ((GradientDrawable) backdroundColorEditScreen.getBackground()).setColor(COLOR);
+       // ((GradientDrawable) backdroundColorEditScreen.getBackground()).setColor(COLOR);
 
     }
 

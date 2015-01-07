@@ -18,6 +18,7 @@
 
 package edu.agh.klaukold.utilities;
 
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -125,7 +126,11 @@ public class Utils {
                         new Point(b.getDrawableShape().getBounds().right, b.getDrawableShape().getBounds().centerY()), true);
                 parent.getLines().put(b, l);
                 fstart += hights.get(b).intValue()/2;
-                Queue<Box> q = b.getChildren();
+                Queue<Box> q = new LinkedList<Box>();
+                for (Box b1: b.getChildren()) {
+                  q.add(b1);
+                }
+
                 calculatePosition(q, b, true);
             }
         } else {
@@ -143,7 +148,10 @@ public class Utils {
                         new Point(b.getDrawableShape().getBounds().left, b.getDrawableShape().getBounds().centerY()), true);
                 parent.getLines().put(b, l);
                 fstart += hights.get(b).intValue()/2;
-                Queue<Box> q = b.getChildren();
+                Queue<Box> q = new LinkedList<Box>();
+                for (Box b1: b.getChildren()) {
+                    q.add(b1);
+                }
                 calculatePosition(q, b, false);
             }
         }

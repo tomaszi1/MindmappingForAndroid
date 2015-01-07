@@ -34,7 +34,9 @@ public class EditSheet implements Command  {
             }
 
             ColorDrawable c = (ColorDrawable)properties.get("color");
-            String colorHex = "#" + Integer.toString(Integer.valueOf(Color.red(c.getColor())), 16) + Integer.toString(Integer.valueOf(Color.green(c.getColor())), 16) + Integer.toString(Integer.valueOf(Color.blue(c.getColor())), 16);
+            String colorHex = "#" + (!Integer.toString(Integer.valueOf(Color.red(c.getColor())), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.red(c.getColor())), 16) : "00")
+                    + (!Integer.toString(Integer.valueOf(Color.green(c.getColor())), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.green(c.getColor())), 16) : "00" )
+                    + (!Integer.toString(Integer.valueOf(Color.blue(c.getColor())), 16).equals("0") ? Integer.toString(Integer.valueOf(Color.blue(c.getColor())), 16) : "00" );
             if (sheet.getStyleId() != null && MainActivity.styleSheet.findStyle(sheet.getStyleId()) != null) {
                 MainActivity.styleSheet.findStyle(sheet.getStyleId()).setProperty(Styles.FillColor,colorHex);
             } else {

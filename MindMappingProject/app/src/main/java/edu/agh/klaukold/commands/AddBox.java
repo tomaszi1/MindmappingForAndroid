@@ -47,11 +47,8 @@ public class AddBox implements Command {
         Resources res = (Resources) properties.get("res");
         parent.addChild(box);
         box.setHeight(100);
-        if (parent.topic.isRoot() && ( style.equals("Default") || (MainActivity.sheet1.getTheme() == null ) )) {
-            box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
 
-        } else
-            if (parent.topic.isRoot() && ( style.equals("Classic") || (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%classic") || MainActivity.sheet1.getTheme().getName().equals("%comic"))) ) {
+         if (parent.topic.isRoot() && ( style.equals("Classic") || (MainActivity.sheet1.getTheme() != null && MainActivity.sheet1.getTheme().getName().equals("%classic"))) ) {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
            topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ROUNDEDRECT);
            topicStyle.setProperty(Styles.FillColor, "#CCE5FF");
@@ -66,7 +63,11 @@ public class AddBox implements Command {
             box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.elipse));
                 topicStyle.setProperty(Styles.ShapeClass, Styles.TOPIC_SHAPE_ELLIPSE);
                 topicStyle.setProperty(Styles.FillColor, "#404040");
-        } else {
+        }        else  if (parent.topic.isRoot() && ( style.equals("Default") || (MainActivity.sheet1.getTheme() == null ) )) {
+                box.setDrawableShape((GradientDrawable) res.getDrawable(R.drawable.round_rect));
+
+            }
+            else {
             if (!parent.topic.isRoot()) {
                 box.setWidth(70);
                 box.setHeight(50);

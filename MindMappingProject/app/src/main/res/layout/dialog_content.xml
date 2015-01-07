@@ -9,27 +9,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout 
+    </edu.agh.klaukold.utilities.VerticalScrollview>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
-    	android:focusableInTouchMode="true">
+    	android:focusableInTouchMode="true"
+            android:orientation="vertical">
 
 	    <EditText
 	        android:id="@+id/editText"
-	        android:layout_width="0dp"
-	        android:layout_weight="0.7"
-	        android:layout_height = "50dp"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="0.6"
+	        android:layout_height = "wrap_content"
 	        android:layout_margin="5dp"
-	        android:scrollbars="vertical" 
+	        android:scrollbars="vertical"
 	        android:overScrollMode="always"
 	        android:inputType="textMultiLine|textNoSuggestions"
-	        />
+            android:minWidth="70dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="horizontal">
 
             <Button
 	        android:id="@+id/dialogButtonOK"
-	        android:layout_width="0dp"
-	        android:layout_weight="0.3"
+	        android:layout_width="10dp"
+	        android:layout_weight="0.2"
 	        android:layout_height="wrap_content"
 	        android:gravity="center"
 	        android:layout_margin="5dp"
@@ -37,16 +52,18 @@
 	        />
 
             <Button
-                android:layout_width="0dp"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
                 android:id="@+id/button2"
-                android:layout_weight="0.4"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_weight="0.3"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="0dp"
                 android:layout_marginTop="5dp" />
 
         </LinearLayout>
-    </edu.agh.klaukold.utilities.VerticalScrollview>
+
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
